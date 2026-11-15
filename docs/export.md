@@ -135,7 +135,7 @@ agentwrench export render-merge merged.jsonl --view tools -o tools.md
 agentwrench export render-merge merged.jsonl --output-temp-dir /existing/writable/scratch
 ```
 
-The transcript starts with a `# trajport merged trajectory` heading. Each
+The transcript starts with a `# agentwrench export merged trajectory` heading. Each
 recorded event has a User/Assistant/System heading with its original step ID
 and an explicit **Source / session** fenced label containing the input ordinal,
 session ID, original source line and step ID. The source catalogue lists the
@@ -714,7 +714,7 @@ Remaining lines are `{"type":"step", ...}` with:
 optional. Results can have null/unmatched call IDs in normalized JSONL.
 Recognized raw records and unknown records live in `extra` in full exports,
 subject to redaction, media omission, and output limits. Markdown output from
-`convert --to md` starts with a `# trajport trajectory` heading; `summary`
+`convert --to md` starts with a `# agentwrench export trajectory` heading; `summary`
 output starts with `# Hand-off brief`.
 
 JSONL input records are delimited by LF (`\n`); CRLF (`\r\n`) is also accepted.

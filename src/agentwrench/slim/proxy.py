@@ -16,6 +16,7 @@ from .requests import MAX_PENDING, PendingRequest, RequestTracker
 from .slim import apply_config, extract_tools
 from .stdio import ChildProcess, SignalHandlers, StdinReader, StreamClosedError, write_stderr, write_stdout
 from . import timers
+from .._text import plural
 
 MAX_LINE_BYTES = 8 * 1024 * 1024
 
@@ -339,7 +340,7 @@ async def run_proxy(command: list[str], config: dict[str, Any], *, request_timeo
         child.close_pipes()
     handlers.remove()
     if unfinished:
-        warn(f'server exited with {unfinished} pending request(s)')
+        warn(f'server exited with {plural(unfinished, "pending request")}')
     if state['forced_signal']:
         return 128 + _signal_number(state['forced_signal'])
     if code is not None and code > 0:

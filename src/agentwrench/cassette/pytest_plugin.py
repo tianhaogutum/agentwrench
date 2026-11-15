@@ -18,7 +18,7 @@ MAX_EXIT_REPORT = 4096
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup("mcp-cassette")
+    group = parser.getgroup("agentwrench cassette")
     group.addoption("--mcp-record", choices=("none", "once", "all"), default="none",
                     help="none: replay only; once: record missing; all: re-record (executes server)")
 

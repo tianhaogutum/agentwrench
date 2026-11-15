@@ -70,7 +70,7 @@ A single-file `--json` report has this shape (line and block indexes are respect
 }
 ```
 
-Repair reports retain the original issues and add `changes`, `clean_after`, `dry_run`, `output`, and `backup`. Directory reports use `{"files":[...],"errors":[...]}`. Operational errors use `{"file":...,"error":...}` when arguments were successfully parsed. JSON output contains identifiers and edit descriptions, never arguments or tool-output contents. Human dry-run diffs include changed input contents; review them locally if sessions contain secrets. Warnings go to stderr.
+Repair reports retain the original issues and add `changes`, `clean_after`, `dry_run`, `output`, and `backup`. Directory reports use `{"files":[...],"errors":[...],"skipped":[...]}`; JSONL files that auto-detection cannot identify as a Codex or Claude Code session (for example Claude Code `subagents/workflows/*/journal.jsonl`) are listed in `skipped` (text: `PATH: skipped (not a Codex or Claude Code session)`) and do not affect the exit code. Operational errors use `{"file":...,"error":...}` when arguments were successfully parsed. JSON output contains identifiers and edit descriptions, never arguments or tool-output contents. Human dry-run diffs include changed input contents; review them locally if sessions contain secrets. Warnings go to stderr.
 
 Exit codes: `check`: **0** clean, **1** issues, **2** usage/unreadable/unsupported format. `repair`: **0** validated clean result or dry-run, **2** refusal/failure. Repair is idempotent: a second run reports zero changes; an in-place no-op does not write or create another backup.
 

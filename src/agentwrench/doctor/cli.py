@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import json
 import os
 from pathlib import Path
@@ -12,11 +13,12 @@ from . import __version__
 from .audit import audit
 from .audit_migration import migrate_audit
 from .audit_verification import verify_audit
-from .engine import DoctorError, Report, scan
+from .engine import DoctorError, Report, UndetectedFormat, scan
 from .files import assert_unchanged, open_session, publish
 from .manifest import apply, preview
 from .repair import make_plan, transform, validate_plan
 from .recovery import PairingRefusal, recover, verify_backup, verify_output
+from .._text import plural
 
 
 class Parser(argparse.ArgumentParser):
@@ -91,32 +93,88 @@ def warn_live(source, path: Path) -> None:
 
 def show(report: Report, repairing: bool = False, dry_run: bool = False) -> None:
     if repairing:
-        print(f"{report.file} [{report.format}]: {len(report.changes)} changes" + (" (dry-run)" if dry_run else ""))
+        print(f"{report.file} [{report.format}]: {plural(len(report.changes), 'change')}" + (" (dry-run)" if dry_run else ""))
         for change in report.changes:
             print(f"  L{change['line']} {change['action']}: {change['detail']}")
     else:
-        print(f"{report.file} [{report.format}]: " + (f"{len(report.issues)} issues" if report.issues else "clean"))
+        print(f"{report.file} [{report.format}]: " + (plural(len(report.issues), "issue") if report.issues else "clean"))
         for issue in report.issues:
             cid = " " + json.dumps(issue.call_id, ensure_ascii=True) if issue.call_id is not None else ""
             print(f"  L{issue.line} {issue.code}{cid}: {issue.detail}")
 
 
-def diff(source, path: Path, plan) -> None:
+def _line_ops(raw: bytes, changed: list[bytes]):
+    """Diff one input line against the lines the plan replaces it with."""
+    if raw in changed:  # unchanged record with inserted neighbours (e.g. a stub output)
+        at = changed.index(raw)
+        return [*(("+", value) for value in changed[:at]), (" ", raw), *(("+", value) for value in changed[at + 1:])]
+    return [("-", raw), *(("+", value) for value in changed)]
+
+
+def _hunks(ops, context: int):
+    """Group a stream of (tag, line) ops into unified-diff hunks with ``context`` lines.
+
+    Streams: only lines near a change are kept in memory."""
+    old_no = new_no = 1
+    hunk: list[tuple[str, bytes]] = []
+    start = (1, 1)
+    lead: deque[tuple[int, int, bytes]] = deque(maxlen=context)  # equal lines before the next hunk
+    tail: list[tuple[int, int, bytes]] = []  # equal lines after the open hunk's last change
+    for tag, content in ops:
+        if tag == " ":
+            if not hunk:
+                lead.append((old_no, new_no, content))
+            else:
+                tail.append((old_no, new_no, content))
+                if len(tail) > 2 * context:
+                    hunk.extend((" ", line) for _, _, line in tail[:context])
+                    yield start, hunk
+                    hunk = []
+                    lead.clear()
+                    lead.extend(tail[len(tail) - context:] if context else [])
+                    tail = []
+            old_no += 1
+            new_no += 1
+            continue
+        if not hunk:
+            start = (lead[0][0], lead[0][1]) if lead else (old_no, new_no)
+            hunk = [(" ", line) for _, _, line in lead]
+            lead.clear()
+        else:
+            hunk.extend((" ", line) for _, _, line in tail)
+            tail = []
+        hunk.append((tag, content))
+        if tag == "-":
+            old_no += 1
+        else:
+            new_no += 1
+    if hunk:
+        hunk.extend((" ", line) for _, _, line in tail[:context])
+        yield start, hunk
+
+
+def _range(start: int, length: int) -> str:
+    # Same convention as difflib.unified_diff / GNU diff.
+    if length == 1:
+        return str(start)
+    return f"{start - 1 if not length else start},{length}"
+
+
+def diff(source, path: Path, plan, context: int = 1) -> None:
+    """Print a unified diff of the planned repair (one context line: records can be long)."""
     print(f"--- {path}\n+++ {path} (planned)")
     source.seek(0)
-    new_line = 1
-    for line, raw in enumerate(source, 1):
-        changed = transform(plan, line, raw)
-        if changed != [raw]:
-            new_start = new_line if changed else new_line - 1
-            print(f"@@ -{line},1 +{new_start},{len(changed)} @@")
-            for prefix, content in [("-", raw), *(("+", value) for value in changed)]:
-                # Invalid UTF-8 is escaped; do not fail while previewing --drop-invalid.
-                text = content.decode("utf-8", errors="backslashreplace")
-                print(prefix + text.rstrip("\n"))
-                if not content.endswith(b"\n"):
-                    print("\\ No newline at end of file")
-        new_line += len(changed)
+    ops = (op for line, raw in enumerate(source, 1) for op in _line_ops(raw, transform(plan, line, raw)))
+    for (old_start, new_start), hunk in _hunks(ops, context):
+        old_len = sum(tag != "+" for tag, _ in hunk)
+        new_len = sum(tag != "-" for tag, _ in hunk)
+        print(f"@@ -{_range(old_start, old_len)} +{_range(new_start, new_len)} @@")
+        for prefix, content in hunk:
+            # Invalid UTF-8 is escaped; do not fail while previewing --drop-invalid.
+            text = content.decode("utf-8", errors="backslashreplace")
+            print(prefix + text.rstrip("\n"))
+            if not content.endswith(b"\n"):
+                print("\\ No newline at end of file")
 
 
 def paths_in(directory: Path) -> list[Path]:
@@ -185,14 +243,14 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps(payload, ensure_ascii=True))
             else:
                 print(f"{args.path} [{payload['format']}]: migrated v1 to v2 at byte {payload['offset']}; "
-                      f"{payload['emitted_count']} diagnostic hashes preserved; checkpoint: {args.out}")
+                      f"{plural(payload['emitted_count'], 'diagnostic hash', 'diagnostic hashes')} preserved; checkpoint: {args.out}")
             return 0
         if args.command == "audit":
             payload = audit(args.path, args.checkpoint, args.format, args.allow_incomplete_final)
             if args.json:
                 print(json.dumps(payload, ensure_ascii=True))
             else:
-                print(f"{args.path} [{payload['format']}]: {payload['issue_count']} current issues, "
+                print(f"{args.path} [{payload['format']}]: {plural(payload['issue_count'], 'current issue')}, "
                       f"{len(payload['issues'])} new; cursor byte {payload['offset']}")
                 for issue in payload["issues"]:
                     print(f"  L{issue['line']} byte {issue['byte_offset']} {issue['code']}: {issue['detail']}")
@@ -206,6 +264,7 @@ def main(argv: list[str] | None = None) -> int:
             paths = paths_in(args.path) if directory else [args.path]
             reports: list[Report] = []
             errors: list[dict] = []
+            skipped: list[dict] = []
             for path in paths:
                 try:
                     with open_session(path) as source:
@@ -214,13 +273,22 @@ def main(argv: list[str] | None = None) -> int:
                     if not args.json:
                         show(report)
                     reports.append(report)
+                except UndetectedFormat:
+                    if not directory:
+                        raise
+                    # Other JSONL under a sessions tree (e.g. Claude Code subagents/workflows
+                    # journals) is not a session: skip it like `agentwrench scan` does.
+                    skipped.append({"file": str(path), "reason": "not a Codex or Claude Code session"})
+                    if not args.json:
+                        print(f"{path}: skipped (not a Codex or Claude Code session)")
                 except (OSError, DoctorError) as exc:
                     if not directory:
                         raise
                     errors.append({"file": str(path), "error": str(exc)})
                     print(f"error: {path}: {exc}", file=sys.stderr)
             if args.json:
-                payload = {"files": [r.as_dict() for r in reports], "errors": errors} if directory else reports[0].as_dict()
+                payload = ({"files": [r.as_dict() for r in reports], "errors": errors, "skipped": skipped}
+                           if directory else reports[0].as_dict())
                 print(json.dumps(payload, ensure_ascii=True))
             elif directory and not paths:
                 print(f"{args.path}: no *.jsonl files")

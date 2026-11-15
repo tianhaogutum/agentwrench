@@ -12,6 +12,7 @@ from .core import (MAX_FILE_BYTES, MAX_FILES, MAX_TOTAL_BYTES, SEPARATOR, Reader
                    UPSTREAM_SHA, absolute, directory, filename, inspect_codex)
 from .impact import MAX_WORKDIRS, _changes, normalize_cwds
 from .relocation import project_manifest
+from .._text import plural
 
 FORMAT = 'agentsmd-scope.snapshot'
 MANIFEST_FORMAT = 'agentsmd-scope.manifest'
@@ -434,10 +435,10 @@ def _explain_loss(diff: dict) -> list[str]:
 def explain_diff(diff: dict) -> str:
     if diff['format'] == 'agentsmd-scope.manifest-diff':
         lines = [f"{'CHANGED' if diff['effective_changed'] else 'UNCHANGED'}: "
-                 f"{diff['summary']['changed_cwd_count']} working directories changed"]
+                 f"{plural(diff['summary']['changed_cwd_count'], 'working directory', 'working directories')} changed"]
         lines.extend(f"{row['kind']} {json.dumps(row['cwd'], ensure_ascii=True)}" for row in diff['directories'])
         if 'file_changes' in diff:
-            lines.append(f"file changes: {len(diff['file_changes'])} working directories")
+            lines.append(f"file changes: {plural(len(diff['file_changes']), 'working directory', 'working directories')}")
             for row in diff['file_changes']:
                 lines.append(f"{row['kind']} {json.dumps(row['cwd'], ensure_ascii=True)}")
                 lines.extend(f"  {change['kind']} {change['scope']} "
@@ -447,7 +448,7 @@ def explain_diff(diff: dict) -> str:
                      f"{json.dumps(row['after_cwd'], ensure_ascii=True)}" for row in diff.get('relocations', []))
         return '\n'.join(lines + _explain_loss(diff))
     lines = [f"{'CHANGED' if diff['effective_changed'] else 'UNCHANGED'}: effective instructions; "
-             f"{len(diff['changes'])} file change(s)"]
+             f"{plural(len(diff['changes']), 'file change')}"]
     for change in diff['changes']:
         lines.append(f"{change['kind']} {change['scope']} {json.dumps(change['path'], ensure_ascii=True)}")
     for key in diff['context_changes']:

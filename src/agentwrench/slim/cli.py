@@ -11,6 +11,7 @@ from typing import Any
 
 from .config import PROGRAM, VERSION, InputError, validate_config
 from .discover import (
+    PROTOCOL_VERSION,
     DiscoveryError,
     run_discover,
     validate_discovery_timeout,
@@ -18,6 +19,7 @@ from .discover import (
     validate_max_pages,
     validate_max_tools,
     validate_max_wire_bytes,
+    validate_protocol_versions,
     validate_server_env,
     validate_server_unset_env,
     validate_shutdown_timeout,
@@ -31,16 +33,20 @@ from .requests import validate_request_timeout
 from .slim import apply_config, extract_tools, measure
 from .stdio import write_stderr, write_stdout
 
+DOCS_URL = 'https://github.com/tianhaogutum/agentwrench/blob/main/docs/slim.md'
+
 USAGE = f"""{PROGRAM} {VERSION} — offline MCP context planner and stdio proxy
 Usage:
   {PROGRAM} measure <tools.json> [--config slim.json] [--json]
   {PROGRAM} plan <tools.json> --budget <estimated-tokens>
-  {PROGRAM} discover [--output <catalogue.json>] [--server-cwd <directory>] [--server-env <NAME=VALUE>]... [--server-unset-env <NAME>]... [--config slim.json] [--request-timeout-ms <ms>] [--discovery-timeout-ms <ms>] [--shutdown-timeout-ms <ms>] [--max-pages <n>] [--max-tools <n>] [--max-output-bytes <n>] [--max-wire-bytes <n>] -- <server> [args...]
+  {PROGRAM} discover [--output <catalogue.json>] [--server-cwd <directory>] [--server-env <NAME=VALUE>]... [--server-unset-env <NAME>]... [--accept-protocol-version <YYYY-MM-DD>]... [--config slim.json] [--request-timeout-ms <ms>] [--discovery-timeout-ms <ms>] [--shutdown-timeout-ms <ms>] [--max-pages <n>] [--max-tools <n>] [--max-output-bytes <n>] [--max-wire-bytes <n>] -- <server> [args...]
   {PROGRAM} proxy --config slim.json [--request-timeout-ms <ms>] -- <server> [args...]
 
 Token estimates are ceil(UTF-8 bytes / 4), not model token counts.
 Plan writes a ready config to stdout and analysis to stderr; it never starts a server.
-Globs support only * and ?; deny wins. See README for limits."""
+Discover requires MCP protocol {PROTOCOL_VERSION} unless older revisions are accepted
+with --accept-protocol-version (e.g. 2025-06-18).
+Globs support only * and ?; deny wins. Limits and details: {DOCS_URL}"""
 
 MODES = ('measure', 'plan', 'proxy', 'discover')
 _DIGITS = re.compile('[0-9]+')
@@ -53,6 +59,10 @@ _VALUE_OPTIONS: dict[str, set[str]] = {
     'discover': {'--config', '--output', '--server-cwd', '--request-timeout-ms', '--discovery-timeout-ms',
                  '--shutdown-timeout-ms', '--max-pages', '--max-tools', '--max-output-bytes', '--max-wire-bytes'},
 }
+
+# Repeatable discover-only options and their option keys.
+_REPEATABLE = {'--server-env': 'serverEnv', '--server-unset-env': 'serverUnsetEnv',
+               '--accept-protocol-version': 'protocolVersions'}
 
 # (option, error message for non-digit values, validator)
 _NUMERIC_OPTIONS: list[tuple[str, str, str, Any]] = [
@@ -85,12 +95,12 @@ def parse(args: list[str]) -> tuple[str, dict[str, Any], str | None, list[str]]:
         if arg == '--' and mode in ('proxy', 'discover'):
             command = rest[i + 1:]
             break
-        if arg in ('--server-env', '--server-unset-env'):
+        if arg in _REPEATABLE:
             if mode != 'discover':
                 raise InputError(f'{arg}: unsupported option')
             if _missing(following):
                 raise InputError(f'{arg}: missing value')
-            options.setdefault('serverEnv' if arg == '--server-env' else 'serverUnsetEnv', []).append(following)
+            options.setdefault(_REPEATABLE[arg], []).append(following)
             i += 1
         elif arg.startswith('--server-env='):
             # Never reflect a supplied assignment in wrapper diagnostics.
@@ -130,7 +140,36 @@ def parse(args: list[str]) -> tuple[str, dict[str, Any], str | None, list[str]]:
                 raise InputError(message)
             options[key] = validate(int(options[option]))
     validate_server_unset_env(options.get('serverUnsetEnv'), validate_server_env(options.get('serverEnv')))
+    validate_protocol_versions(options.get('protocolVersions'))
     return mode, options, positional[0] if positional else None, command
+
+
+def _accepted_versions(extra: list[str] | None) -> tuple[str, ...] | None:
+    """The default revision plus any explicitly accepted older ones."""
+    return None if not extra else tuple(dict.fromkeys((PROTOCOL_VERSION, *extra)))
+
+
+MIN_USEFUL_DESCRIPTION_CHARS = 40
+
+
+def _plan_warnings(tools: list[dict[str, Any]], p: dict[str, Any]) -> list[str]:
+    """Explain a plan that only fits by gutting descriptions, or does not fit at all."""
+    cap = p['config'].get('maxDescriptionChars')
+    short = cap is not None and cap < MIN_USEFUL_DESCRIPTION_CHARS
+    if not short and p['meetsBudget']:
+        return []
+    lines = []
+    if short:
+        lines.append(f'description cap of {cap} code point{"" if cap == 1 else "s"} is below '
+                     f'{MIN_USEFUL_DESCRIPTION_CHARS}; tool descriptions lose most of their usage guidance.')
+    if not p['meetsBudget']:
+        lines.append(f"budget {p['budget']} is not met even by this config (~{p['after']['estimatedTokens']} tokens).")
+    strip = {key: value for key, value in p['config'].items() if key != 'maxDescriptionChars'}
+    strip_only = measure(apply_config(tools, strip))['estimatedTokens']
+    useful = measure(apply_config(tools, {**strip, 'maxDescriptionChars': MIN_USEFUL_DESCRIPTION_CHARS}))['estimatedTokens']
+    lines.append(f'consider strip-only (remove maxDescriptionChars from the config: ~{strip_only} tokens) '
+                 f'or a higher budget (--budget {useful} keeps up to {MIN_USEFUL_DESCRIPTION_CHARS} characters).')
+    return lines
 
 
 def _report(m: dict[str, Any]) -> str:
@@ -156,7 +195,8 @@ async def _run(args: list[str]) -> int:
             server_cwd=options.get('server-cwd'), request_timeout_ms=options.get('request_timeout_ms'),
             discovery_timeout_ms=options.get('discovery_timeout_ms'), shutdown_timeout_ms=options.get('shutdown_timeout_ms'),
             max_pages=options.get('max_pages'), max_tools=options.get('max_tools'),
-            max_output_bytes=options.get('max_output_bytes'), max_wire_bytes=options.get('max_wire_bytes'))
+            max_output_bytes=options.get('max_output_bytes'), max_wire_bytes=options.get('max_wire_bytes'),
+            protocol_versions=_accepted_versions(options.get('protocolVersions')))
         if 'output' in options:
             write_catalogue_file(options['output'], snapshot)
         else:
@@ -172,6 +212,8 @@ async def _run(args: list[str]) -> int:
         _err('Budget met. No tools denied.\n' if p['meetsBudget'] else 'Budget NOT met without removing tools. Config denies nothing.\n')
         for t in p['denySuggestions']:
             _err(f"Deny suggestion (review manually): {stringify(t['name'])} ({t['bytes']} B); remaining ~{t['estimatedTokensIfDenied']}\n")
+        for line in _plan_warnings(tools, p):
+            _err(f'Warning: {line}\n')
         return 0
     has_config = 'config' in options
     before = measure(tools)

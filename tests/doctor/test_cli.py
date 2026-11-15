@@ -117,7 +117,7 @@ def test_directory_aggregate_continues_after_bad_file(tmp_path):
 
 def test_empty_directory_clean(tmp_path):
     run = cli("check", tmp_path, "--json")
-    assert run.returncode == 0 and json.loads(run.stdout) == {"files": [], "errors": []}
+    assert run.returncode == 0 and json.loads(run.stdout) == {"files": [], "errors": [], "skipped": []}
 
 
 def test_refuse_existing_output_and_symlinks(tmp_path):
@@ -251,7 +251,7 @@ def test_directory_scan_does_not_follow_symlink_directory(tmp_path):
     (scan_dir / "linked").symlink_to(outside, target_is_directory=True)
     run = cli("check", scan_dir, "--json")
     assert run.returncode == 0
-    assert json.loads(run.stdout) == {"files": [], "errors": []}
+    assert json.loads(run.stdout) == {"files": [], "errors": [], "skipped": []}
 
 
 def test_dry_run_out_does_not_create_output(tmp_path):
@@ -261,3 +261,71 @@ def test_dry_run_out_does_not_create_output(tmp_path):
     assert json.loads(run.stdout)["clean_after"] is True
     assert not out.exists()
     assert list(tmp_path.iterdir()) == []
+
+
+def test_directory_mode_skips_jsonl_that_is_not_a_session(tmp_path):
+    (tmp_path / "a.jsonl").write_bytes((FIXTURES / "codex/clean.jsonl").read_bytes())
+    journal = tmp_path / "subagents" / "workflows" / "w1" / "journal.jsonl"
+    journal.parent.mkdir(parents=True)
+    journal.write_text('{"event":"step","n":1}\n{"event":"done"}\n')
+    run = cli("check", tmp_path, "--json")
+    report = json.loads(run.stdout)
+    assert run.returncode == 0, run.stderr
+    assert len(report["files"]) == 1 and report["errors"] == []
+    assert report["skipped"] == [{"file": str(journal), "reason": "not a Codex or Claude Code session"}]
+    text = cli("check", tmp_path)
+    assert text.returncode == 0 and f"{journal}: skipped (not a Codex or Claude Code session)" in text.stdout
+    single = cli("check", journal)  # an explicit single file still explains the refusal
+    assert single.returncode == 2 and "cannot detect format" in single.stderr
+
+
+def test_dry_run_diff_keeps_the_unchanged_call_line_as_context():
+    path = FIXTURES / "claude/orphan_tool_use.jsonl"
+    original = path.read_text().splitlines()
+    run = cli("repair", path, "--dry-run")
+    assert run.returncode == 0, run.stderr
+    lines = run.stdout.splitlines()
+    assert lines[0] == f"{path} [claude]: 1 change (dry-run)"
+    hunk = lines[lines.index(f"+++ {path} (planned)") + 1:]
+    assert hunk[0] == "@@ -1 +1,2 @@"
+    assert hunk[1] == " " + original[0]
+    assert hunk[2].startswith("+") and "tool output missing" in hunk[2]
+    assert len(hunk) == 3 and not any(line.startswith("-") for line in hunk)
+
+
+def _apply(old, hunks):
+    """Apply printed-style hunks (as tag/line lists) to ``old`` and check headers."""
+    new, at = [], 0
+    for (old_start, _), hunk in hunks:
+        new.extend(old[at:old_start - 1])
+        at = old_start - 1
+        for tag, line in hunk:
+            if tag in " -":
+                assert old[at] == line
+                at += 1
+            if tag in " +":
+                new.append(line)
+    return new + old[at:]
+
+
+@pytest.mark.parametrize("seed", range(40))
+def test_hunks_reconstruct_the_planned_file(seed):
+    import random
+    from agentwrench.doctor.cli import _hunks, _line_ops
+    rng = random.Random(seed)
+    old = [f"line {i}\n".encode() for i in range(rng.randint(0, 30))]
+    planned, ops = [], []
+    for line in old:
+        choice = rng.random()
+        changed = ([] if choice < 0.1 else [line, b"stub\n"] if choice < 0.2
+                   else [b"edited\n"] if choice < 0.25 else [line])
+        planned += changed
+        ops += _line_ops(line, changed)
+    for context in (0, 1, 3):
+        hunks = list(_hunks(iter(ops), context))
+        assert _apply(old, hunks) == planned
+        for (_, _), hunk in hunks:
+            assert any(tag != " " for tag, _ in hunk)
+            lead = next(i for i, (tag, _) in enumerate(hunk) if tag != " ")
+            trail = next(i for i, (tag, _) in enumerate(reversed(hunk)) if tag != " ")
+            assert lead <= context and trail <= context

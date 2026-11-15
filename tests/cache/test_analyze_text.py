@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 
 from agentwrench.cache import analyze, parse_capture
@@ -268,7 +269,7 @@ def test_text_shows_existing_configured_reasons_beneath_pairs(tmp_path) -> None:
             divergence = row["firstDivergence"]["path"] if row["firstDivergence"] else "-"
             pair_line = (
                 f"{row['from']}->{row['to']}\t{to_fixed(row['stability'] * 100, 2)}%\t{row['sharedSegments']}/{row['previousSegments']}\t"
-                f"{row['sharedBytes']}\t{number_to_string(row['sharedEstimatedTokens'])}\t{js(divergence)}\t{row['class']}\n"
+                f"{row['sharedBytes']}\t{math.ceil(row['sharedEstimatedTokens'])}\t{js(divergence)}\t{row['class']}\n"
             )
             assert pair_line + (f"  reason: {js(row['reason'])}\n" if row.get("reason") else "") in configured
         if path == BEFORE:
@@ -373,7 +374,7 @@ def test_text_shows_existing_configured_differing_spans_once_beneath_their_pairs
                 "volatile": [],
             }
             assert (
-                '1->2\t84.17%\t2/3\t101\t25.25\t"/messages/1/content"\tsystem_changed\n'
+                '1->2\t84.17%\t2/3\t101\t26\t"/messages/1/content"\tsystem_changed\n'
                 '  differing span: {"start":0,"before":"Stable question","after":"Changed question","volatile":[]}\n'
             ) in plain.stdout
             assert plain.stdout.count("  differing span:") == 2
@@ -455,7 +456,7 @@ def check_configured_metrics(text: str, report) -> None:
             f"{to_fixed(row['stability'] * 100, 2)}%",
             f"{row['sharedSegments']}/{row['previousSegments']}",
             str(row["sharedBytes"]),
-            number_to_string(row["sharedEstimatedTokens"]),
+            str(math.ceil(row["sharedEstimatedTokens"])),  # text rounds up; JSON keeps bytes / 4
             js(row["firstDivergence"]["path"] if row["firstDivergence"] else "-"),
             row["class"],
         ]
@@ -485,7 +486,7 @@ def test_text_gives_configured_metrics_the_same_columns_as_raw_only_when_pairs_e
             ] == [2, 3, 101, 25.25]
             assert (
                 PAIR_HEADER
-                + '1->2\t84.17%\t2/3\t101\t25.25\t"/messages/1/content"\tsystem_changed\n'
+                + '1->2\t84.17%\t2/3\t101\t26\t"/messages/1/content"\tsystem_changed\n'
                 + '  differing span: {"start":0,"before":"Stable question","after":"Changed question","volatile":[]}\n'
             ) in plain.stdout
         raw, no_fields = analyze_cli(path), analyze_cli(path, "--volatile-fields", empty)

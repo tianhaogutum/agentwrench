@@ -95,3 +95,19 @@ def test_request_timeout_cli_rejects_invalid_values_before_spawning_and_excludes
         assert result.returncode == 1
         assert re.search('cannot start server', result.stderr)
     assert re.search('--request-timeout-ms', run('--help').stdout)
+
+
+def test_plan_warns_on_stderr_when_descriptions_are_gutted_or_budget_is_unmet():
+    unmet = run('plan', 'fixtures/tools-40.json', '--budget', '4000')
+    assert unmet.returncode == 0
+    assert json.loads(unmet.stdout)['maxDescriptionChars'] == 0
+    assert 'Warning: description cap of 0 code points is below 40' in unmet.stderr
+    assert 'Warning: budget 4000 is not met even by this config (~4618 tokens).' in unmet.stderr
+    assert ('Warning: consider strip-only (remove maxDescriptionChars from the config: ~9340 tokens) '
+            'or a higher budget (--budget 4885 keeps up to 40 characters).') in unmet.stderr
+    tight = run('plan', 'fixtures/tools-40.json', '--budget', '4650')
+    assert json.loads(tight.stdout)['maxDescriptionChars'] == 3
+    assert 'Warning: description cap of 3 code points is below 40' in tight.stderr
+    assert 'not met' not in tight.stderr
+    for budget in ('6000', '20000'):  # a useful cap, or strip-only
+        assert 'Warning' not in run('plan', 'fixtures/tools-40.json', '--budget', budget).stderr

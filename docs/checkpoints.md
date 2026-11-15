@@ -54,7 +54,7 @@ Example diff (last two checkpoints in this fixture; long values shortened here):
 "counter": changed
   before: 11
   after:  12
-"items": changed +1 items
+"items": changed +1 item
   before: ["event-0001", "event-0002", ..., "event-0011"]
   after:  ["event-0001", "event-0002", ..., "event-0011", "even...
 ```

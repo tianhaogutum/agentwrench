@@ -200,7 +200,7 @@ def markdown_step(s):
 
 
 def markdown(doc):
-    parts = ['# trajport trajectory', '## Agent', fence(doc['agent']['name']),
+    parts = ['# agentwrench export trajectory', '## Agent', fence(doc['agent']['name']),
              '## Session', fence(doc['session_id'])]
     for s in doc['steps']:
         parts.extend(markdown_step(s))

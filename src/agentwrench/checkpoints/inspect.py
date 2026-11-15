@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .codec import checkpoint, decode, encoded, preview
 from .db import ScopeError, blob_size, key
+from .._text import plural
 
 
 def sizes(cps, writes):
@@ -104,17 +105,17 @@ def diff_report(cps, *, namespace="", from_id=None, to_id=None):
         if channel not in old:
             change = {"channel": channel, "kind": "added", "after": preview(new[channel])}
             if isinstance(new[channel], list):
-                change["summary"] = f"+{len(new[channel])} items"
+                change["summary"] = f"+{plural(len(new[channel]), 'item')}"
         elif channel not in new:
             change = {"channel": channel, "kind": "removed", "before": preview(old[channel])}
             if isinstance(old[channel], list):
-                change["summary"] = f"-{len(old[channel])} items"
+                change["summary"] = f"-{plural(len(old[channel]), 'item')}"
         elif encoded(old[channel]) != encoded(new[channel]):
             change = {"channel": channel, "kind": "changed", "before": preview(old[channel]), "after": preview(new[channel])}
             a, b = old[channel], new[channel]
             if isinstance(a, list) and isinstance(b, list):
                 delta = len(b) - len(a)
-                change["summary"] = f"{delta:+d} items"
+                change["summary"] = f"{delta:+d} {'item' if abs(delta) == 1 else 'items'}"
                 change["appended"] = len(b) >= len(a) and encoded(a) == encoded(b[:len(a)])
         else:
             continue

@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
+import math
 import os
 import re
 import sys
 from dataclasses import dataclass, field
 from typing import Any, TextIO
 
+from .._text import plural
 from . import __version__
 from .analyze import CLASSES, analyze
 from .canonicalize import RULES, canonicalize, write_capture
 from .capture import FORMATS, parse_capture, read_capture
-from .errors import CacheError
+from .errors import CacheError, FsError
 from .jscompat import number_to_string, quote, stringify, to_fixed, well_formed
 from .sessions import SESSION_LIMITS, analyze_sessions
 from .volatile import read_volatile_fields
@@ -164,7 +166,7 @@ def _pair_line(row: dict[str, Any]) -> str:
     return (
         f"{row['from']}->{row['to']}\t{to_fixed(row['stability'] * 100, 2)}%\t"
         f"{row['sharedSegments']}/{row['previousSegments']}\t{row['sharedBytes']}\t"
-        f"{_num(row['sharedEstimatedTokens'])}\t{quote(divergence)}\t{row['class']}"
+        f"{math.ceil(row['sharedEstimatedTokens'])}\t{quote(divergence)}\t{row['class']}"
     )
 
 
@@ -188,7 +190,10 @@ def _session_ranking(out: list[str], report: dict[str, Any], label: str) -> None
 
 
 def render_sessions(report: dict[str, Any], policy_view: str | None) -> list[str]:
-    out = [f"{report['sessionCount']} sessions; {report['requests']} requests; {report['pairs']} within-session pairs"]
+    out = [
+        f"{plural(report['sessionCount'], 'session')}; {plural(report['requests'], 'request')}; "
+        f"{plural(report['pairs'], 'within-session pair')}"
+    ]
     out.append(
         "session\tformat\tpairs\tstability\traw classes\traw breaking pairs\tcaptured usage breaks\t"
         "captured usage compared pairs"
@@ -240,7 +245,7 @@ def render_analysis_jsonl(report: dict[str, Any]) -> list[str]:
 
 def render_analysis(report: dict[str, Any]) -> list[str]:
     configured = report.get("configured")
-    out = [f"format: {report['format']}; {report['requests']} requests"]
+    out = [f"format: {report['format']}; {plural(report['requests'], 'request')}"]
     if not report["pairs"]:
         out.append("nothing to compare")
     else:
@@ -334,12 +339,13 @@ def _compare(opts: Options, before: dict[str, Any], volatile_fields: list[Any]) 
     return out
 
 
-def _run(argv: list[str]) -> tuple[list[str], int]:
+def _run(argv: list[str]) -> tuple[list[str], int, str | None]:
+    """Output lines, exit status and an optional stderr reason for a policy failure."""
     opts = parse_options(argv)
     if opts.help:
-        return [HELP], 0
+        return [HELP], 0, None
     if opts.version:
-        return [__version__], 0
+        return [__version__], 0, None
     policy_view = opts.values.get("policy-view")
     fields_path = opts.values.get("volatile-fields")
     volatile_fields = [] if fields_path is None else read_volatile_fields(fields_path)
@@ -350,22 +356,27 @@ def _run(argv: list[str]) -> tuple[list[str], int]:
         report = analyze_sessions(opts.paths, opts.format, volatile_fields)
         out = [stringify(report, 2)] if opts.json else render_sessions(report, policy_view)
         policy = report["configured"] if policy_view == "configured" else report
-        failed = any(
-            report["usageBreaks"] > 0 if c == "usage_break" else policy["classCounts"].get(c, 0) > 0
+        counts = {
+            c: report["usageBreaks"] if c == "usage_break" else policy["classCounts"].get(c, 0)
             for c in opts.fail_on or ()
-        )
-        return out, 1 if failed or _below(policy["stability"], opts.min_stability) else 0
+        }
+        return (out, *_policy_failure(opts, counts, policy["stability"], policy_view))
 
     records = read_capture(opts.paths[0], opts.format)
     if opts.command == "canonicalize":
         entries = canonicalize(records, opts.rules if opts.rules is not None else RULES)
         # Validate the exact serialized variant before installing it. No upstream steps.
         parse_capture("\n".join(stringify(e) for e in entries) + "\n", opts.format)
-        write_capture(opts.values["out"], entries)
-        return [f"wrote {len(entries)} requests; historical usage preserved, not replayed"], 0
+        try:
+            write_capture(opts.values["out"], entries)
+        except FsError as error:
+            if error.code == "EEXIST" and error.syscall == "link":
+                raise CacheError("--out already exists (or is a symlink); choose a new file") from None
+            raise
+        return [f"wrote {plural(len(entries), 'request')}; historical usage preserved, not replayed"], 0, None
     report = analyze(records, volatile_fields)
     if opts.command == "compare":
-        return _compare(opts, report, volatile_fields), 0
+        return _compare(opts, report, volatile_fields), 0, None
     if opts.output_format == "jsonl":
         out = render_analysis_jsonl(report)
     elif opts.json:
@@ -375,12 +386,28 @@ def _run(argv: list[str]) -> tuple[list[str], int]:
     if not opts.json and opts.output_format != "jsonl" and "configured" in report:
         out.append(f"policy view: {policy_view or 'raw'}")
     policy = report["configured"] if policy_view == "configured" else report
-    fail_on = opts.fail_on or []
-    failed = any(
-        row["class"] in fail_on or (row["usage"] and row["usage"]["usageBreak"] and "usage_break" in fail_on)
-        for row in policy["rows"]
-    )
-    return out, 1 if failed or _below(policy["stability"], opts.min_stability) else 0
+    counts = {
+        c: sum(
+            1 for row in policy["rows"]
+            if (bool(row["usage"] and row["usage"]["usageBreak"]) if c == "usage_break" else row["class"] == c)
+        )
+        for c in opts.fail_on or ()
+    }
+    return (out, *_policy_failure(opts, counts, policy["stability"], policy_view))
+
+
+def _policy_failure(
+    opts: Options, counts: dict[str, int], stability: float | None, policy_view: str | None
+) -> tuple[int, str | None]:
+    """Exit status and a one-line stderr reason for --fail-on / --min-stability."""
+    matched = ", ".join(f"{c} ({plural(n, 'pair')})" for c, n in counts.items() if n)
+    reasons = [f"--fail-on matched {matched}"] if matched else []
+    if _below(stability, opts.min_stability):
+        reasons.append(f"stability {_score(stability)} is below --min-stability {opts.values['min-stability']}")
+    if not reasons:
+        return 0, None
+    view = f" ({policy_view} view)" if policy_view else ""
+    return 1, f"{PROG}: policy failed{view}: " + "; ".join(reasons)
 
 
 def _write(stream: TextIO, text: str) -> None:
@@ -399,7 +426,7 @@ def _write(stream: TextIO, text: str) -> None:
 def main(argv: list[str] | None = None) -> int:
     """Run ``agentwrench cache`` with ``argv`` (excluding the program and group name)."""
     try:
-        lines, status = _run(sys.argv[1:] if argv is None else list(argv))
+        lines, status, reason = _run(sys.argv[1:] if argv is None else list(argv))
     except Exception as error:  # noqa: BLE001 - like the Node tool, report every failure as exit 2
         message = error.message if isinstance(error, CacheError) else str(error)
         # JSON parse errors never echo input content. Avoid serializing raw requests or secrets.
@@ -412,4 +439,7 @@ def main(argv: list[str] | None = None) -> int:
         devnull = os.open(os.devnull, os.O_WRONLY)
         os.dup2(devnull, sys.stdout.fileno())
         os.close(devnull)
+    if reason:
+        # Explain a policy exit 1 on stderr only; stdout (text/JSON/JSONL) is unchanged.
+        _write(sys.stderr, reason + "\n")
     return status

@@ -31,7 +31,12 @@ def check_export(args: list[str], expected_exit: int = 0, input_format: str | No
     result = cli("analyze", *args, "--format", "jsonl", *(["--input-format", input_format] if input_format else []))
     assert result_json.status == expected_exit, result_json.stderr
     assert result.status == expected_exit, result.stderr
-    assert result.stderr == ""
+    # A policy failure explains itself in one stderr line; stdout stays the JSONL contract.
+    if expected_exit == 1:
+        assert result.stderr.startswith("agentwrench cache: policy failed") and result.stderr.count("\n") == 1
+        assert result_json.stderr == result.stderr
+    else:
+        assert result.stderr == ""
     records = [json.loads(line) for line in result.stdout.rstrip().split("\n")]
     assert result.stdout == "\n".join(js(r) for r in records) + "\n"
     report = json.loads(result_json.stdout)

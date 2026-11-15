@@ -28,6 +28,7 @@ MAX_SOURCE_TOOLS = 10000
 DEFAULT_REQUEST_TIMEOUT_MS = 30000
 DEFAULT_SHUTDOWN_TIMEOUT_MS = 1000
 _PORTABLE_NAME = re.compile('[A-Za-z_][A-Za-z0-9_]*')
+PROTOCOL_VERSION_PATTERN = re.compile('[0-9]{4}-[0-9]{2}-[0-9]{2}')
 
 ListPage = Callable[[dict[str, Any] | None], Awaitable[Any]]
 
@@ -206,13 +207,39 @@ class _State:
     next_id = 0
 
 
+def validate_protocol_versions(value: Any) -> list[str] | None:
+    """Extra ``YYYY-MM-DD`` MCP protocol revisions to accept; ``None`` means omitted."""
+    if value is None:
+        return None
+    if not isinstance(value, list):
+        raise InputError('--accept-protocol-version: expected an array of YYYY-MM-DD strings')
+    seen: set[str] = set()
+    for entry in value:
+        if not isinstance(entry, str) or not PROTOCOL_VERSION_PATTERN.fullmatch(entry):
+            raise InputError('--accept-protocol-version: expected an MCP protocol revision such as 2025-06-18')
+        if entry in seen:
+            raise InputError('--accept-protocol-version: duplicate version')
+        seen.add(entry)
+    return list(value)
+
+
+def _initialize_error(version: Any, accepted: frozenset[str]) -> str:
+    listed = ', '.join(sorted(accepted)) or 'none'
+    message = f'discovery requires tools capability and protocol {listed}'
+    # Only a well-formed revision is echoed; other remote content stays out of diagnostics.
+    if isinstance(version, str) and PROTOCOL_VERSION_PATTERN.fullmatch(version) and version not in accepted:
+        message += f' (server negotiated {version}; to accept it, add --accept-protocol-version {version})'
+    return message
+
+
 async def run_discover(command: list[str], config: dict[str, Any], *, server_env: list[str] | None = None,
                        server_unset_env: list[str] | None = None, server_cwd: str | None = None,
                        request_timeout_ms: int | None = None, discovery_timeout_ms: int | None = None,
                        shutdown_timeout_ms: int | None = None, max_pages: int | None = None,
                        max_tools: int | None = None, max_output_bytes: int | None = None,
                        max_wire_bytes: int | None = None, protocol_versions: Iterable[str] | None = None,
-                       server_stderr: Any = None) -> str:
+                       server_stderr: Any = None,
+                       on_protocol_version: Callable[[str], Any] | None = None) -> str:
     """Start ``command``, walk every tools/list page and return the catalogue JSON line.
 
     Options left as ``None`` use their defaults (30 s per request, no overall
@@ -220,6 +247,7 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
     ``protocol_versions`` lists the negotiated protocol versions to accept
     (default: only :data:`PROTOCOL_VERSION`); ``server_stderr`` is passed to the
     child process (default: inherit ours, e.g. ``subprocess.DEVNULL`` to discard).
+    ``on_protocol_version`` is called with the accepted negotiated version.
     """
     accepted = frozenset((PROTOCOL_VERSION,) if protocol_versions is None else protocol_versions)
     request_timeout_ms = validate_request_timeout(DEFAULT_REQUEST_TIMEOUT_MS if request_timeout_ms is None else request_timeout_ms)
@@ -419,7 +447,9 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
                 or not isinstance(capabilities, dict) or not isinstance(capabilities.get('tools'), dict)
                 or not isinstance(server_info, dict) or not isinstance(server_info.get('name'), str)
                 or not isinstance(server_info.get('version'), str)):
-            raise DiscoveryError('discovery requires tools capability and protocol 2025-11-25')
+            raise DiscoveryError(_initialize_error(version, accepted))
+        if on_protocol_version is not None:
+            on_protocol_version(version)
         await race(send({'jsonrpc': '2.0', 'method': 'notifications/initialized'}))
         snapshot = await collect_catalogue(lambda params: request('tools/list', params), config,
                                            max_pages=max_pages, max_tools=max_tools, max_output_bytes=max_output_bytes)

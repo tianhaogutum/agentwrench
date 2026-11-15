@@ -99,7 +99,7 @@ def test_diff_append_scalar_remove_and_add(db):
         cps, _ = read_rows(con, "t-1")
     result = diff_report(cps)
     changes = {c["channel"]: c for c in result["changes"]}
-    assert changes["items"]["summary"] == "+1 items"
+    assert changes["items"]["summary"] == "+1 item"
     assert changes["items"]["appended"] is True
     assert changes["counter"]["before"] == "3"
     assert changes["counter"]["after"] == "4"

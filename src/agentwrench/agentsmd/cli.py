@@ -14,6 +14,7 @@ from .core import ScopeError, absolute, inspect_codex, load_settings
 from .impact import explain_impact, inspect_impact
 from .relocation import read_cwd_map
 from .snapshot import create_manifest, create_snapshot, diff_artifacts, explain_diff, read_snapshot
+from .._text import plural
 
 
 def parser() -> argparse.ArgumentParser:
@@ -153,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
             if not math.isfinite(threshold) or not 0 <= threshold <= 1:
                 raise ScopeError("--max-usage must be a finite number in [0, 1]")
             if report.diagnostics:
-                print(f"FAIL: {len(report.diagnostics)} file/import error(s); run explain for details")
+                print(f"FAIL: {plural(len(report.diagnostics), 'file/import error')}; run explain for details")
                 return 1
             if report.truncations or any(e["status"] == "dropped-over-budget" for e in report.entries):
                 print(f"FAIL: project instructions truncated/dropped ({report.project_bytes_used}/{report.max_bytes} B)")
@@ -161,7 +162,7 @@ def main(argv: list[str] | None = None) -> int:
             if report.agent == "codex" and report.usage > threshold:
                 print(f"FAIL: project usage {report.usage:.2%} exceeds {threshold:.2%}")
                 return 1
-            print(f"PASS: {len(report.entries)} files; " + (f"project usage {report.usage:.2%}" if report.agent == "codex" else "imports resolved (docs-derived)"))
+            print(f"PASS: {plural(len(report.entries), 'file')}; " + (f"project usage {report.usage:.2%}" if report.agent == "codex" else "imports resolved (docs-derived)"))
             return 0
         if args.command == "render":
             if report.diagnostics:

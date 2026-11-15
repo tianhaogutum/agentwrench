@@ -27,6 +27,10 @@ class FormatError(DoctorError):
     """Unsupported, mixed or mismatched session format (safe to categorize)."""
 
 
+class UndetectedFormat(FormatError):
+    """Auto-detection found no Codex or Claude Code session records (e.g. other JSONL logs)."""
+
+
 def usable_id(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
@@ -329,7 +333,9 @@ def scan(lines: Iterable[bytes], file: str, format: str = "auto") -> Report:
     report.digest = digest.hexdigest()
     if report.format == "auto":
         if report.lines:
-            raise FormatError(f"{file}: cannot detect format; use --format codex or --format claude")
+            message = f"{file}: cannot detect format; use --format codex or --format claude"
+            # Only well-formed JSONL of another kind is "not a session"; garbage stays an error.
+            raise (FormatError if report.issues else UndetectedFormat)(message)
         report.format = "empty"
     pair(report)
     sort_issues(report)

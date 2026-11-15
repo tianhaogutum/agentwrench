@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 
+from .._text import plural
 from . import SCHEMA, __version__
 from .common import CLIENT_LABELS, ESTIMATOR, Finding, Locations, show_path
 from .mcp import SCOPE_RANK, TOKENS_PER_TOOL_BUDGET, Server
@@ -186,7 +187,7 @@ class Text:
             for line in body:
                 self.out(line)
             stdio = sum(e.transport == "stdio" and e.active for e in self.servers)
-            self.out(f"  {stdio} stdio server(s) not measured. Run with {s.cyan('--probe')} to measure their "
+            self.out(f"  {plural(stdio, 'stdio server')} not measured. Run with {s.cyan('--probe')} to measure their "
                      "tool-definition tokens")
             self.out("  (starts each configured stdio server locally, lists its tools, then stops it).")
             self.area_findings("mcp")
@@ -194,7 +195,7 @@ class Text:
         measured = [e for e in self.servers if e.status == "measured"]
         took = mcp["elapsed_ms"] / 1000 if mcp["elapsed_ms"] is not None else 0.0
         unique = len({e.launch.key() for e in self.servers if e.launch and e.status in ("measured", "failed")})
-        self.out(s.bold("1. MCP tool definitions") + s.dim(f"  (probed {unique} server(s) in {_seconds(took)})"))
+        self.out(s.bold("1. MCP tool definitions") + s.dim(f"  (probed {plural(unique, 'server')} in {_seconds(took)})"))
         rows = [["CLIENT", "SCOPE", "SERVER", "TOOLS", "EST. TOKENS", "NOTE"]]
         status_rank = {"measured": 0, "failed": 1, "remote": 2, "listed": 3, "disabled": 4, "shadowed": 5, "invalid": 6}
         for e in sorted(self.servers, key=lambda e: (status_rank[e.status], -(e.tokens or 0),
@@ -242,13 +243,13 @@ class Text:
             usage = f"{codex['project_bytes_loaded']:,} / {codex['limit_bytes']:,} B project budget ({codex['usage']:.0%})"
             if codex["truncated"]:
                 usage = s.red(usage + ", truncated")
-            rows.append(["Codex", f"AGENTS.md ({files} file{'s' * (files != 1)})",
+            rows.append(["Codex", f"AGENTS.md ({plural(files, 'file')})",
                          f"~{codex['estimated_tokens']:,} tokens", usage])
         if "error" in claude:
             rows.append(["Claude Code", "CLAUDE.md", "-", s.red("not inspected")])
         else:
             memory = sum(1 for f in claude["files"] if f["scope"] != "import" and f["loaded_bytes"])
-            rows.append(["Claude Code", f"CLAUDE.md ({memory} file{'s' * (memory != 1)} + {claude['imports']} imports)",
+            rows.append(["Claude Code", f"CLAUDE.md ({plural(memory, 'file')} + {plural(claude['imports'], 'import')})",
                          f"~{claude['estimated_tokens']:,} tokens", f"{claude['loaded_bytes']:,} B"])
         for line in table(rows, {2}):
             self.out(line)
@@ -295,9 +296,9 @@ class Text:
             if not c["mcp_servers"]:
                 mcp_text = "no MCP servers"
             elif mcp is None:
-                mcp_text = f"MCP not measured ({c['mcp_servers']} server(s); use --probe)"
+                mcp_text = f"MCP not measured ({plural(c['mcp_servers'], 'server')}; use --probe)"
             else:
-                mcp_text = f"MCP {mcp:,} ({c['mcp_servers_measured']}/{c['mcp_servers']} servers measured)"
+                mcp_text = f"MCP {mcp:,} ({c['mcp_servers_measured']}/{plural(c['mcp_servers'], 'server')} measured)"
             instr = "CLAUDE.md" if client == "claude-code" else "AGENTS.md"
             rows.append([CLIENT_LABELS[client], s.bold(f"{c['fixed_overhead_tokens']:,}"),
                          f"= {mcp_text} + {instr} {c['instruction_tokens']:,}"])
@@ -306,7 +307,8 @@ class Text:
         problems = summary["problems"]
         if problems:
             self.out(f"  {s.red(str(problems)) if summary['errors'] else s.yellow(str(problems))} "
-                     f"problem(s): {summary['errors']} error(s), {summary['warnings']} warning(s)")
+                     f"{'problem' if problems == 1 else 'problems'}: {plural(summary['errors'], 'error')}, "
+                     f"{plural(summary['warnings'], 'warning')}")
         else:
             self.out(f"  {s.green('No problems found.')}")
         if self.fixes:

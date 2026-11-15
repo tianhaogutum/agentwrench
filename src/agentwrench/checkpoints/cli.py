@@ -10,6 +10,7 @@ from .db import ScopeError, connect, read_rows
 from .inspect import diff_report, stats_report, threads_report
 from .prune import prune
 from .plan_status import plan_status
+from .._text import plural
 
 
 def difference_limit(value):
@@ -94,8 +95,9 @@ def render(command, result):
                   row["checkpoints"], row["writes"], row["bytes"], row["opaque_checkpoints"],
                   quoted(row["first"]), quoted(row["last"])]))
     elif command == "stats":
-        print(f"{result['checkpoints']} checkpoints, {result['writes']} writes, {result['bytes']} payload bytes")
-        print(f"opaque: {result['opaque_checkpoints']} checkpoints, {result['opaque_writes']} writes ({result['opaque_bytes']} bytes)")
+        print(f"{plural(result['checkpoints'], 'checkpoint')}, {plural(result['writes'], 'write')}, {result['bytes']} payload bytes")
+        print(f"opaque: {plural(result['opaque_checkpoints'], 'checkpoint')}, {plural(result['opaque_writes'], 'write')} "
+              f"({result['opaque_bytes']} bytes)")
         print("channel\tserialized state bytes\twrite bytes\tcombined attribution")
         for row in result["channels"]:
             print(f"{quoted(row['channel'])}\t{row['checkpoint_value_bytes']}\t{row['write_bytes']}\t{row['bytes']}")
@@ -221,7 +223,7 @@ def render(command, result):
         print("read-only diagnosis; apply-plan must revalidate before execution")
     else:
         verb = "would delete" if result["dry_run"] else "deleted"
-        print(f"{verb} {result['delete_checkpoints']} checkpoints, {result['delete_writes']} writes "
+        print(f"{verb} {plural(result['delete_checkpoints'], 'checkpoint')}, {plural(result['delete_writes'], 'write')} "
               f"(~{result['reclaimable_payload_bytes']} payload bytes + {result['reclaimable_metadata_bytes']} metadata bytes)")
         print(result["verification"])
         for row in result["latest"]:

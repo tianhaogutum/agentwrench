@@ -22,6 +22,7 @@ from ..mcpconfig.core import SECRET_KEY, TOKEN, redacted, to_ir
 from ..mcpconfig.formats import ConfigError, Document, loads, plain
 from ..slim import DiscoveryError, InputError, plan
 from ..slim import measure as slim_measure
+from ..slim.discover import PROTOCOL_VERSION as SLIM_PROTOCOL_VERSION
 from ..slim.discover import run_discover
 from .common import CLIENT_LABELS, Finding, Locations, quote, show_path
 
@@ -74,6 +75,8 @@ class Server:
     slim: dict | None = None
     duplicate_of: str | None = None
     launch: Launch | None = field(default=None, repr=False)
+    # Negotiated MCP revision from --probe; used for suggested commands, not serialized.
+    protocol_version: str | None = field(default=None, repr=False)
 
     @property
     def active(self) -> bool:
@@ -292,17 +295,19 @@ def _short_error(message: str, timeout: float) -> str:
 
 async def _discover(launch: Launch, timeout: float, semaphore: asyncio.Semaphore) -> dict:
     ms = max(1, int(timeout * 1000))
+    versions: list[str] = []
     async with semaphore:
         try:
             snapshot = await run_discover(
                 launch.command, {}, server_env=[f"{k}={v}" for k, v in launch.env.items()] or None,
                 server_cwd=launch.cwd, request_timeout_ms=ms, discovery_timeout_ms=ms,
-                protocol_versions=PROTOCOL_VERSIONS, server_stderr=subprocess.DEVNULL)
+                protocol_versions=PROTOCOL_VERSIONS, server_stderr=subprocess.DEVNULL,
+                on_protocol_version=versions.append)
         except (DiscoveryError, InputError) as exc:
             return {"error": _short_error(str(exc), timeout)}
         except Exception as exc:  # never let one server abort the scan
             return {"error": f"discovery failed ({type(exc).__name__})"}
-    return {"tools": json.loads(snapshot)["tools"]}
+    return {"tools": json.loads(snapshot)["tools"], "protocol_version": versions[0] if versions else None}
 
 
 async def _discover_all(launches: dict[str, Launch], timeout: float) -> dict[str, dict]:
@@ -347,6 +352,7 @@ def probe(servers: list[Server], timeout: float) -> float:
             entry.status, entry.error = "failed", outcome["error"]
             continue
         tools = outcome["tools"]
+        entry.protocol_version = outcome.get("protocol_version")
         if entry.launch.enabled_tools is not None:
             tools = [t for t in tools if t["name"] in entry.launch.enabled_tools]
         if entry.launch.disabled_tools:
@@ -374,6 +380,9 @@ def slim_commands(entry: Server, project: Path) -> list[str]:
     for key in entry.env_keys:
         if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
             words += ["--server-env", f'{key}="${key}"']
+    if entry.protocol_version and entry.protocol_version != SLIM_PROTOCOL_VERSION:
+        # slim discover is strict by default; the probed server negotiated an older revision.
+        words += ["--accept-protocol-version", entry.protocol_version]
     words += ["--", *(quote(w) for w in entry.command or [])]
     budget = entry.slim["budget"] if entry.slim else 0
     return [" ".join(words), f"agentwrench slim plan {catalogue} --budget {budget}"]

@@ -170,6 +170,24 @@ def test_slim_discovery_protocol_option_keeps_default_strict():
     assert json.loads(snapshot)["tools"][0]["name"] == "ping_db"
 
 
+def test_suggested_discover_command_accepts_the_older_protocol_the_server_negotiated(setup, capsys, tmp_path):
+    old = {"command": PY, "args": [str(FIXTURES / "old_protocol_server.py"), "tools-40"]}
+    setup.mcp_json({"legacy": old, "tracker": fake()})
+    code, doc = run_json(capsys, setup.args("--probe"))
+    assert code == 0
+    commands = {fix["command"][0].split()[4]: fix["command"] for fix in doc["summary"]["top_fixes"]
+                if fix["command"] and fix["command"][0].startswith("agentwrench slim discover")}
+    assert "--accept-protocol-version 2025-06-18 -- " in commands["legacy.tools.json"][0]
+    assert "--accept-protocol-version" not in commands["tracker.tools.json"][0]
+    # The suggested command really works (stdout catalogue instead of --output).
+    import subprocess
+    discover = [PY, "-m", "agentwrench", "slim", "discover", "--accept-protocol-version", "2025-06-18",
+                "--", PY, *old["args"]]
+    result = subprocess.run(discover, capture_output=True, text=True, cwd=tmp_path)
+    assert result.returncode == 0, result.stderr
+    assert len(json.loads(result.stdout)["tools"]) == 40
+
+
 def test_secrets_never_appear_in_output(setup, capsys):
     env = {"API_TOKEN": SECRET, "PLAIN": SECRET}
     setup.claude_json({

@@ -213,7 +213,7 @@ def render_merge(path, stream, *, max_output_bytes=None, selected_sources=None,
         if selected_sources is not None:
             reader.require(all(n in sources for n in selected_sources),
                            'selected source ordinal is not declared')
-        write(['# trajport merged trajectory', '## Sources', fence(dumps([
+        write(['# agentwrench export merged trajectory', '## Sources', fence(dumps([
             {'input': number, 'session_id': h['session_id'], 'agent': h['agent']}
             for number, h in sources.items()], pretty=True), 'json')])
         if selected_sources is not None:

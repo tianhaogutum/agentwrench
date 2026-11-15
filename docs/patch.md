@@ -67,9 +67,9 @@ Example input (`change.patch`), with `hello.txt` initially containing `old\n`:
 *** End Patch
 ```
 
-`apply` prints `Applied 2 file operation(s).` and creates `hello.txt` containing
+`apply` prints `Applied 2 file operations.` and creates `hello.txt` containing
 `new\n` and `nested/note.txt` containing `created\n`. `--dry-run` prints
-`Validated 2 file operation(s).` and creates **no files or directories**, not even
+`Validated 2 file operations.` and creates **no files or directories**, not even
 a staging directory. To try the supplied multi-file example without changing it,
 copy its tree to a scratch directory first:
 
@@ -273,8 +273,8 @@ agentwrench patch apply-plan change.plan.json --root ./project --dry-run
 agentwrench patch apply-plan change.plan.json --root ./project
 ```
 
-The final two commands print `Validated 2 file operation(s).` and
-`Applied 2 file operation(s).` respectively. The original patch file is no longer
+The final two commands print `Validated 2 file operations.` and
+`Applied 2 file operations.` respectively. The original patch file is no longer
 needed. `apply-plan` also accepts `-` for a plan on stdin.
 
 Format `v4a-plan`, version `1`, has exactly these fields:

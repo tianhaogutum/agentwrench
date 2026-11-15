@@ -130,7 +130,7 @@ def scan_sessions(loc: Locations, limit: int, findings: list[Finding]) -> dict:
             "example_command": example,
         }
         if broken:
-            message = (f"{len(broken)} of {len(rows)} recent {CLIENT_LABELS[client]} sessions "
+            message = (f"{len(broken)} of {len(rows)} recent {CLIENT_LABELS[client]} {'session' if len(rows) == 1 else 'sessions'} "
                        f"{'has' if len(broken) == 1 else 'have'} unpaired or invalid tool-call records; "
                        "resuming fails until repaired (stop the agent first)")
             findings.append(Finding("error", "sessions", client, message, example or []))

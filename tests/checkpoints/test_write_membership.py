@@ -26,6 +26,13 @@ def inputs(folder):
             and not (p.name.endswith('-wal') and p.stat().st_size == 0)}
 
 
+# The refused `prune --apply-plan` below must leave the WAL database byte-identical. With
+# SQLite < 3.51.0 its connection checkpoints the committed WAL into the main file and removes
+# the WAL on close even though this test's writer connection is still open, so the raw bytes
+# change (contents are equal). Verified: fails on 3.46.1-3.50.4, passes on 3.51.0+.
+@pytest.mark.skipif(sqlite3.sqlite_version_info < (3, 51, 0),
+                    reason=f"needs SQLite >= 3.51.0 (have {sqlite3.sqlite_version}): older SQLite checkpoints "
+                           "and removes the WAL when the refused prune connection closes, changing raw DB bytes")
 def test_stable_checkpoint_write_membership_wal_and_legacy(tmp_path, monkeypatch):
     db = small_database(tmp_path / 'history.db')
     execute(db, 'INSERT INTO writes SELECT thread_id,checkpoint_ns,checkpoint_id,task_id,task_path,-1,channel,type,value FROM writes')

@@ -6,6 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from .core import UPSTREAM_SHA, Report, ScopeError, absolute, directory, inspect_codex, load_settings
+from .._text import plural
 
 MAX_WORKDIRS = 64
 
@@ -135,12 +136,14 @@ def inspect_impact(cwds: list[Path], before_home: Path, after_home: Path,
 
 def explain_impact(report: dict) -> str:
     summary = report["summary"]
-    lines = [f"Codex impact: {summary['changed_cwd_count']}/{summary['cwd_count']} working directories changed"]
+    lines = [f"Codex impact: {summary['changed_cwd_count']}/"
+             f"{plural(summary['cwd_count'], 'working directory', 'working directories')} changed"]
     if "loss_policy" in report:
         policy = report["loss_policy"]
         verdict = "ERROR" if policy["passed"] is None else "PASS" if policy["passed"] else "FAIL"
-        lines.append(f"{verdict}: no-new-loss; {policy['regressed_cwd_count']} working directories regressed; "
-                     f"{policy['newly_lost_bytes']} newly lost B, {policy['newly_lost_files']} newly lost files")
+        lines.append(f"{verdict}: no-new-loss; "
+                     f"{plural(policy['regressed_cwd_count'], 'working directory', 'working directories')} regressed; "
+                     f"{policy['newly_lost_bytes']} newly lost B, {plural(policy['newly_lost_files'], 'newly lost file')}")
     for side in ("before", "after"):
         config = report[side]
         lines.append(f"{side} home: {json.dumps(config['codex_home'])}; "

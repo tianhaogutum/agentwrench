@@ -32,7 +32,7 @@ agentwrench scan  -  context overhead and breakage for Claude Code & Codex (read
   home     examples/scan/demo-home
   project  examples/scan/demo-project
 
-1. MCP tool definitions  (probed 5 server(s) in 0.06s)
+1. MCP tool definitions  (probed 5 servers in 0.06s)
   CLIENT       SCOPE    SERVER         TOOLS  EST. TOKENS  NOTE
   Claude Code  project  issue-tracker     40       22,787  slim: -14,946
   Claude Code  global   github            33       10,425  slim: -4,055

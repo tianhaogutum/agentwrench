@@ -16,6 +16,7 @@ from .model import InputError
 from .policy import check, load_policy
 from .sidecar import inspect_sidecar, verified_original, verify_sidecar
 from .streams import normalize
+from .._text import plural
 
 
 def write_new_reports(outputs: list[tuple[str, str | bytes]]) -> None:
@@ -92,10 +93,10 @@ def _nonnegative(value: str) -> int:
 
 
 def junit(report: dict) -> str:
-    root = ET.Element("testsuite", name="trajgate", tests=str(report["summary"]["total"]),
+    root = ET.Element("testsuite", name="agentwrench gate", tests=str(report["summary"]["total"]),
                       failures=str(report["summary"]["failed"]), errors="0")
     for r in report["results"]:
-        case = ET.SubElement(root, "testcase", classname="trajgate.policy", name=_xml_text(r["id"]))
+        case = ET.SubElement(root, "testcase", classname="agentwrench.gate.policy", name=_xml_text(r["id"]))
         text = _xml_text(r["message"] + "; evidence event indexes=" + json.dumps(r["evidence"]))
         if not r["passed"]:
             ET.SubElement(case, "failure", message=_xml_text(r["message"])).text = text
@@ -212,7 +213,7 @@ def main(argv: list[str] | None = None) -> int:
                 for result in report["results"]:
                     evidence = ", ".join(f"#{i}" for i in result["evidence"]) or "none"
                     print(_console_text(f"{'PASS' if result['passed'] else 'FAIL'} {result['id']}: {result['message']} (events: {evidence})"))
-                print(f"{report['summary']['failed']} failed, {report['summary']['passed']} passed; ignored {report['ignored_count']} unknown/partial events")
+                print(f"{report['summary']['failed']} failed, {report['summary']['passed']} passed; ignored {plural(report['ignored_count'], 'unknown/partial event')}")
             return 0 if report["passed"] else 1
         result = trajectory.as_dict() if args.action == "normalize" else export_agentevals(trajectory)
         if args.action == "export-agentevals" and trajectory.ignored:

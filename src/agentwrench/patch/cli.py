@@ -10,6 +10,7 @@ from .parser import parse
 from .planfile import MAX_PLAN_BYTES, check_plan, load_plan, plan_check_report, preview
 from .transaction import commit
 from .unified import check_unified, from_unified, to_unified, unified_check_report
+from .._text import plural
 
 
 def read_input(name: str, limit: int = MAX_FILE_BYTES) -> str:
@@ -113,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps(patch.to_dict(), ensure_ascii=False, indent=2))
             else:
                 for f in patch.files:
-                    print(f"{f.kind} {f.path}" + (f" -> {f.move_to}" if f.move_to else '') + f" ({len(f.hunks)} hunks)")
+                    print(f"{f.kind} {f.path}" + (f" -> {f.move_to}" if f.move_to else '') + f" ({plural(len(f.hunks), 'hunk')})")
             return 0
         if args.command == 'preview':
             result = preview(patch, args.root)
@@ -146,7 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         cleanup = [d for d in prepared.diagnostics if d['status'] == 'warning']
         if cleanup:
             print(render(cleanup), file=sys.stderr)
-        print(f"{'Validated' if args.dry_run else 'Applied'} {len(prepared.changes)} file operation(s).")
+        print(f"{'Validated' if args.dry_run else 'Applied'} {plural(len(prepared.changes), 'file operation')}.")
         return 0
     except (PatchError, UnicodeError) as exc:
         if unified_check:

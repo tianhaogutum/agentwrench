@@ -17,6 +17,7 @@ from .formats import ConfigError, FORMATS, MAX_BYTES, ROOTS, loads, new_document
 from .merge import changes, conflict_details, three_way
 from .policy import POLICY_KINDS, POLICY_SCOPES, POLICY_RULES, POLICY_MAX_BYTES, parse_policy, selector_matches
 from .relocation import create_manifest, read_manifest, relocate, selection
+from .._text import plural
 
 
 def label(text):
@@ -465,7 +466,7 @@ def run(args):
         for name, path in drift:
             print(f'DRIFT {label(name)}.{label(path)}: source and target differ (values masked)')
         if not drift:
-            print(f'In sync: {len(expected)} source servers; unrelated target servers ignored.')
+            print(f'In sync: {plural(len(expected), "source server")}; unrelated target servers ignored.')
         return 1 if drift else 0
     if args.overwrite and not args.merge:
         raise ConfigError('--overwrite requires --merge')
@@ -552,8 +553,8 @@ def run(args):
                 print(f'CHANGE {label(path)}: target would change (values masked)')
             added = len(merged.keys() - target.servers.keys())
             removed = len(target.servers.keys() - merged.keys())
-            print(f'PLAN: {added} servers added; {removed} removed; {len(merged)} total after merge.')
-        print(f'DRY RUN: {len(projected)} source servers; {operation}; no files written.')
+            print(f'PLAN: {plural(added, "server")} added; {removed} removed; {len(merged)} total after merge.')
+        print(f'DRY RUN: {plural(len(projected), "source server")}; {operation}; no files written.')
         return 3 if errors else 0
     if args.output:
         if expected_bytes == result.encode('utf-8'):
@@ -561,7 +562,7 @@ def run(args):
         else:
             atomic_write(args.output, result, expected_bytes)
             count = len(merged) if args.base else len(projected)
-            print(f'Wrote {count} servers; output path masked.', file=sys.stderr)
+            print(f'Wrote {plural(count, "server")}; output path masked.', file=sys.stderr)
     else:
         sys.stdout.write(result)
     return 3 if errors else 0
