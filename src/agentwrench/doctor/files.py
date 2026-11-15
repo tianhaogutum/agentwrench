@@ -1,10 +1,14 @@
-"""Linux regular-file boundaries, cooperative locks, and atomic publication."""
+"""Regular-file boundaries, cooperative locks, and atomic publication (POSIX).
+
+Reading works everywhere: without ``fcntl`` (Windows) files are read unlocked and
+symlinks are refused by an explicit check. Anything that writes or needs an
+exclusive lock requires POSIX ``flock`` and fails with a clear error elsewhere.
+"""
 from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import errno
-import fcntl
 import hashlib
 import os
 from pathlib import Path
@@ -15,11 +19,31 @@ from typing import BinaryIO, Iterator
 from .engine import DoctorError
 from .repair import Plan, render
 
+try:
+    import fcntl
+except ImportError:  # Windows: read-only paths still work
+    fcntl = None  # type: ignore[assignment]
+
+O_NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+O_NONBLOCK = getattr(os, "O_NONBLOCK", 0)
+O_BINARY = getattr(os, "O_BINARY", 0)
+NO_LOCKS = ("this command needs POSIX file locks (Linux or macOS); "
+            "it is not supported on this platform. Read-only checks still work")
+
+
+def require_locks() -> None:
+    if fcntl is None:
+        raise DoctorError(NO_LOCKS)
+
 
 @contextmanager
 def open_session(path: Path, write: bool = False) -> Iterator[BinaryIO]:
     try:
-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        if write:
+            require_locks()
+        if not O_NOFOLLOW and os.path.islink(path):
+            raise DoctorError("symlink inputs are not supported")
+        fd = os.open(path, os.O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_BINARY)
     except OSError as exc:
         # O_NOFOLLOW reports a final-component symlink as ELOOP; name the real refusal instead.
         if exc.errno == errno.ELOOP:
@@ -28,10 +52,11 @@ def open_session(path: Path, write: bool = False) -> Iterator[BinaryIO]:
     try:
         if not stat.S_ISREG(os.fstat(fd).st_mode):
             raise DoctorError(f"{path}: only regular files are supported (no symlinks/FIFOs/devices)")
-        try:
-            fcntl.flock(fd, (fcntl.LOCK_EX if write else fcntl.LOCK_SH) | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise DoctorError(f"{path}: file is locked by another process") from exc
+        if fcntl is not None:
+            try:
+                fcntl.flock(fd, (fcntl.LOCK_EX if write else fcntl.LOCK_SH) | fcntl.LOCK_NB)
+            except BlockingIOError as exc:
+                raise DoctorError(f"{path}: file is locked by another process") from exc
         with os.fdopen(fd, "rb", closefd=False) as stream:
             yield stream
     finally:
@@ -54,6 +79,7 @@ def assert_unchanged(source: BinaryIO, path: Path, plan: Plan) -> None:
 
 
 def _fsync_dir(path: Path) -> None:
+    require_locks()
     fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
     try:
         os.fsync(fd)
@@ -63,6 +89,7 @@ def _fsync_dir(path: Path) -> None:
 
 def publish(source: BinaryIO, path: Path, destination: Path, plan: Plan, in_place: bool,
             expected_digest: str | None = None, *, before_write=None) -> str | None:
+    require_locks()
     if not in_place and os.path.lexists(destination):
         raise DoctorError(f"{destination}: --out must be a new path (refusing overwrite)")
     parent = destination.parent.resolve(strict=True)

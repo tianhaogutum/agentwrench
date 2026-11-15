@@ -11,6 +11,7 @@ from .inspect import diff_report, stats_report, threads_report
 from .prune import prune
 from .plan_status import plan_status
 from .._text import plural
+from . import SUBCOMMANDS
 
 
 def difference_limit(value):
@@ -25,8 +26,9 @@ def difference_limit(value):
 def parser():
     p = argparse.ArgumentParser(prog="agentwrench checkpoints", description="Offline LangGraph SQLite checkpoint inspector")
     sub = p.add_subparsers(dest="command", required=True)
+    helps = SUBCOMMANDS
     for name in ("threads", "stats", "diff", "prune", "snapshot", "plan-status"):
-        command = sub.add_parser(name)
+        command = sub.add_parser(name, help=helps[name], description=helps[name])
         command.add_argument("db", help="existing SqliteSaver database (never created implicitly)")
         command.add_argument("--json", action="store_true", help="machine-readable JSON")
         if name not in ("threads", "plan-status"):
@@ -52,7 +54,7 @@ def parser():
             backups.add_argument("--backup", help="new backup file; existing paths are never overwritten")
             backups.add_argument("--no-backup", action="store_true")
             command.add_argument("--vacuum", action="store_true", help="compact after verified commit")
-    gate = sub.add_parser("budget", help="compare saved snapshots against per-group byte growth limits")
+    gate = sub.add_parser("budget", help=SUBCOMMANDS["budget"])
     gate.add_argument("baseline", help="baseline snapshot JSON")
     gate.add_argument("current", help="current snapshot JSON")
     gate.add_argument("--policy", help="versioned JSON policy with defaults and exact group overrides")
@@ -74,7 +76,7 @@ def parser():
     gate.add_argument("--max-thread-growth-bytes", type=int)
     gate.add_argument("--max-channel-growth-bytes", type=int)
     gate.add_argument("--json", action="store_true", help="machine-readable JSON")
-    comparison = sub.add_parser("compare-plans", help="compare saved checkpoint actions without database access")
+    comparison = sub.add_parser("compare-plans", help=SUBCOMMANDS["compare-plans"])
     comparison.add_argument("baseline", help="baseline saved prune plan JSON")
     comparison.add_argument("current", help="current saved prune plan JSON")
     comparison.add_argument("--max-differences", type=difference_limit, metavar="N",

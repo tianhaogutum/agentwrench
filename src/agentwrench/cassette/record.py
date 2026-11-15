@@ -11,6 +11,10 @@ import time
 from .format import (CassetteError, MAX_CASSETTE, MAX_EVENTS, MAX_LINE,
                      canonical, cassette_bytes, id_key, parse_line, pointer_tokens, redact, save_cassette)
 from .stdio import StdoutWriter, read_line, stdin_reader
+from .. import __version__
+
+# Informational only: readers ignore it, so cassettes recorded as "mcp-cassette/0.1.0" still load.
+GENERATOR = f"agentwrench-cassette/{__version__}"
 
 
 MAX_REASONS = 8
@@ -86,7 +90,7 @@ class Recorder:
             raise CassetteError("server exit code is outside signed 32-bit range")
         reasons = bounded_reasons(reasons)
         return {"version": 1, "incomplete": bool(reasons), "redact_paths": self.paths,
-                "metadata": {"generator": "mcp-cassette/0.1.0", "server_exit_code": code,
+                "metadata": {"generator": GENERATOR, "server_exit_code": code,
                              "reasons": reasons}, "events": self.events}
 
 

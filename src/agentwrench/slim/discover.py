@@ -239,7 +239,8 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
                        max_tools: int | None = None, max_output_bytes: int | None = None,
                        max_wire_bytes: int | None = None, protocol_versions: Iterable[str] | None = None,
                        server_stderr: Any = None,
-                       on_protocol_version: Callable[[str], Any] | None = None) -> str:
+                       on_protocol_version: Callable[[str], Any] | None = None,
+                       on_exit: Callable[[int | None, str | None], Any] | None = None) -> str:
     """Start ``command``, walk every tools/list page and return the catalogue JSON line.
 
     Options left as ``None`` use their defaults (30 s per request, no overall
@@ -248,6 +249,8 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
     (default: only :data:`PROTOCOL_VERSION`); ``server_stderr`` is passed to the
     child process (default: inherit ours, e.g. ``subprocess.DEVNULL`` to discard).
     ``on_protocol_version`` is called with the accepted negotiated version.
+    ``on_exit`` is called once with the child's ``(exit code, signal name)`` when it
+    has exited (one of the two is ``None``).
     """
     accepted = frozenset((PROTOCOL_VERSION,) if protocol_versions is None else protocol_versions)
     request_timeout_ms = validate_request_timeout(DEFAULT_REQUEST_TIMEOUT_MS if request_timeout_ms is None else request_timeout_ms)
@@ -316,6 +319,11 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
     async def watch_close() -> None:
         code, sig_name = await child.closed()
         state.child_closed = True
+        if on_exit is not None:
+            try:
+                on_exit(code, sig_name)
+            except Exception:
+                pass
         # Check at observed close, before clearing the grace timer. Exact equality
         # expires even when the event loop has not delivered its callback yet.
         if state.shutdown_deadline is not None:

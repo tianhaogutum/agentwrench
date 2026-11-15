@@ -5,6 +5,8 @@ from __future__ import annotations
 import errno
 import os
 
+from .._text import cannot_read
+
 # libuv's uv_strerror() texts, which Node uses in fs error messages.
 _UV_DESCRIPTIONS = {
     "E2BIG": "argument list too long",
@@ -52,13 +54,18 @@ class CacheError(Exception):
 class FsError(CacheError):
     """A file-system failure, worded like Node: ``CODE: description, syscall 'path'``."""
 
-    def __init__(self, error: OSError, syscall: str, path: str | None = None, dest: str | None = None) -> None:
+    def __init__(self, error: OSError, syscall: str, path: str | None = None, dest: str | None = None,
+                 *, reading: bool = False) -> None:
         number = error.errno or 0
         self.errno = number
         self.code = errno.errorcode.get(number, "UNKNOWN")
         self.syscall = syscall
         self.path = path
         description = _UV_DESCRIPTIONS.get(self.code) or (os.strerror(number).lower() if number else "unknown error")
+        if reading and path is not None:
+            # Name the file the user passed: "cannot read x.jsonl: no such file".
+            super().__init__(cannot_read(path, error))
+            return
         message = f"{self.code}: {description}, {syscall}"
         if path is not None:
             message += f" '{path}'"

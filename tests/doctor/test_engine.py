@@ -253,3 +253,26 @@ def test_scope_boundary_cannot_be_bridged_by_intermediate_node():
     assert {issue.code for issue in inspect(data).issues} == {"RD201", "RD202"}
     fixed, _ = repaired(data)
     assert not inspect(fixed).issues
+
+
+def test_stub_marker_names_agentwrench_and_stub_uuid_is_stable():
+    assert STUB_TEXT.startswith("[agentwrench doctor] ")
+    data = raw(cnode("assistant", "a", blocks=[use("u1")]))
+    fixed, _ = repaired(data)
+    stub = json.loads(fixed.splitlines()[1])
+    # The uuid5 name ("rollout-doctor:" + node + call ids) is unchanged, so IDs match older repairs.
+    assert stub["uuid"] == "6fcd072c-3ed1-564b-a22d-3e95cda40949"
+    assert stub["message"]["content"][0]["content"] == STUB_TEXT
+
+
+@pytest.mark.parametrize("marker", ["[rollout-doctor] tool output missing: call was interrupted", STUB_TEXT])
+def test_files_repaired_with_old_or_new_marker_are_clean_and_left_alone(marker):
+    codex = raw(item("function_call", "c", name="shell", arguments="{}"),
+                item("function_call_output", "c", output=marker))
+    claude = raw(cnode("assistant", "a", blocks=[use("u1")]),
+                 cnode("user", "s", "a", [{"type": "tool_result", "tool_use_id": "u1",
+                                           "content": marker, "is_error": True}]))
+    for data in (codex, claude):
+        assert not inspect(data).issues
+        fixed, report = repaired(data)
+        assert fixed == data and not report.changes

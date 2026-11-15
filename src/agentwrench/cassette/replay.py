@@ -161,11 +161,12 @@ class Replayer:
                 reason += "; params and progressToken presence must match"
             return self.error(msg, reason)
         if msg["method"] == "initialize":
+            # Compare the live request with the recorded *request*. A server that negotiated
+            # a different revision is part of the recording: the same client request gets
+            # the same recorded answer, exactly as it did live.
             incoming = msg.get("params", {}).get("protocolVersion")
             recorded = item.request.get("params", {}).get("protocolVersion")
-            result = (item.response or {}).get("result", {})
-            negotiated = result.get("protocolVersion", recorded) if isinstance(result, dict) else recorded
-            if incoming != recorded or incoming != negotiated:
+            if incoming != recorded:
                 if self.strict:
                     return self.error(msg, "protocolVersion mismatch", code=-32002)
                 self.warn("protocolVersion mismatch: returning the recorded initialize response")

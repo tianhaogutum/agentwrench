@@ -263,3 +263,114 @@ def test_urls_and_opaque_args_are_redacted(setup, capsys):
     assert by_name(doc, "claude-code", "zap")["url"] == "https://actions.example.invalid/mcp/[REDACTED]/sse"
     assert by_name(doc, "claude-code", "bridge")["command"] == ["npx", "-y", "mcp-remote", "[REDACTED]", "[REDACTED]"]
     assert by_name(doc, "claude-code", "bridge")["status"] == "listed"
+
+
+# ---- config read errors are shown, never "no servers configured"
+
+@pytest.mark.parametrize("probe", [(), ("--probe",)])
+def test_invalid_claude_json_is_shown_in_section_1(setup, capsys, probe):
+    (setup.home / ".claude.json").write_text("{not json", encoding="utf-8")
+    code, out, _ = run(capsys, setup.args("--no-color", *probe))
+    assert code == 0
+    section = out.split("1. MCP tool definitions", 1)[1].split("2. Instructions", 1)[0]
+    assert "x cannot read" in section and ".claude.json: invalid JSON; its MCP servers were skipped" in section
+    assert "No MCP servers configured for Codex." in section
+    assert "Claude Code or Codex" not in section
+    summary = out.split("Summary", 1)[1]
+    assert "MCP unknown (config unreadable)" in summary and "1 problem: 1 error" in summary
+    code, doc = run_json(capsys, setup.args(*probe))
+    assert doc["summary"]["clients"]["claude-code"]["complete"] is False
+    assert doc["summary"]["clients"]["codex"]["complete"] is True
+
+
+def test_malformed_codex_config_is_shown_and_both_unreadable_claims_nothing(setup, capsys):
+    setup.codex_config("[mcp_servers.x\ncommand = 1\n")
+    (setup.home / ".claude.json").write_text("[", encoding="utf-8")
+    code, out, _ = run(capsys, setup.args("--no-color"))
+    section = out.split("1. MCP tool definitions", 1)[1].split("2. Instructions", 1)[0]
+    assert "No MCP servers configured" not in section
+    assert section.count("x cannot read") == 2 and ".codex/config.toml" in section
+    assert out.count("MCP unknown (config unreadable)") == 2
+
+
+def test_unreadable_config_with_other_servers_listed(setup, capsys):
+    setup.mcp_json({"tracker": fake()})
+    (setup.home / ".claude.json").write_text("{", encoding="utf-8")
+    code, out, _ = run(capsys, setup.args("--no-color"))
+    assert "x cannot read" in out and "tracker" in out
+    assert "a config was unreadable" in out.split("Summary", 1)[1]
+
+
+# ---- crashing servers: exit status and last stderr line
+
+CRASHER = r'''
+import sys
+sys.stderr.write("starting up\n")
+sys.stderr.write("using token sk-scanTEST0123456789secretvalue and DB_PASSWORD=hunter2hunter2\n")
+sys.stderr.write("Error: Cannot find module 'server.js' " + "y" * 300 + "\n\n   \n")
+sys.exit(3)
+'''
+
+
+def test_crashing_server_reports_exit_status_and_last_stderr_line(setup, capsys, tmp_path):
+    script = tmp_path / "crash.py"
+    script.write_text(CRASHER, encoding="utf-8")
+    setup.mcp_json({"crash": {"command": PY, "args": [str(script)], "env": {"API_KEY": "configured-secret-value"}}})
+    code, doc = run_json(capsys, setup.args("--probe"))
+    server = by_name(doc, "claude-code", "crash")
+    assert server["error"] == "server exited before listing its tools"
+    assert server["exit"]["code"] == 3 and server["exit"]["signal"] is None
+    line = server["exit"]["stderr"]
+    assert line.startswith("Error: Cannot find module 'server.js' yyy") and line.endswith("...")
+    assert len(line) == 160
+    code, out, _ = run(capsys, setup.args("--probe", "--no-color"))
+    assert "failed: server exited before listing its tools (exit status 3)" in out
+    assert "(exit status 3); last stderr line: Error: Cannot find module 'server.js'" in out
+    for doc_text in (out, json.dumps(doc)):
+        assert SECRET not in doc_text and "configured-secret-value" not in doc_text
+
+
+def test_last_stderr_line_is_redacted_like_config_values(setup, capsys, tmp_path):
+    script = tmp_path / "leak.py"
+    script.write_text("import sys\nsys.stderr.write('fatal: auth failed for "
+                      "https://user:pw@example.invalid/x?token=abc password=hunter2hunter2 "
+                      "Bearer abc.def configured-secret-value " + SECRET + "\\n')\nsys.exit(1)\n")
+    setup.mcp_json({"leak": {"command": PY, "args": [str(script)], "env": {"X": "configured-secret-value"}}})
+    code, doc = run_json(capsys, setup.args("--probe"))
+    line = by_name(doc, "claude-code", "leak")["exit"]["stderr"]
+    assert line.startswith("fatal: auth failed for")
+    for secret in ("pw@", "token=abc", "hunter2", "abc.def", "configured-secret-value", SECRET):
+        assert secret not in line, (secret, line)
+    assert "password=[REDACTED]" in line and "Bearer [REDACTED]" in line
+
+
+def test_server_exiting_without_stderr_has_null_stderr(setup, capsys):
+    setup.mcp_json({"exits": fake("early")})
+    code, doc = run_json(capsys, setup.args("--probe"))
+    assert by_name(doc, "claude-code", "exits")["exit"] == {"code": 0, "signal": None, "stderr": None}
+    assert by_name(doc, "claude-code", "exits")["status"] == "failed"
+
+
+def test_non_exit_failures_have_no_exit_object(setup, capsys, tmp_path):
+    setup.mcp_json({"missing": {"command": str(tmp_path / "nope")}, "ok": fake()})
+    code, doc = run_json(capsys, setup.args("--probe"))
+    assert by_name(doc, "claude-code", "missing")["exit"] is None
+    assert by_name(doc, "claude-code", "ok")["exit"] is None
+
+
+# ---- same server in both clients with different env: listed once in tops and fixes
+
+def test_same_server_with_different_env_is_deduplicated_in_tops_and_fixes(setup, capsys):
+    setup.claude_json({"tracker": {**fake(), "env": {"TRACKER_TOKEN": "${TRACKER_TOKEN:-a}"}}})
+    setup.codex_config(f'[mcp_servers.tracker]\ncommand = {json.dumps(PY)}\n'
+                       f'args = [{json.dumps(str(FAKE_SERVER))}, "static"]\n'
+                       'env = { TRACKER_TOKEN = "b" }\n')
+    code, doc = run_json(capsys, setup.args("--probe"))
+    codex = by_name(doc, "codex", "tracker")
+    assert codex["duplicate_of"] == "Claude Code global tracker"
+    fixes = [f for f in doc["summary"]["top_fixes"] if f["tokens_saved"]]
+    assert len(fixes) == 1 and "Claude Code + Codex" in fixes[0]["message"]
+    code, out, _ = run(capsys, setup.args("--probe", "--no-color"))
+    tops = next(line for line in out.splitlines() if "Largest tools:" in line)
+    names = [part.rsplit(" ", 1)[0] for part in tops.split(":", 1)[1].split(",")]
+    assert len(names) == len(set(names)) == 3

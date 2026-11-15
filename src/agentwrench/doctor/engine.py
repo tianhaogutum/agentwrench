@@ -6,8 +6,12 @@ import hashlib
 import json
 from typing import Iterable
 
-STUB_TEXT = "[rollout-doctor] tool output missing: call was interrupted"
-DROP_TEXT = "[rollout-doctor] removed invalid tool blocks"
+# Visible markers written into repaired session files. Files repaired by the standalone
+# rollout-doctor tool carry "[rollout-doctor] ..." instead; nothing parses the marker text
+# (pairing is by call id), so both read the same. Stub UUIDs keep their original
+# "rollout-doctor:" uuid5 name in repair.py so they stay stable across versions.
+STUB_TEXT = "[agentwrench doctor] tool output missing: call was interrupted"
+DROP_TEXT = "[agentwrench doctor] removed invalid tool blocks"
 PAIRS = {
     "function_call": "function_call_output",
     "custom_tool_call": "custom_tool_call_output",

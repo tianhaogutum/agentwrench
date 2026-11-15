@@ -49,7 +49,7 @@ git clone https://github.com/tianhaogutum/agentwrench && cd agentwrench
 uvx agentwrench scan --home examples/scan/demo-home --project examples/scan/demo-project --probe
 ```
 
-Install it for good with `pipx install agentwrench` or `pip install agentwrench` (Python 3.11+).
+Install it for good with `pipx install agentwrench` or `pip install agentwrench` (Python 3.11+; Linux and macOS, Windows untested).
 
 ## What `scan` finds
 
@@ -117,7 +117,7 @@ agentwrench agentsmd explain --cwd .                 # add --agent claude for CL
 
 ### `--resume` fails after an interrupted session → `doctor`
 
-A tool call saved without its result (or a result without its call) makes the provider reject the whole conversation. `doctor` finds unpaired calls in Claude Code and Codex session JSONL and repairs them conservatively: it shows a diff first, then writes a new file (or replaces in place with a backup), keeping every original line byte for byte. [docs/doctor.md](docs/doctor.md)
+A tool call saved without its result (or a result without its call) makes the provider reject the whole conversation. `doctor` finds unpaired calls in Claude Code and Codex session JSONL and repairs them conservatively: it shows a diff first, then writes a new file (or replaces in place with a backup). Lines it does not need to change are kept byte for byte; it inserts a marked stub result for an interrupted call and drops output records that have no usable call (`--strategy drop` removes the unfinished call instead). [docs/doctor.md](docs/doctor.md)
 
 ```sh
 agentwrench doctor repair path/to/session.jsonl --dry-run    # then: --out fixed.jsonl
@@ -156,6 +156,8 @@ agentwrench cassette record --cassette cassettes/my-server.json -- python3 my_se
 agentwrench cassette replay --cassette cassettes/my-server.json --strict
 ```
 
+Strict replay compares each client request with the recorded one; a server that negotiated an older `protocolVersion` is replayed exactly as recorded.
+
 ### You run agents headless in CI → `gate`
 
 Normalize `codex exec --json` or Claude Code `--output-format stream-json` logs and enforce a YAML policy: required and forbidden commands, files the agent may touch, tool-call and token limits. JUnit output, baseline vs candidate comparison, AgentEvals export. Nothing in the log is executed. [docs/gate.md](docs/gate.md)
@@ -175,11 +177,12 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 ## Trust and limits
 
 - **Offline, no telemetry.** agentwrench itself opens no network connections and collects nothing. Remote MCP servers are listed by `scan`, never contacted.
-- **Read-only by default.** `scan`, `check`, `explain`, `report` and `measure` never write. Commands that change files need an explicit target or flag (`--out`, `-o`, `--in-place --backup`, `--root`), most have `--dry-run`, and most refuse to overwrite an existing output file.
+- **Read-only by default.** `scan`, `check`, `explain`, `report` and `measure` never modify your inputs (`gate check --junit` writes only the report file you name). Commands that change files need an explicit target or flag (`--out`, `-o`, `--in-place --backup`, `--root`), most have `--dry-run`, and most refuse to overwrite an existing output file.
 - **What runs code.** `scan --probe` starts each configured stdio MCP server with its own command, args, env and cwd, lists its tools, and stops it. Those are your servers, so they do what they do (an `npx` server may download). `slim discover`, `slim proxy` and `cassette record` run the server command you pass them. Nothing else executes anything.
 - **No secrets in output.** `scan` reports environment variables and headers by name only, masks tokens in commands, and never prints instruction or session text.
 - **Estimates are labelled.** `scan` and `slim` print `ceil(UTF-8 bytes / 4)` estimates. Against tiktoken `o200k_base` they run 7–18% high on raw tool lists and overstate savings by up to 6 points, so the numbers in this README come from the tokenizer. There is no offline Claude tokenizer; treat all counts as roughly ±15%.
-- **Tested.** 9,276 tests; CI on Python 3.11, 3.12 and 3.13 on Linux. Requires Python 3.11+. Apache-2.0.
+- **Tested.** 9,000+ tests; CI on Python 3.11 to 3.14 on Linux, plus macOS on Python 3.13. Requires Python 3.11+. Apache-2.0.
+- **Platforms.** Linux and macOS are supported. Windows is untested and partial: read-only commands such as `scan` and `doctor check` are written to work, but commands that rewrite files under a lock (such as `doctor repair`) refuse to run there.
 
 agentwrench is independent and not affiliated with Anthropic, OpenAI or the Model Context Protocol project. See [THIRD_PARTY.md](THIRD_PARTY.md).
 

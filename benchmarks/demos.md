@@ -114,7 +114,7 @@ examples/doctor/claude/orphan_tool_use.jsonl [claude]: 1 changes (dry-run)
 @@ -1,1 +1,2 @@
 -{"type":"assistant","uuid":"a","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"assistant","content":[{"type":"text","text":"Reading"},{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}
 +{"type":"assistant","uuid":"a","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"assistant","content":[{"type":"text","text":"Reading"},{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}
-+{"sessionId":"synthetic","isSidechain":false,"type":"user","uuid":"6fcd072c-3ed1-564b-a22d-3e95cda40949","parentUuid":"a","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"u1","content":"[rollout-doctor] tool output missing: call was interrupted","is_error":true}]}}
++{"sessionId":"synthetic","isSidechain":false,"type":"user","uuid":"6fcd072c-3ed1-564b-a22d-3e95cda40949","parentUuid":"a","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"u1","content":"[agentwrench doctor] tool output missing: call was interrupted","is_error":true}]}}
 [exit 0]
 ```
 
@@ -144,6 +144,6 @@ examples/doctor/codex/orphan.jsonl [codex]: 2 changes (dry-run)
 @@ -2,1 +1,2 @@
 -{"timestamp":"2026-01-01T00:00:00Z","type":"response_item","payload":{"type":"function_call","name":"shell","arguments":"{\"command\":\"pwd\"}","call_id":"c1"}}
 +{"timestamp":"2026-01-01T00:00:00Z","type":"response_item","payload":{"type":"function_call","name":"shell","arguments":"{\"command\":\"pwd\"}","call_id":"c1"}}
-+{"type":"response_item","payload":{"type":"function_call_output","call_id":"c1","output":"[rollout-doctor] tool output missing: call was interrupted"},"timestamp":"2026-01-01T00:00:00Z"}
++{"type":"response_item","payload":{"type":"function_call_output","call_id":"c1","output":"[agentwrench doctor] tool output missing: call was interrupted"},"timestamp":"2026-01-01T00:00:00Z"}
 [exit 0]
 ```

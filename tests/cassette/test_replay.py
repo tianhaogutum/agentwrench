@@ -61,6 +61,41 @@ def test_initialize_identity_version_and_ping():
     assert "protocolVersion mismatch" in warnings[-1]
 
 
+@pytest.mark.parametrize("match", ["params", "sequence"])
+def test_strict_replay_accepts_server_negotiating_a_different_version(match):
+    # Live: the client asked for 2025-11-25 and the server answered 2025-06-18.
+    init = request("initialize", {"protocolVersion": "2025-11-25", "clientInfo": {"name": "c"}})
+    data = cassette(("client", init), ("server", response(result={"protocolVersion": "2025-06-18"})))
+    warnings = []
+    player = Replayer(data, match=match, strict=True, warn=warnings.append)
+    assert player.handle(request("initialize", {"protocolVersion": "2025-11-25"}, id=5)) == [
+        response(5, {"protocolVersion": "2025-06-18"})]
+    assert player.finish() == 0 and not warnings
+    # Asking for the negotiated version instead is a different request than was recorded.
+    player = Replayer(data, match=match, strict=True, warn=warnings.append)
+    reply = player.handle(request("initialize", {"protocolVersion": "2025-06-18"}))[0]
+    assert reply["error"]["code"] == -32002 and player.finish() == 1
+
+
+def test_new_recordings_name_agentwrench_and_old_generator_still_replays():
+    from agentwrench import __version__
+    from agentwrench.cassette.format import load_cassette
+    from agentwrench.cassette.record import GENERATOR, Recorder
+    from pathlib import Path
+    assert GENERATOR == f"agentwrench-cassette/{__version__}"
+    assert Recorder([]).document(0, [])["metadata"]["generator"] == GENERATOR
+    old = load_cassette(Path(__file__).parent / "cassettes" / "echo.json")
+    assert old["metadata"]["generator"] == "mcp-cassette/0.1.0"
+    for generator in ("mcp-cassette/0.1.0", GENERATOR):
+        data = copy.deepcopy(old)
+        data["metadata"]["generator"] = generator
+        player = Replayer(data, strict=True)
+        for event in data["events"]:
+            if event["direction"] == "client":
+                player.handle(copy.deepcopy(event["message"]))
+        assert player.finish() == 0
+
+
 def test_recorded_ping_consumes_interaction():
     player = Replayer(cassette(("client", request("ping")), ("server", response())), strict=True)
     player.handle(request("ping", id=42))

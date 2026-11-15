@@ -44,6 +44,8 @@ class Finding:
     message: str
     command: list[str] = field(default_factory=list)  # one shell command per line
     tokens_saved: int = 0
+    # Internal tag, not serialized: "config_unreadable" marks a client config that failed to load.
+    kind: str = ""
 
     def to_dict(self) -> dict:
         return {"severity": self.severity, "area": self.area, "client": self.client,

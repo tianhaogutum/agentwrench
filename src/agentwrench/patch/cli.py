@@ -10,15 +10,22 @@ from .parser import parse
 from .planfile import MAX_PLAN_BYTES, check_plan, load_plan, plan_check_report, preview
 from .transaction import commit
 from .unified import check_unified, from_unified, to_unified, unified_check_report
-from .._text import plural
+from .._text import cannot_read, os_reason, plural, safe_path
+
+
+class InputReadError(OSError):
+    """The patch/plan file named on the command line could not be read."""
 
 
 def read_input(name: str, limit: int = MAX_FILE_BYTES) -> str:
     if name == '-':
         data = sys.stdin.buffer.read(limit+1)
     else:
-        with Path(name).open('rb') as handle:
-            data = handle.read(limit+1)
+        try:
+            with Path(name).open('rb') as handle:
+                data = handle.read(limit+1)
+        except OSError as exc:
+            raise InputReadError(exc.errno, exc.strerror, name) from None
     if len(data) > limit:
         raise PatchError(f"input exceeds {limit // (1024 * 1024)} MiB limit")
     return data.decode('utf-8')
@@ -62,8 +69,19 @@ def plan_check_error(code: str, exc: Exception) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog='agentwrench patch', description='Parse, atomically apply, convert, and diagnose V4A patches.')
     commands = parser.add_subparsers(dest='command', required=True)
+    helps = {
+        'parse': 'parse a V4A patch and print its operations',
+        'apply': 'apply a V4A patch atomically under --root (use --dry-run first)',
+        'to-unified': 'convert a V4A patch to a unified diff',
+        'from-unified': 'convert a unified diff to a V4A patch',
+        'explain': 'explain per hunk why a patch does or does not match the files',
+        'preview': 'save a hash-bound plan of what apply would change, without writing files',
+        'apply-plan': 'apply a saved preview plan if the files are still unchanged',
+        'check-plan': 'check whether a saved plan still matches the files (no writes)',
+        'check-unified': 'check whether a unified diff applies cleanly (no writes)',
+    }
     for name in ('parse', 'apply', 'to-unified', 'from-unified', 'explain', 'preview', 'apply-plan', 'check-plan', 'check-unified'):
-        cmd = commands.add_parser(name)
+        cmd = commands.add_parser(name, help=helps[name], description=helps[name])
         cmd.add_argument('patch', help="UTF-8 patch/plan file, or '-' for stdin")
         if name in ('parse', 'explain', 'check-plan'):
             cmd.add_argument('--json', action='store_true')
@@ -186,7 +204,12 @@ def main(argv: list[str] | None = None) -> int:
         if check_only:
             check_error('IO_ERROR', exc)
             return 1
-        print(f"I/O error: {exc.strerror}", file=sys.stderr)
+        if isinstance(exc, InputReadError):
+            print(f"error: {cannot_read(exc.filename, exc)}", file=sys.stderr)
+        elif exc.filename:
+            print(f"I/O error: {safe_path(exc.filename)}: {os_reason(exc)}", file=sys.stderr)
+        else:
+            print(f"I/O error: {exc.strerror or type(exc).__name__}", file=sys.stderr)
         return 1
 
 

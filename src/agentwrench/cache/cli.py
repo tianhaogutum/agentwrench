@@ -50,6 +50,31 @@ Volatile fields: JSON array of exact request-body scalar pointers. Reports raw a
 configured stability without changing captures. CI uses raw unless explicitly selected.
 """
 
+COMMAND_HELP = {
+    "analyze": "Find where consecutive requests in one capture stop sharing a cacheable prefix,\n"
+               "classify the cause, and check it against captured usage. --fail-on/--min-stability gate CI.",
+    "canonicalize": "Write a copy of a capture with tools and schema keys in a stable order (--rules)\n"
+                    "to a new --out file, to test whether stable ordering would fix the cache.",
+    "compare": "Compare prefix stability between two captures (e.g. before and after a fix).",
+    "sessions": "Analyze several independent capture files together and rank the breaking paths.",
+}
+
+
+def command_help(command: str) -> str:
+    """Usage lines of one subcommand from HELP, plus a short description."""
+    lines, keep = [], False
+    for line in HELP.splitlines():
+        if line.startswith(f"  {PROG} "):
+            keep = line.startswith(f"  {PROG} {command} ")
+        elif not line.startswith("      "):
+            keep = False
+        if keep:
+            lines.append(line)
+    return "\n".join(["Usage:", *lines, "", COMMAND_HELP[command], f"Formats: {', '.join(FORMATS)}",
+                      "Exit: 0 success, 1 analyze/sessions policy failure, 2 invalid input/options/I/O.",
+                      f"Run '{PROG} --help' for classes, rules and limits."])
+
+
 _ALLOWED = {
     "analyze": ("format", "input-format", "json", "fail-on", "min-stability", "volatile-fields", "policy-view"),
     "canonicalize": ("format", "out", "rules"),
@@ -85,6 +110,9 @@ def parse_options(argv: list[str]) -> Options:
     allowed = _ALLOWED.get(command)
     if allowed is None:
         raise CacheError("unknown command; use --help")
+    head = args[:args.index("--")] if "--" in args else args
+    if "--help" in head or "-h" in head:
+        return Options(command=command, help=True)
     opts = Options(command=command)
     values = opts.values
     positional_only = False
@@ -343,7 +371,7 @@ def _run(argv: list[str]) -> tuple[list[str], int, str | None]:
     """Output lines, exit status and an optional stderr reason for a policy failure."""
     opts = parse_options(argv)
     if opts.help:
-        return [HELP], 0, None
+        return [command_help(opts.command) if opts.command else HELP], 0, None
     if opts.version:
         return [__version__], 0, None
     policy_view = opts.values.get("policy-view")

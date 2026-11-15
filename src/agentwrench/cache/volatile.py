@@ -71,7 +71,7 @@ def read_volatile_fields(path: str) -> list[Any]:
     try:
         fd = os.open(display, os.O_RDONLY | os.O_NONBLOCK)
     except OSError as error:
-        raise FsError(error, "open", display) from None
+        raise FsError(error, "open", display, reading=True) from None
     try:
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode):

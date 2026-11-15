@@ -77,7 +77,7 @@ def test_io_failure_fail_closed(tree):
     root, cwd = tree
     (root/'AGENTS.md').symlink_to('AGENTS.md')
     result = cli('explain', '--cwd', cwd, '--json')
-    assert result.returncode == 2 and json.loads(result.stdout)['diagnostics']
+    assert result.returncode == 1 and json.loads(result.stdout)['diagnostics']
     assert cli('check', '--cwd', cwd).returncode == 1
     result = cli('render', '--cwd', cwd)
     assert result.returncode == 2 and not result.stdout
@@ -87,7 +87,7 @@ def test_claude_cli_and_unsupported_render(tree):
     root, cwd = tree
     put(root/'CLAUDE.md', '@missing.md')
     result = cli('explain', '--cwd', cwd, '--agent', 'claude', '--json')
-    assert result.returncode == 2
+    assert result.returncode == 1
     assert json.loads(result.stdout)['edges'][-1]['error'] == 'FileNotFoundError'
     assert cli('check', '--cwd', cwd, '--agent', 'claude').returncode == 1
     assert cli('render', '--cwd', cwd, '--agent', 'claude').returncode == 2

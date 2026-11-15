@@ -95,13 +95,25 @@ disabled with Codex `enabled = false` or Claude Code's per-project `disabledMcpS
 
 Without `--probe` nothing is started; the table shows each server's transport and its
 (redacted) command or URL. With `--probe`, each distinct stdio server is started once
-(a server configured identically for both clients is shared), with its configured
+(a server configured identically for both clients is shared; servers with the same
+command, cwd and tool definitions are shown once in *Largest tools* and the fixes, even
+if their env differs), with its configured
 command, args, env (on top of your environment; Claude `${VAR}` / `${VAR:-default}`
 references are expanded) and cwd (default: the project directory). scan performs the MCP
 `initialize` handshake, pages through `tools/list` with `agentwrench slim`'s bounded
 discovery, then closes the server. Codex `enabled_tools` / `disabled_tools` filters are
-applied before measuring. Server stderr is discarded. A server that cannot start, exits,
-or exceeds `--timeout` is reported with a short reason and the scan continues. Remote
+applied before measuring. A server that cannot start, exits, or exceeds `--timeout` is
+reported with a short reason and the scan continues. Server stderr is never shown, except
+for a server that exits before listing its tools: then scan reports its exit status and its
+last non-empty stderr line (kept in memory only, at most 160 characters, with configured env
+values, tokens and `secret=value` pairs redacted), for example
+`failed to start for discovery: server exited before listing its tools (exit status 1); last
+stderr line: Error: Cannot find module 'server.js'`.
+
+A config file that cannot be read (invalid JSON or TOML, unreadable file) is an error in
+this section (`cannot read ~/.claude.json: invalid JSON; its MCP servers were skipped`);
+that client's summary says *MCP unknown* instead of *no MCP servers*, and its JSON
+`complete` is `false`. Remote
 (HTTP/SSE) servers are listed but never contacted.
 
 For each measured server, scan runs `agentwrench slim plan` in memory at a budget of
@@ -145,7 +157,8 @@ files per client with `agentwrench doctor`'s streaming checker:
 * Codex: `$CODEX_HOME/sessions/**/rollout-*.jsonl`
 
 Files are opened read-only under a shared, non-blocking lock; locked or unreadable files
-are counted as unreadable. A file modified in the last 10 minutes whose only problem is a
+are counted as unreadable. (Windows, which is untested, has no `flock`: files are read
+without the lock.) A file modified in the last 10 minutes whose only problem is a
 pending call with no new user prompt after it is an agent that is running right now; it is
 shown as *in progress* and not counted. For broken files scan prints the repair commands
 for one example (stop the agent first):
@@ -202,7 +215,8 @@ line.
       "top_tools": [{"name": "create_pull_request_review", "estimated_tokens": 452}],
       "slim": {"budget": 6600, "estimated_tokens_after": 6370, "estimated_tokens_saved": 4055,
                "meets_budget": true, "config": {"stripSchemaAnnotations": ["description", "title", "examples", "$comment"]}},
-      "duplicate_of": null              // e.g. "Claude Code global github" for the Codex copy
+      "duplicate_of": null,             // e.g. "Claude Code global github" for the Codex copy
+      "exit": null                      // failed probes that exited: {"code": 1, "signal": null, "stderr": "Error: ..."}
     }]
   },
   "instructions": {

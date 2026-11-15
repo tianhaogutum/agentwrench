@@ -67,7 +67,8 @@ the second prints `PASS: 4 files; project usage 54.84%`.
 
 `check` emits one line. Exit 0 means the policy passes; exit 1 means truncation,
 dropped files, excess usage, or file/import errors. Invalid arguments/configuration
-exit 2. `explain` exits 2 on file/import errors but still supplies the report;
+exit 2. `explain` exits 1 on file/import errors (such as a missing `@import`) and still
+prints the full report;
 `render` refuses to produce a misleading exact result after any file errors.
 A truncated `render` succeeds, because that truncated body is the intended output.
 Run `check` separately to enforce a policy. Reports contain paths and headings;

@@ -13,14 +13,49 @@ from .export import handoff, jsonl, markdown, prepare, to_atif
 from .model import InputError, dumps
 from .render_merge import render_merge, timestamp_window, validate_merge
 from .merge import merge_jsonl, timestamp_instant
+from .._text import cannot_read, plural, safe_path
+from ..mcpconfig.core import TOKEN
+
+
+def _stats_line(diagnostics: dict, steps: int, output: Path | None) -> str:
+    """One readable line: what was written, warnings, redactions and truncations."""
+    where = f'wrote {label(output)}: ' if output else ''
+    parts = [plural(steps, 'step')]
+    warnings = diagnostics['warnings']
+    total = sum(warnings.values())
+    parts.append(plural(total, 'warning') + (f" ({', '.join(f'{k} {v}' for k, v in sorted(warnings.items()))})"
+                                              if total else ''))
+    redaction = diagnostics['redaction']
+    if redaction.get('mode') == 'off':
+        parts.append('redaction off')
+    else:
+        parts.append(f"{plural(redaction.get('total', 0), 'value')} redacted")
+    if diagnostics['truncated_fields']:
+        parts.append(f"{plural(diagnostics['truncated_fields'], 'tool result')} truncated")
+    return where + ', '.join(parts)
+
+
+def _is_input(args, exc: OSError) -> bool:
+    """The failing path is an input file named on the command line (not an output)."""
+    if not exc.filename or isinstance(exc, FileExistsError):
+        return False
+    inputs = [getattr(args, 'session', None), *(getattr(args, 'sessions', None) or [])]
+    return any(path is not None and os.fspath(path) == os.fspath(exc.filename) for path in inputs)
+
+
+def label(path) -> str:
+    # Name the file as the user gave it, without terminal controls or obvious tokens.
+    return safe_path(TOKEN.sub('[REDACTED]', os.fspath(path)))
 
 
 def parser():
     p = argparse.ArgumentParser(prog='agentwrench export', description='Offline session conversion and redacted hand-off briefs')
     p.add_argument('--version', action='version', version='%(prog)s ' + __version__)
     subs = p.add_subparsers(dest='action', required=True)
+    helps = {'convert': 'convert a Codex, Claude Code or Cline session to ATIF, Markdown or agentwrench export JSONL',
+             'summary': 'write a redacted Markdown hand-off brief for one session'}
     for command in ('convert', 'summary'):
-        sub = subs.add_parser(command)
+        sub = subs.add_parser(command, help=helps[command], description=helps[command])
         sub.add_argument('session', type=Path)
         sub.add_argument('--from', dest='fmt', choices=('auto', 'codex', 'claude', 'cline'), default='auto')
         sub.add_argument('--redact', choices=('default', 'strict', 'off'), default='default')
@@ -30,6 +65,8 @@ def parser():
         sub.add_argument('--max-output-chars', type=int, default=20000,
                          help='limit characters per tool result; 0 is unlimited (default: 20000)')
         sub.add_argument('-o', '--output', type=Path, help='create a new private output file (never overwrite)')
+        sub.add_argument('--stats-json', action='store_true',
+                         help='print warning/redaction counts on stderr as one JSON object instead of a sentence')
         if command == 'convert':
             sub.add_argument('--to', choices=('atif', 'md', 'jsonl'), required=True)
             sub.add_argument('--view', choices=('conversation', 'tools', 'full'), default='full')
@@ -39,7 +76,7 @@ def parser():
     validate.add_argument('--include-sidechains', action='store_true')
     validate.add_argument('--fail-on-warning', action='store_true',
                           help='exit 2 for counted adapter warnings; still report the same JSON counts')
-    merge = subs.add_parser('merge', help='merge trajport/v1 JSONL exports, optionally sorting unsorted inputs')
+    merge = subs.add_parser('merge', help='merge agentwrench export JSONL files (format trajport/v1), optionally sorting unsorted inputs')
     merge.add_argument('sessions', type=Path, nargs='+')
     merge.add_argument('--check', action='store_true',
                        help='validate all inputs and report counts without staging or writing output; '
@@ -68,10 +105,10 @@ def parser():
                        help='positive total UTF-8 output-byte limit including header/LF '
                             '(default: unlimited); independent of sort run quota')
     merge.add_argument('-o', '--output', type=Path, help='create a new private output file (never overwrite)')
-    validate_merged = subs.add_parser('validate-merge', help='validate one merge-v1 export without rendering or staging')
-    validate_merged.add_argument('session', type=Path, help='one trajport/merge-v1 JSONL export; no originals required')
-    render = subs.add_parser('render-merge', help='render a validated merge-v1 export as Markdown')
-    render.add_argument('session', type=Path, help='one trajport/merge-v1 JSONL export')
+    validate_merged = subs.add_parser('validate-merge', help='validate one merged export (format trajport/merge-v1) without rendering or staging')
+    validate_merged.add_argument('session', type=Path, help='one merged agentwrench export JSONL file (format trajport/merge-v1); no originals required')
+    render = subs.add_parser('render-merge', help='render a validated merged export (format trajport/merge-v1) as Markdown')
+    render.add_argument('session', type=Path, help='one merged agentwrench export JSONL file (format trajport/merge-v1)')
     render.add_argument('--view', choices=('conversation', 'tools', 'full'), default='full',
                         help='normalized presentation (default: full); combine with source/time selection; '
                              'all events and hidden fields are still validated')
@@ -255,14 +292,23 @@ def main(argv=None):
             sys.stdout.write(output)
         diagnostics = {'warnings': doc['extra']['warnings'], 'redaction': doc['extra']['redaction'],
                        'truncated_fields': doc['extra']['truncated_fields']}
-        sys.stderr.write('agentwrench export: ' + dumps(diagnostics) + '\n')
+        if args.stats_json:
+            sys.stderr.write('agentwrench export: ' + dumps(diagnostics) + '\n')
+        else:
+            sys.stderr.write('agentwrench export: ' + _stats_line(diagnostics, len(doc['steps']), args.output) + '\n')
         return 0
     except BrokenPipeError:
         return 0
     except InputError as exc:
         print(f'agentwrench export: error: {exc}', file=sys.stderr)
         return 2
-    except (OSError, RecursionError, ValueError, TypeError, sqlite3.Error) as exc:
+    except OSError as exc:
+        if _is_input(args, exc):
+            print(f"agentwrench export: error: {cannot_read(TOKEN.sub('[REDACTED]', os.fspath(exc.filename)), exc)}", file=sys.stderr)
+        else:
+            print(f'agentwrench export: error: cannot process input/output ({type(exc).__name__})', file=sys.stderr)
+        return 2
+    except (RecursionError, ValueError, TypeError, sqlite3.Error) as exc:
         # OS errors may contain private paths; JSON errors may contain source data.
         print(f'agentwrench export: error: cannot process input/output ({type(exc).__name__})', file=sys.stderr)
         return 2

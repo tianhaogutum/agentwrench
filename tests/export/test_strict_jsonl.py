@@ -81,7 +81,7 @@ def test_strict_cli_tail_failure_publishes_nothing(tmp_path, action, fmt, ending
     command = [action, path, '--redact', 'off']
     if action == 'convert':
         command += ['--to', 'jsonl']
-    default = run(*command)
+    default = run(*command, '--stats-json')
     assert default.returncode == 0 and default.stdout
     assert json.loads(default.stderr.removeprefix('agentwrench export: '))['warnings'] == {'truncated_last_line': 1}
     for output in ([], ['-o', tmp_path / 'new.jsonl']):
@@ -98,7 +98,7 @@ def test_strict_cli_complete_unterminated_record_succeeds(tmp_path, action, fmt,
     path = tmp_path / 'valid.jsonl'
     path.write_bytes(session_bytes(fmt, ending, final_ending=False)[0])
     output = tmp_path / 'out'
-    command = [action, path, '--strict-jsonl', '--redact', 'off', '-o', output]
+    command = [action, path, '--strict-jsonl', '--redact', 'off', '-o', output, '--stats-json']
     if action == 'convert':
         command += ['--to', 'atif']
     result = run(*command)

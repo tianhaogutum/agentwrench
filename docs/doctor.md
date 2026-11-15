@@ -53,8 +53,10 @@ agentwrench doctor check ./damaged.jsonl --format codex
 For the Codex orphan fixture, `check` exits 1 and reports `RD103` at line 1 and `RD101` at line 2. Default repair drops the unusable output and inserts a `function_call_output` after the call:
 
 ```json
-{"type":"response_item","payload":{"type":"function_call_output","call_id":"c1","output":"[rollout-doctor] tool output missing: call was interrupted"},"timestamp":"2026-01-01T00:00:00Z"}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"c1","output":"[agentwrench doctor] tool output missing: call was interrupted"},"timestamp":"2026-01-01T00:00:00Z"}
 ```
+
+The marker text is informational only: pairing is checked by call id, so files repaired by the earlier standalone `rollout-doctor` (marker `[rollout-doctor] ...`) check clean and are left unchanged. Synthetic Claude Code stub UUIDs are derived deterministically (uuid5) from the call and are the same as in those earlier repairs.
 
 A single-file `--json` report has this shape (line and block indexes are respectively 1-based and 0-based):
 

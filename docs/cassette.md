@@ -337,8 +337,9 @@ when a client ignores the subprocess status. Cassette metadata never arms a faul
   one-use FIFO for identical repeats. Request and notification keys are distinct.
   `--match sequence`: require the next recorded client event to match.
 - Initialize reuses recorded server identity/capabilities, ignoring client identity
-  and capability differences. A requested/recorded/negotiated version mismatch
-  warns; `--strict` sends an error and fails. Responses use the new live IDs.
+  and capability differences. A client `protocolVersion` that differs from the
+  recorded request's warns; `--strict` sends an error and fails. The server's
+  negotiated version is replayed as recorded and never causes a mismatch. Responses use the new live IDs.
 - Recorded server notifications are emitted once with their owning interaction;
   ordinary request progress tokens bind to the live token in either matching
   mode. Progress-token ownership works for overlapping recorded calls. Output order is
@@ -596,8 +597,9 @@ never execute workflows, and recording explicitly executes the supplied server.
 
 This is independent of MCP Inspector and its native export formats; it does not
 import Inspector sessions. The JSON format is specific to this project and
-[versioned/documented](cassette/CASSETTE.md); cassettes record
-`"generator": "mcp-cassette/0.1.0"` in their metadata.
+[versioned/documented](cassette/CASSETTE.md); new cassettes record
+`"generator": "agentwrench-cassette/<version>"` in their metadata. The field is
+informational; cassettes recorded with `"mcp-cassette/0.1.0"` replay unchanged.
 
 ## Development
 

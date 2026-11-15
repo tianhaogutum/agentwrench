@@ -13,7 +13,7 @@ rejected. JSON-RPC batches are not supported.
   "incomplete": false,
   "redact_paths": [],
   "metadata": {
-    "generator": "mcp-cassette/0.1.0",
+    "generator": "agentwrench-cassette/0.1.0",
     "server_exit_code": 0,
     "reasons": []
   },
@@ -31,7 +31,9 @@ milliseconds, measured at receipt by the proxy (not server execution time).
 `direction` is `client` for messages sent to the child, `server` for messages
 received from the child. Messages include requests, responses and notifications.
 `metadata` is informational; exit code and reason strings indicate why a
-recording is incomplete. No argv, environment, cwd, PID or stderr is stored.
+recording is incomplete. Readers never interpret `generator`: new recordings say
+`"agentwrench-cassette/<version>"`, older ones `"mcp-cassette/0.1.0"`, and both
+load the same. No argv, environment, cwd, PID or stderr is stored.
 
 The parser validates JSON-RPC 2.0 envelope structure; MCP params and `_meta`
 must be objects. Request IDs are integers or strings, with types kept distinct.
@@ -241,7 +243,8 @@ response, as required by JSON-RPC.
 
 Initialize is the deliberate exception: client identity and capabilities are
 ignored; it returns the next recorded initialize response. The live requested
-protocol version is compared to both the recorded request and negotiated result.
+protocol version is compared to the recorded request's version (not to the
+version the server negotiated in its recorded result, which is replayed as is).
 A mismatch warns in default mode; strict mode returns error `-32002`, leaves
 the interaction unused and fails the process. No capabilities are synthesized.
 A recorded ping is consumed like other requests; an extra ping is answered with

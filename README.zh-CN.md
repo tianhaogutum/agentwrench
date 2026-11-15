@@ -49,7 +49,7 @@ git clone https://github.com/tianhaogutum/agentwrench && cd agentwrench
 uvx agentwrench scan --home examples/scan/demo-home --project examples/scan/demo-project --probe
 ```
 
-长期使用可以 `pipx install agentwrench` 或 `pip install agentwrench`（需要 Python 3.11+）。
+长期使用可以 `pipx install agentwrench` 或 `pip install agentwrench`（需要 Python 3.11+；支持 Linux 和 macOS，Windows 未经测试）。
 
 ## `scan` 会查什么
 
@@ -117,7 +117,7 @@ agentwrench agentsmd explain --cwd .                 # 加 --agent claude 检查
 
 ### 会话中断后 `--resume` 失败 → `doctor`
 
-会话里只存了工具调用却没有结果（或者反过来），服务商就会拒绝整段对话。`doctor` 找出 Claude Code 和 Codex 会话 JSONL 里不成对的调用，并保守地修复：先给你看 diff，再写到新文件（或带备份原地替换），原有的每一行逐字节保留。[docs/doctor.md](docs/doctor.md)
+会话里只存了工具调用却没有结果（或者反过来），服务商就会拒绝整段对话。`doctor` 找出 Claude Code 和 Codex 会话 JSONL 里不成对的调用，并保守地修复：先给你看 diff，再写到新文件（或带备份原地替换）。不需要改动的行逐字节保留；被中断的调用会补上一条带标记的占位结果，找不到对应调用的输出记录会被删除（`--strategy drop` 则改为删除未完成的调用）。[docs/doctor.md](docs/doctor.md)
 
 ```sh
 agentwrench doctor repair path/to/session.jsonl --dry-run    # 确认后：--out fixed.jsonl
@@ -156,6 +156,8 @@ agentwrench cassette record --cassette cassettes/my-server.json -- python3 my_se
 agentwrench cassette replay --cassette cassettes/my-server.json --strict
 ```
 
+严格回放把客户端的每个请求和录制时的请求比较；服务器当时协商出更旧的 `protocolVersion` 也没关系，会按录制内容原样回放。
+
 ### 在 CI 里无人值守地跑代理 → `gate`
 
 把 `codex exec --json` 或 Claude Code `--output-format stream-json` 的日志标准化，再用 YAML 策略把关：必须跑和禁止跑的命令、允许改动的文件、工具调用次数和 token 上限。支持 JUnit 输出、基线与候选版本对比、导出给 AgentEvals。日志里的任何内容都不会被执行。[docs/gate.md](docs/gate.md)
@@ -175,11 +177,12 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 ## 可信与局限
 
 - **离线，无遥测。** agentwrench 本身不建立任何网络连接，也不收集任何数据。远程 MCP 服务器只会被 `scan` 列出来，从不连接。
-- **默认只读。** `scan`、`check`、`explain`、`report` 和 `measure` 从不写文件。会改文件的命令都要显式给出目标或开关（`--out`、`-o`、`--in-place --backup`、`--root`），大多数提供 `--dry-run`，大多数拒绝覆盖已存在的输出文件。
+- **默认只读。** `scan`、`check`、`explain`、`report` 和 `measure` 从不修改你的输入文件（`gate check --junit` 只写你指定的报告文件）。会改文件的命令都要显式给出目标或开关（`--out`、`-o`、`--in-place --backup`、`--root`），大多数提供 `--dry-run`，大多数拒绝覆盖已存在的输出文件。
 - **哪些会执行代码。** `scan --probe` 用你配置里的命令、参数、环境变量和工作目录启动每个 stdio MCP 服务器，列出工具后关掉。这些是你自己的服务器，它们会做它们本来就做的事（`npx` 服务器可能会下载）。`slim discover`、`slim proxy` 和 `cassette record` 会运行你传给它们的服务器命令。除此之外不执行任何东西。
 - **输出里没有密钥。** `scan` 对环境变量和请求头只报名字，会遮掉命令里的 token，也从不打印指令文件或会话的正文。
 - **估算会标明。** `scan` 和 `slim` 打印的是 `ceil(UTF-8 字节数 / 4)` 估算值。和 tiktoken `o200k_base` 相比，它在原始工具列表上偏高 7–18%，对节省比例最多高估 6 个百分点，所以本文的数字都来自分词器实测。目前没有可离线使用的 Claude 分词器，所有数字请按 ±15% 理解。
-- **有测试。** 9,276 个测试；CI 在 Linux 上覆盖 Python 3.11、3.12、3.13。需要 Python 3.11+。Apache-2.0 许可。
+- **有测试。** 9,000+ 个测试；CI 在 Linux 上覆盖 Python 3.11 到 3.14，另在 macOS 上跑 Python 3.13。需要 Python 3.11+。Apache-2.0 许可。
+- **支持的平台。** 支持 Linux 和 macOS。Windows 未经测试，只能部分使用：`scan`、`doctor check` 等只读命令按可用设计，但需要加锁改写文件的命令（如 `doctor repair`）在 Windows 上会拒绝运行。
 
 agentwrench 是独立项目，与 Anthropic、OpenAI 和 Model Context Protocol 项目均无关联。见 [THIRD_PARTY.md](THIRD_PARTY.md)。
 

@@ -49,6 +49,31 @@ with --accept-protocol-version (e.g. 2025-06-18).
 Globs support only * and ?; deny wins. Limits and details: {DOCS_URL}"""
 
 MODES = ('measure', 'plan', 'proxy', 'discover')
+
+# `agentwrench slim <mode> --help`: that mode's usage line plus what it does.
+MODE_HELP = {
+    'measure': 'Measure the tool definitions in a tools.json catalogue (optionally after a slim config).\n'
+               'Starts nothing; --json prints the numbers as JSON.',
+    'plan': 'Write a slim config that fits --budget estimated tokens to stdout, analysis to stderr.\n'
+            'Strips schema annotations first, then shortens descriptions; never removes a tool.',
+    'discover': 'Start an MCP stdio server, page through tools/list and write its catalogue\n'
+                '(to --output or stdout), then stop it. This executes the server command.',
+    'proxy': 'Run a server behind a stdio proxy that serves the slimmed tool list from --config.\n'
+             'Point your MCP client at this command instead of the server.',
+}
+
+
+def mode_usage(mode: str) -> str:
+    line = next(text for text in USAGE.splitlines() if text.strip().startswith(f'{PROGRAM} {mode} '))
+    return f"Usage:\n{line}\n\n{MODE_HELP[mode]}\nToken estimates are ceil(UTF-8 bytes / 4). Details: {DOCS_URL}"
+
+
+def _wants_mode_help(args: list[str]) -> bool:
+    """``<mode> ... --help`` before any ``--`` server command."""
+    if not args or args[0] not in MODES:
+        return False
+    head = args[1:args.index('--')] if '--' in args else args[1:]
+    return any(arg in ('--help', '-h') for arg in head)
 _DIGITS = re.compile('[0-9]+')
 
 # Value options accepted by each mode (beyond the repeatable environment options).
@@ -243,6 +268,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if len(args) == 1 and args[0] in ('--help', '-h'):
             _out(f'{USAGE}\n')
+            return 0
+        if _wants_mode_help(args):
+            _out(f'{mode_usage(args[0])}\n')
             return 0
         if len(args) == 1 and args[0] == '--version':
             _out(f'{VERSION}\n')

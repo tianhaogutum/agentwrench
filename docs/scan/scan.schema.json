@@ -78,7 +78,7 @@
         "instruction_tokens": {"type": "integer", "minimum": 0},
         "mcp_servers": {"type": "integer", "minimum": 0, "description": "Active (enabled, not overridden) servers."},
         "mcp_servers_measured": {"type": "integer", "minimum": 0},
-        "complete": {"type": "boolean", "description": "Every active server was measured."}
+        "complete": {"type": "boolean", "description": "Every active server was measured and every MCP config of the client could be read."}
       }
     },
     "finding": {
@@ -134,7 +134,20 @@
              }}
           ]
         },
-        "duplicate_of": {"type": ["string", "null"]}
+        "duplicate_of": {"type": ["string", "null"]},
+        "exit": {
+          "description": "Set when --probe saw the server exit before listing its tools.",
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object", "required": ["code", "signal", "stderr"],
+             "properties": {
+               "code": {"type": ["integer", "null"], "description": "Exit status, or null if killed by a signal."},
+               "signal": {"type": ["string", "null"], "description": "Signal name such as SIGSEGV, or null."},
+               "stderr": {"type": ["string", "null"],
+                          "description": "Last non-empty stderr line, secrets redacted, at most 160 characters."}
+             }}
+          ]
+        }
       }
     },
     "error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}}},

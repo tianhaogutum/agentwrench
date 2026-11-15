@@ -13,7 +13,7 @@
 <text y="76" xml:space="preserve"><tspan x="18.0" class="b">agentwrench scan</tspan><tspan x="158.9" class="d">-</tspan><tspan x="182.4" class="d">context overhead and breakage for Claude Code &amp; Codex (read-only, offline)</tspan></text>
 <text y="93" xml:space="preserve"><tspan x="33.7">home</tspan><tspan x="104.1">demo-home</tspan></text>
 <text y="110" xml:space="preserve"><tspan x="33.7">project</tspan><tspan x="104.1">demo-project</tspan></text>
-<text y="144" xml:space="preserve"><tspan x="18.0" class="b">1. MCP tool definitions</tspan><tspan x="213.8" class="d">(probed 5 server(s) in 0.06s)</tspan></text>
+<text y="144" xml:space="preserve"><tspan x="18.0" class="b">1. MCP tool definitions</tspan><tspan x="213.8" class="d">(probed 5 servers in 0.07s)</tspan></text>
 <text y="161" xml:space="preserve"><tspan x="33.7" class="d">CLIENT</tspan><tspan x="135.4" class="d">SCOPE</tspan><tspan x="205.9" class="d">SERVER</tspan><tspan x="323.4" class="d">TOOLS</tspan><tspan x="378.2" class="d">EST. TOKENS</tspan><tspan x="480.0" class="d">NOTE</tspan></text>
 <text y="178" xml:space="preserve"><tspan x="33.7">Claude Code</tspan><tspan x="135.4">project</tspan><tspan x="205.9">issue-tracker</tspan><tspan x="346.9">40</tspan><tspan x="417.3">22,787</tspan><tspan x="480.0" class="c33">slim: -14,946</tspan></text>
 <text y="195" xml:space="preserve"><tspan x="33.7">Claude Code</tspan><tspan x="135.4">global</tspan><tspan x="205.9">github</tspan><tspan x="346.9">33</tspan><tspan x="417.3">10,425</tspan><tspan x="480.0" class="c33">slim: -4,055</tspan></text>
@@ -54,7 +54,7 @@
 <text y="841" xml:space="preserve"><tspan x="33.7">Fixed context overhead per turn (estimated tokens, before you type anything):</tspan></text>
 <text y="858" xml:space="preserve"><tspan x="49.3">Claude Code</tspan><tspan x="151.1" class="b">44,936</tspan><tspan x="213.8">= MCP 35,305 (3/5 servers measured) + CLAUDE.md 9,631</tspan></text>
 <text y="875" xml:space="preserve"><tspan x="49.3">Codex</tspan><tspan x="151.1" class="b">18,943</tspan><tspan x="213.8">= MCP 10,652 (2/2 servers measured) + AGENTS.md 8,291</tspan></text>
-<text y="892" xml:space="preserve"><tspan x="33.7" class="c31">6</tspan><tspan x="49.3">problem(s): 3 error(s), 3 warning(s)</tspan></text>
+<text y="892" xml:space="preserve"><tspan x="33.7" class="c31">6</tspan><tspan x="49.3">problems: 3 errors, 3 warnings</tspan></text>
 <text y="909" xml:space="preserve"><tspan x="33.7">Top fixes:</tspan></text>
 <text y="926" xml:space="preserve"><tspan x="49.3">1.</tspan><tspan x="72.8" class="b">-14,946 tokens/turn</tspan><tspan x="237.2">trim 'issue-tracker' tool definitions (Claude Code): 22,787 -&gt; ~7,841 tokens</tspan></text>
 <text y="943" xml:space="preserve"><tspan x="88.5" class="c36">agentwrench slim discover --output issue-tracker.tools.json --server-cwd demo-project -- python3</tspan></text>

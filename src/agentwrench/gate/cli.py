@@ -110,8 +110,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="agentwrench gate", description="Offline trajectory normalization and policy gates")
     parser.add_argument("--version", action="version", version=__version__)
     subs = parser.add_subparsers(dest="action", required=True)
+    helps = {"normalize": "normalize a codex exec --json or Claude Code stream-json log to one trajectory format",
+             "export-agentevals": "export a normalized run as an AgentEvals trajectory",
+             "check": "enforce a YAML policy on a headless run (exit 1 on violations; optional --junit)"}
     for name in ("normalize", "export-agentevals", "check"):
-        sub = subs.add_parser(name)
+        sub = subs.add_parser(name, help=helps[name], description=helps[name])
         sub.add_argument("stream", help="UTF-8 JSONL file; - reads binary stdin; ./- names a literal file (never executed)")
         sub.add_argument("--from", dest="source", choices=("auto", "codex-exec", "claude-stream"), default="auto")
         sub.add_argument("--root", help="absolute POSIX repository root for lexical path mapping")

@@ -159,7 +159,7 @@ def analyze_sessions(paths: Any, format: str = "auto", volatile_fields: Any = ()
             os.stat(path)
             source = os.path.realpath(path, strict=True)
         except OSError as error:
-            raise FsError(error, "realpath", path) from None
+            raise FsError(error, "realpath", path, reading=True) from None
         if source in sources:
             raise CacheError("duplicate resolved session path")
         sources.add(source)

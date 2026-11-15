@@ -1,12 +1,13 @@
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.27", "hatch-fancy-pypi-readme>=24.1"]
 build-backend = "hatchling.build"
 
 [project]
 name = "agentwrench"
 version = "0.1.0"
-description = "Offline dev tools for AI coding agents: repair sessions, convert MCP configs, replay MCP servers, gate trajectories in CI, inspect AGENTS.md budgets and apply Codex patches"
-readme = "README.md"
+description = "Find and cut the tokens and breakages your Claude Code, Codex and MCP setup silently costs you: scan, slim, cache, doctor and more. Offline."
+# README.md with repository-relative links rewritten for PyPI (see tool.hatch.metadata.hooks below).
+dynamic = ["readme"]
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "THIRD_PARTY.md"]
@@ -21,6 +22,7 @@ classifiers = [
     "Environment :: Console",
     "Framework :: Pytest",
     "Intended Audience :: Developers",
+    "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
@@ -69,6 +71,36 @@ agentwrench = "agentwrench.cli:main"
 
 [project.entry-points.pytest11]
 agentwrench_cassette = "agentwrench.cassette.pytest_plugin"
+
+# PyPI cannot resolve repository-relative links or images: rewrite them to GitHub URLs.
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+# <img src>, <source srcset>: raw file URLs so the images render
+pattern = '(src|srcset)="(?!https?://)([^"]+)"'
+replacement = '\1="https://raw.githubusercontent.com/tianhaogutum/agentwrench/main/\2"'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = 'href="(?!https?://|#|mailto:)([^"]+)"'
+replacement = 'href="https://github.com/tianhaogutum/agentwrench/blob/main/\1"'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+# Markdown images, then Markdown links to files and directories
+pattern = '!\[([^\]]*)\]\((?!https?://)([^)\s]+)\)'
+replacement = '![\1](https://raw.githubusercontent.com/tianhaogutum/agentwrench/main/\2)'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\((?!https?://|#|mailto:)([^)\s]+)\)'
+replacement = '](https://github.com/tianhaogutum/agentwrench/blob/main/\1)'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+# In-page anchors: PyPI does not generate heading ids
+pattern = '\]\(#([^)\s]+)\)'
+replacement = '](https://github.com/tianhaogutum/agentwrench#\1)'
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentwrench"]

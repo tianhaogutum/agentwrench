@@ -7,6 +7,7 @@ import os
 import stat
 from typing import Any
 
+from .._text import cannot_read
 from .bounds import validate_json_tree
 from .config import InputError
 from .jsjson import decode_utf8, parse
@@ -49,6 +50,8 @@ def read_json(path: str) -> Any:
         return validate_json_tree(parse(text))
     except InputError:
         raise
+    except OSError as error:
+        raise InputError(cannot_read(path, error)) from None
     except Exception as error:
         raise InputError(f"{path}: {error_code(error) or 'invalid JSON or UTF-8'}") from None
     finally:

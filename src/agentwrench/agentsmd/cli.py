@@ -21,8 +21,12 @@ def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="agentwrench agentsmd", description="Offline Codex byte-budget and Claude import audit")
     root.add_argument("--version", action="version", version="%(prog)s " + __version__)
     sub = root.add_subparsers(dest="command", required=True)
+    helps = {"explain": "show which instruction files load, the byte budget, where the cut falls and imports",
+             "check": "one-line PASS/FAIL: exit 1 on truncation, dropped files, high usage or import errors",
+             "render": "print the exact Codex instruction text that would be loaded",
+             "snapshot": "save a JSON snapshot of the effective instructions for a later diff"}
     for command in ("explain", "check", "render", "snapshot"):
-        cmd = sub.add_parser(command)
+        cmd = sub.add_parser(command, help=helps[command], description=helps[command])
         if command == "snapshot":
             cmd.add_argument("--cwd", type=Path, action="append")
             cmd.add_argument("--manifest", action="store_true", help="capture 1-64 explicit working directories")
@@ -172,7 +176,8 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(report.to_dict(), ensure_ascii=True, indent=2))
         else:
             print(explain(report))
-        return 2 if report.diagnostics else 0
+        # File/import errors are findings in a complete report (as for `check`): exit 1.
+        return 1 if report.diagnostics else 0
     except (ScopeError, OSError, RuntimeError) as exc:
         # I/O exceptions can include hostile paths; JSON escaping prevents terminal controls.
         print("agentwrench agentsmd: " + json.dumps(str(exc), ensure_ascii=True), file=sys.stderr)

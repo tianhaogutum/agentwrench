@@ -22,11 +22,15 @@ jobs:
       - run: uvx ruff check .
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: macos-latest
+            python-version: "3.13"
     env:
       # uv-managed CPython bundles a current SQLite; the checkpoints suite compares
       # SQLite file bytes and expects modern WAL behaviour.
@@ -38,5 +42,5 @@ jobs:
       - name: Run tests
         run: uv run --extra test pytest -q
       - name: Build wheel and sdist
-        if: matrix.python-version == '3.13'
+        if: matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest'
         run: uv build

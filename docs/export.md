@@ -107,12 +107,17 @@ no supported steps is an error. Markdown presents the selected activity and
 export diagnostics; detailed raw records are available in ATIF/JSONL.
 
 Successful conversion/summary output goes to stdout or the requested new file.
-Machine-readable warning/redaction counts go to stderr (prefixed
-`agentwrench export: `) and into export metadata. Exit 0 means conversion
+A one-line summary goes to stderr, for example
+`agentwrench export: wrote handoff.md: 2 steps, 1 warning (unknown_record 1), 25 values redacted`.
+With `--stats-json` stderr instead carries the machine-readable warning/redaction
+counts as one JSON object (prefixed `agentwrench export: `); the same counts are
+always in the export metadata. Exit 0 means conversion
 succeeded (possibly with counted warnings); exit 2 means invalid input, an
 unsupported/empty format or view, or an I/O error. Existing outputs and symlinks
 are refused. Parent directories are not created. Failure messages do not echo
-input contents or private filesystem paths.
+input contents; an input file that cannot be read is named as given on the
+command line (`cannot read session.jsonl: no such file`, tokens masked), other
+filesystem errors only by kind.
 
 ## Render a merged transcript
 

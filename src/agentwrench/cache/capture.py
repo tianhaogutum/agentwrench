@@ -239,7 +239,7 @@ def read_capture(path: str, format: str = "auto") -> list[Record]:
     try:
         fd = os.open(display, os.O_RDONLY | os.O_NONBLOCK)
     except OSError as error:
-        raise FsError(error, "open", display) from None
+        raise FsError(error, "open", display, reading=True) from None
     try:
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode):

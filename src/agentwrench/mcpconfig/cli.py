@@ -17,7 +17,7 @@ from .formats import ConfigError, FORMATS, MAX_BYTES, ROOTS, loads, new_document
 from .merge import changes, conflict_details, three_way
 from .policy import POLICY_KINDS, POLICY_SCOPES, POLICY_RULES, POLICY_MAX_BYTES, parse_policy, selector_matches
 from .relocation import create_manifest, read_manifest, relocate, selection
-from .._text import plural
+from .._text import os_reason, plural
 
 
 def label(text):
@@ -37,7 +37,10 @@ def read_file(path: Path, *, max_bytes=MAX_BYTES):
             raise ConfigError('configuration exceeds 1 MiB limit' if max_bytes == MAX_BYTES
                               else 'policy file exceeds 64 KiB limit')
         return raw.decode('utf-8')
-    except (OSError, UnicodeError):
+    except OSError as exc:
+        # Name the file the user passed (tokens and controls masked by label()).
+        raise ConfigError(f'cannot read {label(os.fspath(path))}: {os_reason(exc)}') from None
+    except UnicodeError:
         raise ConfigError('cannot read UTF-8 regular input file (path/value masked)') from None
 
 
@@ -264,8 +267,11 @@ class Parser(argparse.ArgumentParser):
 def parser():
     p = Parser(prog='agentwrench mcp-config', description='Offline, non-destructive MCP native-file conversion. Never starts servers.')
     sub = p.add_subparsers(dest='action', required=True, parser_class=Parser)
+    helps = {'convert': 'convert MCP server definitions from one client format to another',
+             'report': 'report fields that a conversion would lose and literal secrets, without writing',
+             'check': 'exit 1 if a target config has drifted from its converted source (for CI)'}
     for action in ('convert', 'report', 'check'):
-        cmd = sub.add_parser(action)
+        cmd = sub.add_parser(action, help=helps[action], description=helps[action])
         cmd.add_argument('--from', dest='source_format', required=True, choices=FORMATS)
         cmd.add_argument('--to', dest='target_format', required=True, choices=FORMATS)
         if action == 'check':

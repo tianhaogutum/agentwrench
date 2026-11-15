@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import replace
-import fcntl
 import hashlib
 import json
 import os
@@ -13,7 +12,7 @@ import tempfile
 
 from .engine import DoctorError, Report, add_record, decode, pair, sort_issues
 from .audit_state import VERSION, pack, unpack
-from .files import _fsync_dir, open_session
+from .files import NO_LOCKS, _fsync_dir, fcntl, open_session
 
 
 class _Incomplete(Exception):
@@ -199,6 +198,8 @@ def _validate_state(state, version=VERSION):
 @contextmanager
 def _checkpoint_lock(checkpoint):
     # Keep a stable inode for the lock while the JSON checkpoint is atomically replaced.
+    if fcntl is None:
+        raise DoctorError(NO_LOCKS)
     lock = checkpoint.with_name(checkpoint.name + ".lock")
     fd = os.open(lock, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
     try:

@@ -17,7 +17,7 @@ def run(*args):
 @pytest.mark.parametrize('fmt', SESSIONS)
 @pytest.mark.parametrize('target', ['atif', 'md', 'jsonl'])
 def test_cli_success(fmt, target):
-    result = run('convert', SESSIONS[fmt], '--to', target)
+    result = run('convert', SESSIONS[fmt], '--to', target, '--stats-json')
     assert result.returncode == 0, result.stderr
     assert result.stdout
     diag = json.loads(result.stderr.removeprefix('agentwrench export: '))
@@ -47,7 +47,7 @@ def test_unicode_jsonl_data_roundtrip(tmp_path, fmt, target, ending):
     for escaped in (False, True):
         path.write_bytes((''.join(json.dumps(row, ensure_ascii=escaped) + ending
                                  for row in rows)).encode('utf-8'))
-        result = run('convert', path, '--to', target, '--redact', 'off')
+        result = run('convert', path, '--to', target, '--redact', 'off', '--stats-json')
         assert result.returncode == 0, result.stderr
         assert json.loads(result.stderr.removeprefix('agentwrench export: '))['warnings'] == {}
         # Only LF delimits exported JSONL, too: splitlines() corrupts these values.
@@ -100,10 +100,25 @@ def test_undetectable_exit2(tmp_path, tail):
     assert result.returncode == 2 and not result.stdout
 
 
-def test_diagnostics_never_echo_private_paths(tmp_path):
-    result = run('summary', tmp_path / 'my-PASSWORD-private')
-    assert result.returncode == 2
-    assert 'my-PASSWORD-private' not in result.stderr
+def test_missing_input_is_named_with_tokens_redacted(tmp_path):
+    result = run('summary', tmp_path / 'missing-session.jsonl')
+    assert result.returncode == 2 and not result.stdout
+    assert result.stderr == f"agentwrench export: error: cannot read {tmp_path / 'missing-session.jsonl'}: no such file\n"
+    result = run('summary', tmp_path / 'sk-abcdefghijklmnop1234.jsonl')
+    assert result.returncode == 2 and 'abcdefghijklmnop1234' not in result.stderr and '[REDACTED]' in result.stderr
+
+
+def test_summary_stderr_is_one_readable_line_and_json_on_request(tmp_path):
+    out = tmp_path / 'handoff.md'
+    result = run('summary', FIXTURES / 'codex/rollout-secrets.jsonl', '-o', out)
+    assert result.returncode == 0 and out.exists()
+    assert result.stderr == (f"agentwrench export: wrote {out}: 2 steps, 1 warning (unknown_record 1), "
+                             "25 values redacted\n")
+    result = run('convert', FIXTURES / 'codex/rollout-secrets.jsonl', '--to', 'md', '--redact', 'off')
+    assert result.stderr.endswith(", redaction off\n") and '{' not in result.stderr
+    result = run('summary', FIXTURES / 'codex/rollout-secrets.jsonl', '--stats-json')
+    stats = json.loads(result.stderr.removeprefix('agentwrench export: '))
+    assert stats['redaction']['total'] == 25 and stats['warnings'] == {'unknown_record': 1}
 
 
 def test_source_commands_are_inert(make_jsonl, tmp_path):
@@ -120,7 +135,7 @@ def test_secret_fixture_stdout_and_stderr():
     assert result.returncode == 0
     assert 'sk-' not in result.stdout + result.stderr
     assert 'synthetic-json-secret' not in result.stdout + result.stderr
-    assert 'redaction' in result.stderr
+    assert '25 values redacted' in result.stderr
 
 
 def test_summary_cli_and_explicit_format():

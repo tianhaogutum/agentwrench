@@ -105,6 +105,15 @@ def test_missing_module_reports_not_available(monkeypatch, capsys):
     assert err.startswith("agentwrench: command 'ghost' is not available") and "Traceback" not in err
 
 
+def test_checkpoints_help_without_langgraph_prints_usage_and_hint():
+    for args in (["checkpoints", "--help"], ["checkpoints", "stats", "--help"], ["help", "checkpoints"]):
+        result = run(*args, module=("-c", BLOCK_LANGGRAPH))
+        assert result.returncode == 0, (args, result.stderr)
+        assert result.stdout.startswith("usage: agentwrench checkpoints <subcommand>")
+        assert "\n  stats " in result.stdout and "\n  prune " in result.stdout
+        assert result.stdout.endswith("install them with: pip install 'agentwrench[langgraph]'\n")
+
+
 def test_checkpoints_without_langgraph_prints_install_hint():
     result = run("checkpoints", "threads", "x.db", module=("-c", BLOCK_LANGGRAPH))
     assert result.returncode == 2 and result.stdout == ""
@@ -123,3 +132,56 @@ def test_subpackage_main_routes_through_dispatcher(module):
 def test_cassette_pytest_plugin_entry_point():
     plugins = {ep.name: ep.value for ep in entry_points(group="pytest11")}
     assert plugins.get("agentwrench_cassette") == "agentwrench.cassette.pytest_plugin"
+
+
+SUBCOMMANDS = {
+    "scan": [],
+    "slim": ["measure", "plan", "discover", "proxy"],
+    "cache": ["analyze", "canonicalize", "compare", "sessions"],
+    "doctor": ["check", "repair", "preview", "apply", "recover", "verify-backup", "verify-output", "audit",
+               "migrate-audit", "verify-audit"],
+    "export": ["convert", "summary", "validate", "merge", "validate-merge", "render-merge"],
+    "gate": ["normalize", "export-agentevals", "check", "compare", "inspect-sidecar", "restore", "verify-sidecar"],
+    "mcp-config": ["convert", "report", "check", "relocate"],
+    "cassette": ["record", "replay", "inspect", "validate"],
+    "agentsmd": ["explain", "check", "render", "snapshot", "impact", "diff"],
+    "patch": ["parse", "apply", "to-unified", "from-unified", "explain", "preview", "apply-plan", "check-plan",
+              "check-unified"],
+    "checkpoints": ["threads", "stats", "diff", "prune", "snapshot", "plan-status", "budget", "compare-plans"],
+}
+ALL_HELP = [(name, None) for name in SUBCOMMANDS] + [(name, sub) for name, subs in SUBCOMMANDS.items() for sub in subs]
+
+
+def _main(argv, capsys):
+    try:
+        code = cli.main(argv)
+    except SystemExit as exc:
+        code = exc.code
+    captured = capsys.readouterr()
+    return code, captured.out, captured.err
+
+
+def test_subcommand_table_covers_every_command():
+    assert set(SUBCOMMANDS) == set(cli.BY_NAME)
+
+
+@pytest.mark.parametrize("flag", ["--help", "-h"])
+@pytest.mark.parametrize("command,sub", ALL_HELP, ids=lambda v: v or "-")
+def test_every_command_and_subcommand_help_exits_0(command, sub, flag, capsys):
+    argv = [command, *([sub] if sub else []), flag]
+    code, out, err = _main(argv, capsys)
+    assert code == 0, (argv, err)
+    assert "usage" in out.lower(), (argv, out)
+    if sub:
+        assert f"{command} {sub}" in out, (argv, out)
+
+
+@pytest.mark.parametrize("command", [c for c, subs in SUBCOMMANDS.items() if subs and c not in ("slim", "cache")])
+def test_parent_help_describes_every_subcommand(command, capsys):
+    code, out, _ = _main([command, "--help"], capsys)
+    lines = out.splitlines()
+    for sub in SUBCOMMANDS[command]:
+        index = next(i for i, line in enumerate(lines) if line.strip().split(" ")[0] == sub
+                     and line.startswith("    "))
+        rest = lines[index].strip()[len(sub):].strip() or lines[index + 1].strip()
+        assert rest, (command, sub)

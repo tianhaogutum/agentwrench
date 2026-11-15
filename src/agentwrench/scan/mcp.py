@@ -11,7 +11,7 @@ import json
 import os
 import re
 import signal
-import subprocess
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -33,6 +33,9 @@ TOKENS_PER_TOOL_BUDGET = 200
 MIN_SAVING_TOKENS = 500
 MAX_CONCURRENT_PROBES = 8
 MAX_CLAUDE_JSON_BYTES = 64 * 1024 * 1024
+STDERR_TAIL_BYTES = 8192   # keep only the end of a probed server's stderr, in memory
+STDERR_LINE_CHARS = 160
+EXITED = "server exited before listing its tools"
 SCOPE_RANK = {"global": 0, "project": 1, "local": 2}  # Claude: local > project > user
 _ARG_SECRET = re.compile(r"(auth|(^|[-_])key($|[-_=])|pat($|[-_=]))", re.I)
 _ENV_REF = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}")
@@ -75,8 +78,13 @@ class Server:
     slim: dict | None = None
     duplicate_of: str | None = None
     launch: Launch | None = field(default=None, repr=False)
+    # Set by --probe when the server exited before listing its tools: exit code or signal
+    # and its last non-empty stderr line (redacted, truncated).
+    exit: dict | None = None
     # Negotiated MCP revision from --probe; used for suggested commands, not serialized.
     protocol_version: str | None = field(default=None, repr=False)
+    # Same command, cwd and tool definitions => same server, even if env values differ.
+    identity: str | None = field(default=None, repr=False)
 
     @property
     def active(self) -> bool:
@@ -93,7 +101,18 @@ class Server:
             "env_keys": self.env_keys, "header_keys": self.header_keys, "error": self.error,
             "tools": self.tools, "bytes": self.bytes, "estimated_tokens": self.tokens,
             "top_tools": self.top_tools, "slim": self.slim, "duplicate_of": self.duplicate_of,
+            "exit": self.exit,
         }
+
+    def failure_detail(self) -> str:
+        """``error`` plus the exit status, e.g. ``server exited ... (exit status 1)``."""
+        text = self.error or ""
+        if self.exit is not None:
+            if self.exit.get("signal"):
+                text += f" (killed by {self.exit['signal']})"
+            elif self.exit.get("code") is not None:
+                text += f" (exit status {self.exit['code']})"
+        return text
 
 
 # --------------------------------------------------------------------------- display
@@ -149,6 +168,43 @@ def display_url(url: str) -> str:
         port = ""
     path = "/".join("[REDACTED]" if TOKEN.search(seg) or _opaque(seg) else seg for seg in parts.path.split("/"))
     return f"{parts.scheme}://{parts.hostname}{port}{path}"
+
+
+def redact_text(line: str, secrets: list[str] = ()) -> str:
+    """Mask secrets in one line of free text (server stderr), word by word like commands.
+
+    Configured env values are removed verbatim first; then tokens, long opaque words,
+    ``secret=value`` / ``--token value`` pairs and URL credentials/queries are masked.
+    """
+    for value in sorted((v for v in secrets if len(v) >= 6), key=len, reverse=True):
+        line = line.replace(value, "[REDACTED]")
+    out: list[str] = []
+    hide_next = False
+    for word in line.split():
+        bare = word.strip("'\"()[]{},;")
+        if hide_next:
+            out.append("[REDACTED]")
+            hide_next = False
+        elif bare.lower() == "bearer" or bare.lower() == "basic":
+            out.append(word)
+            hide_next = True
+        elif TOKEN.search(word) or _opaque(bare):
+            out.append("[REDACTED]")
+        elif _URLISH.search(bare):
+            out.append(display_url(bare[_URLISH.search(bare).start():]))
+        elif re.match(r"[-\w.]*[=:]", bare) and SECRET_KEY.search(re.split(r"[=:]", bare, maxsplit=1)[0]):
+            key, sep, value = re.split(r"([=:])", bare, maxsplit=1)
+            if value:
+                out.append(f"{key}{sep}[REDACTED]")
+            else:
+                out.append(word)
+                hide_next = True
+        elif bare.startswith("-") and (SECRET_KEY.search(bare) or _ARG_SECRET.search(bare.lstrip("-"))):
+            out.append(word)
+            hide_next = True
+        else:
+            out.append(word)
+    return " ".join(out)
 
 
 # --------------------------------------------------------------------------- configs
@@ -217,7 +273,8 @@ def collect_servers(loc: Locations, findings: list[Finding]) -> list[Server]:
     def config_error(client: str, path: Path, exc: Exception) -> None:
         detail = str(exc) if isinstance(exc, ConfigError) else type(exc).__name__
         findings.append(Finding("error", "mcp", client,
-                                f"cannot read {show_path(path)}: {detail}; its MCP servers were skipped"))
+                                f"cannot read {show_path(path)}: {detail}; its MCP servers were skipped",
+                                kind="config_unreadable"))
 
     # Claude Code: ~/.claude.json (user + per-project "local" scope) and <project>/.mcp.json.
     claude_data: Any = {}
@@ -287,26 +344,72 @@ def _short_error(message: str, timeout: float) -> str:
         return "cannot start (command not found or not executable)"
     if message in ("discovery server exited before completion", "discovery server exited unsuccessfully",
                    "discovery server stdout closed before completion"):
-        return "server exited before listing its tools"
+        return EXITED
     if message.startswith("discovery requires tools capability"):
         return "no tools capability or unsupported protocol version"
     return message.removeprefix("discovery ")
 
 
+class _StderrTail:
+    """Drain a probed server's stderr through a pipe, keeping only its last bytes in memory."""
+
+    def __init__(self) -> None:
+        self.read_fd, self.write_fd = os.pipe()
+        self.data = b""
+        self.thread = threading.Thread(target=self._drain, daemon=True)
+        self.thread.start()
+
+    def _drain(self) -> None:
+        try:
+            while chunk := os.read(self.read_fd, 65536):
+                self.data = (self.data + chunk)[-STDERR_TAIL_BYTES:]
+        except OSError:
+            pass
+        finally:
+            os.close(self.read_fd)
+
+    def close_writer(self) -> None:
+        if self.write_fd >= 0:
+            os.close(self.write_fd)
+            self.write_fd = -1
+
+    async def last_line(self, secrets: list[str]) -> str | None:
+        """Last non-empty line once the pipe is closed (a lingering grandchild may hold it)."""
+        self.close_writer()
+        await asyncio.get_running_loop().run_in_executor(None, self.thread.join, 0.5)
+        lines = [line.strip() for line in self.data.decode("utf-8", "replace").splitlines()]
+        last = next((line for line in reversed(lines) if line), None)
+        if last is None:
+            return None
+        from .report import clean  # local import: report imports this module
+        text = redact_text(clean(last), secrets)
+        return text if len(text) <= STDERR_LINE_CHARS else text[:STDERR_LINE_CHARS - 3] + "..."
+
+
 async def _discover(launch: Launch, timeout: float, semaphore: asyncio.Semaphore) -> dict:
     ms = max(1, int(timeout * 1000))
     versions: list[str] = []
+    exits: list[tuple[int | None, str | None]] = []
     async with semaphore:
+        tail = _StderrTail()
         try:
             snapshot = await run_discover(
                 launch.command, {}, server_env=[f"{k}={v}" for k, v in launch.env.items()] or None,
                 server_cwd=launch.cwd, request_timeout_ms=ms, discovery_timeout_ms=ms,
-                protocol_versions=PROTOCOL_VERSIONS, server_stderr=subprocess.DEVNULL,
-                on_protocol_version=versions.append)
+                protocol_versions=PROTOCOL_VERSIONS, server_stderr=tail.write_fd,
+                on_protocol_version=versions.append, on_exit=lambda code, sig: exits.append((code, sig)))
         except (DiscoveryError, InputError) as exc:
-            return {"error": _short_error(str(exc), timeout)}
+            error = _short_error(str(exc), timeout)
+            if error != EXITED:
+                tail.close_writer()
+                return {"error": error}
+            code, sig = exits[0] if exits else (None, None)
+            return {"error": error, "exit": {"code": code, "signal": sig,
+                                             "stderr": await tail.last_line(list(launch.env.values()))}}
         except Exception as exc:  # never let one server abort the scan
+            tail.close_writer()
             return {"error": f"discovery failed ({type(exc).__name__})"}
+        tail.close_writer()
     return {"tools": json.loads(snapshot)["tools"], "protocol_version": versions[0] if versions else None}
 
 
@@ -349,7 +452,7 @@ def probe(servers: list[Server], timeout: float) -> float:
             continue
         outcome = results[entry.launch.key()]
         if "error" in outcome:
-            entry.status, entry.error = "failed", outcome["error"]
+            entry.status, entry.error, entry.exit = "failed", outcome["error"], outcome.get("exit")
             continue
         tools = outcome["tools"]
         entry.protocol_version = outcome.get("protocol_version")
@@ -362,7 +465,9 @@ def probe(servers: list[Server], timeout: float) -> float:
         entry.tools, entry.bytes, entry.tokens = measured["tools"], measured["bytes"], measured["estimatedTokens"]
         entry.top_tools = [{"name": t["name"], "estimated_tokens": t["estimatedTokens"]} for t in measured["top"][:3]]
         entry.slim = _slim_suggestion(tools, entry.tokens)
-        key = entry.launch.key()
+        # Identical command, cwd and tool definitions are one server for display and fixes,
+        # even when the clients pass it different env (e.g. Claude ${VAR} vs a Codex literal).
+        key = entry.identity = json.dumps([entry.launch.command, entry.launch.cwd, tools], sort_keys=True)
         if key in first:
             entry.duplicate_of = first[key].label()
         else:
@@ -398,13 +503,14 @@ def mcp_findings(servers: list[Server], project: Path, probed: bool) -> list[Fin
             if entry.launch is not None and entry.launch.key() in failed:
                 continue
             failed.add(entry.launch.key() if entry.launch is not None else entry.label())
-            findings.append(Finding("error", "mcp", entry.client,
-                                    f"{entry.label()}: failed to start for discovery: {entry.error}"))
+            message = f"{entry.label()}: failed to start for discovery: {entry.failure_detail()}"
+            if entry.exit is not None and entry.exit.get("stderr"):
+                message += f"; last stderr line: {entry.exit['stderr']}"
+            findings.append(Finding("error", "mcp", entry.client, message))
         elif entry.status == "measured" and entry.slim and entry.duplicate_of is None:
             saved = entry.slim["estimated_tokens_saved"]
             clients = sorted({CLIENT_LABELS[s.client] for s in servers
-                              if s.status == "measured" and s.launch and entry.launch
-                              and s.launch.key() == entry.launch.key()})
+                              if s.status == "measured" and s.identity == entry.identity})
             findings.append(Finding(
                 "warning", "mcp", entry.client,
                 f"trim '{entry.name}' tool definitions ({' + '.join(clients)}): "

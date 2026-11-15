@@ -159,3 +159,64 @@ def test_module_entry_point():
     result = subprocess.run([sys.executable, "-m", "agentwrench.scan", "--version"], capture_output=True, text=True,
                             timeout=60)
     assert result.returncode == 0 and result.stdout.startswith("agentwrench scan ")
+
+
+def test_every_command_scan_suggests_for_the_demo_runs(tmp_path):
+    """Each suggested command must work as printed: exit 0 or 1 (a finding), never 2."""
+    if shutil.which("python3") is None:
+        pytest.skip("demo config runs servers with python3 from PATH")
+    import os
+    import shlex
+    examples = tmp_path / "examples"
+    shutil.copytree(ROOT / "examples" / "scan", examples / "scan")
+    shutil.copytree(ROOT / "examples" / "slim", examples / "slim")
+    cwd = examples / "scan"
+    fake_home = tmp_path / "user-home"  # `agentsmd explain --agent claude` reads ~/.claude
+    fake_home.mkdir()
+    env = {**os.environ, "HOME": str(fake_home), "GITHUB_PERSONAL_ACCESS_TOKEN": "x", "DATABASE_URL": "x",
+           "NO_COLOR": "1"}
+    env.pop("CODEX_HOME", None)
+    env.pop("CLAUDE_CONFIG_DIR", None)
+    scan = subprocess.run([sys.executable, "-m", "agentwrench", "scan", "--home", "demo-home", "--project",
+                           "demo-project", "--probe", "--json"], cwd=cwd, env=env, capture_output=True,
+                          text=True, timeout=300)
+    assert scan.returncode == 0, scan.stderr
+    doc = json.loads(scan.stdout)
+    commands = list(dict.fromkeys(c for f in doc["findings"] + doc["summary"]["top_fixes"] for c in f["command"]))
+    commands += [c for c in doc["sessions"]["claude-code"]["example_command"] if c not in commands]
+    assert any(" slim discover " in c for c in commands) and any(" agentsmd explain " in c for c in commands)
+    assert any("--agent claude" in c for c in commands) and any(" doctor repair " in c for c in commands)
+    # discover before plan, and the dry-run before the in-place repair
+    commands.sort(key=lambda c: (" slim plan " in c, "--in-place" in c))
+    prefix = shlex.join([sys.executable, "-m", "agentwrench"])
+    for command in commands:
+        assert command.startswith("agentwrench "), command
+        result = subprocess.run(prefix + command[len("agentwrench"):], shell=True, cwd=cwd, env=env,
+                                capture_output=True, text=True, timeout=300)
+        assert result.returncode in (0, 1), (command, result.returncode, result.stderr[-2000:])
+
+
+WITHOUT_FCNTL = r'''
+import json, sys
+sys.modules["fcntl"] = None  # as on Windows: `import fcntl` raises ImportError
+import agentwrench.scan.cli as scan_cli
+import agentwrench.doctor.cli
+assert "fcntl" not in [m for m, v in sys.modules.items() if v is not None]
+home, project, session = sys.argv[1:4]
+assert scan_cli.main(["--home", home, "--project", project, "--json"]) == 0
+from agentwrench.doctor.cli import main as doctor
+assert doctor(["check", session]) == 1
+code = doctor(["repair", session, "--in-place", "--backup"])
+assert code == 2, code
+'''
+
+
+def test_scan_and_doctor_check_work_without_fcntl(setup, tmp_path):
+    session = setup.claude_session("bad", claude_orphan())
+    result = subprocess.run([sys.executable, "-c", WITHOUT_FCNTL, str(setup.home), str(setup.project), str(session)],
+                            capture_output=True, text=True, timeout=120)
+    assert result.returncode == 0, result.stderr
+    doc, _ = json.JSONDecoder().raw_decode(result.stdout)
+    assert doc["sessions"]["claude-code"]["broken"] == 1
+    assert "needs POSIX file locks" in result.stderr
+    assert session.read_text() == "".join(json.dumps(r) + "\n" for r in claude_orphan())

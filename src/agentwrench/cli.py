@@ -86,6 +86,19 @@ def _install_hint(command: Command) -> str:
             f"install them with: pip install '{PROG}[{command.extra}]'")
 
 
+def _help_without_extra(command: Command) -> str:
+    """A usage summary that needs only the command's package, not its optional extra."""
+    lines = [f"usage: {PROG} {command.name} <subcommand> [args...]", "", command.summary + "."]
+    try:
+        subcommands = getattr(importlib.import_module(command.module.rpartition(".")[0]), "SUBCOMMANDS", {})
+    except ImportError:
+        subcommands = {}
+    if subcommands:
+        width = max(map(len, subcommands)) + 2
+        lines += ["", "subcommands:", *(f"  {name.ljust(width)}{text}" for name, text in subcommands.items())]
+    return "\n".join(lines) + "\n\n"
+
+
 def overview() -> str:
     width = max(len(command.name) for command in COMMANDS) + 2
     lines = [
@@ -135,6 +148,10 @@ def run(command: Command, argv: list[str]) -> int:
                          f"{PROG} {__version__} yet; see {REPO_URL}\n")
         return 2
     if command.extra and _missing_requirements(command):
+        if any(arg in ("-h", "--help") for arg in argv):
+            sys.stdout.write(_help_without_extra(command))
+            sys.stdout.write(_install_hint(command) + "\n")
+            return 0
         sys.stderr.write(_install_hint(command) + "\n")
         return 2
     try:

@@ -6,6 +6,7 @@ import sqlite3
 
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from .._text import cannot_read
 from .codec import MAX_BLOB_BYTES
 
 MAX_ROWS = 200_000
@@ -56,7 +57,10 @@ def connect(path, *, writable=False, validate_schema=True):
     # Diagnostics may inspect schema drift without accepting it for pruning.
     if writable and not validate_schema:
         raise ScopeError("writable connections require schema validation")
-    path = Path(path).expanduser().resolve(strict=True)
+    try:
+        path = Path(path).expanduser().resolve(strict=True)
+    except OSError as exc:
+        raise ScopeError(cannot_read(path, exc)) from None
     if not path.is_file():
         raise ScopeError("database must be an existing regular file")
     mode = "rw" if writable else "ro"

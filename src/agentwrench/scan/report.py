@@ -12,7 +12,8 @@ SEVERITY_RANK = {"error": 0, "warning": 1}
 COMMAND_WIDTH = 46
 
 
-def overhead(servers: list[Server], instructions: dict, probed: bool) -> dict:
+def overhead(servers: list[Server], instructions: dict, probed: bool,
+             unreadable: set[str] = frozenset()) -> dict:
     clients = {}
     for client in CLIENT_LABELS:
         active = [s for s in servers if s.client == client and s.active]
@@ -25,9 +26,14 @@ def overhead(servers: list[Server], instructions: dict, probed: bool) -> dict:
             "instruction_tokens": instr,
             "mcp_servers": len(active),
             "mcp_servers_measured": len(measured),
-            "complete": len(measured) == len(active),
+            "complete": len(measured) == len(active) and client not in unreadable,
         }
     return clients
+
+
+def unreadable_clients(findings: list[Finding]) -> set[str]:
+    """Clients with an MCP config that could not be read (their server list is incomplete)."""
+    return {f.client for f in findings if f.kind == "config_unreadable" and f.client}
 
 
 def top_fixes(findings: list[Finding], limit: int = 3) -> list[Finding]:
@@ -45,7 +51,7 @@ def top_fixes(findings: list[Finding], limit: int = 3) -> list[Finding]:
 def build(loc: Locations, *, servers: list[Server], probed: bool, probe_seconds: float | None,
           instructions: dict, sessions: dict, findings: list[Finding], options: dict,
           elapsed: float, fail_over: int | None) -> dict:
-    clients = overhead(servers, instructions, probed)
+    clients = overhead(servers, instructions, probed, unreadable_clients(findings))
     peak = max(c["fixed_overhead_tokens"] for c in clients.values())
     order = {"mcp": 0, "instructions": 1, "sessions": 2}
     findings.sort(key=lambda f: (order[f.area], SEVERITY_RANK[f.severity], -f.tokens_saved))
@@ -167,7 +173,11 @@ class Text:
         self.out()
         if not self.servers:
             self.out(s.bold("1. MCP tool definitions"))
-            self.out("  No MCP servers configured for Claude Code or Codex.")
+            unreadable = unreadable_clients(self.findings)
+            readable = [label for client, label in CLIENT_LABELS.items() if client not in unreadable]
+            if readable:
+                self.out(f"  No MCP servers configured for {' or '.join(readable)}.")
+            self.area_findings("mcp")
             return
         if not mcp["probed"]:
             self.out(s.bold("1. MCP servers") + s.dim("  (not started)"))
@@ -207,7 +217,7 @@ class Text:
                 elif e.duplicate_of:
                     note = s.dim(f"same server as {clean(e.duplicate_of)}")
             elif e.status == "failed":
-                note = s.red(f"failed: {clean(e.error)}")
+                note = s.red(f"failed: {clean(e.failure_detail())}")
             elif e.status == "remote":
                 note = s.dim(f"remote ({e.transport}), not measured")
             elif e.status == "shadowed":
@@ -291,9 +301,16 @@ class Text:
         self.out(s.bold("Summary"))
         self.out("  Fixed context overhead per turn (estimated tokens, before you type anything):")
         rows = []
+        unreadable = unreadable_clients(self.findings)
         for client, c in summary["clients"].items():
             mcp = c["mcp_tokens"]
-            if not c["mcp_servers"]:
+            if client in unreadable and not c["mcp_servers"]:
+                mcp_text = "MCP unknown (config unreadable)"
+            elif client in unreadable:
+                mcp_text = (f"MCP {mcp:,} ({c['mcp_servers_measured']}/{plural(c['mcp_servers'], 'server')} measured; "
+                            "a config was unreadable)") if mcp is not None else \
+                    f"MCP not measured ({plural(c['mcp_servers'], 'server')}; a config was unreadable)"
+            elif not c["mcp_servers"]:
                 mcp_text = "no MCP servers"
             elif mcp is None:
                 mcp_text = f"MCP not measured ({plural(c['mcp_servers'], 'server')}; use --probe)"
