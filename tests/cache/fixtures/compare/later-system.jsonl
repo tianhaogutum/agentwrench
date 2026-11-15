@@ -1,0 +1,2 @@
+{"model":"gpt-test","messages":[{"role":"system","content":"turn=1"},{"role":"system","content":"Stable question"}]}
+{"model":"gpt-test","messages":[{"role":"system","content":"turn=2"},{"role":"system","content":"Changed question"}]}

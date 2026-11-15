@@ -1,0 +1,2364 @@
+{
+  "tools": [
+    {
+      "name": "read_issue",
+      "description": "Read a synthetic issue. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read issue request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_issue",
+      "description": "Search a synthetic issue. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search issue request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_issue",
+      "description": "Create a synthetic issue. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create issue request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_issue",
+      "description": "Update a synthetic issue. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update issue request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_issue",
+      "description": "Delete a synthetic issue. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete issue request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_project",
+      "description": "Read a synthetic project. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read project request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_project",
+      "description": "Search a synthetic project. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search project request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_project",
+      "description": "Create a synthetic project. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create project request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_project",
+      "description": "Update a synthetic project. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update project request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_project",
+      "description": "Delete a synthetic project. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete project request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_document",
+      "description": "Read a synthetic document. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read document request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_document",
+      "description": "Search a synthetic document. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search document request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_document",
+      "description": "Create a synthetic document. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create document request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_document",
+      "description": "Update a synthetic document. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update document request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_document",
+      "description": "Delete a synthetic document. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete document request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_comment",
+      "description": "Read a synthetic comment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read comment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_comment",
+      "description": "Search a synthetic comment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search comment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_comment",
+      "description": "Create a synthetic comment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create comment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_comment",
+      "description": "Update a synthetic comment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update comment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_comment",
+      "description": "Delete a synthetic comment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete comment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_label",
+      "description": "Read a synthetic label. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read label request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_label",
+      "description": "Search a synthetic label. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search label request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_label",
+      "description": "Create a synthetic label. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create label request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_label",
+      "description": "Update a synthetic label. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update label request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_label",
+      "description": "Delete a synthetic label. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete label request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_member",
+      "description": "Read a synthetic member. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read member request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_member",
+      "description": "Search a synthetic member. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search member request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_member",
+      "description": "Create a synthetic member. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create member request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_member",
+      "description": "Update a synthetic member. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update member request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_member",
+      "description": "Delete a synthetic member. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete member request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_milestone",
+      "description": "Read a synthetic milestone. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read milestone request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_milestone",
+      "description": "Search a synthetic milestone. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search milestone request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_milestone",
+      "description": "Create a synthetic milestone. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create milestone request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_milestone",
+      "description": "Update a synthetic milestone. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update milestone request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_milestone",
+      "description": "Delete a synthetic milestone. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete milestone request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    },
+    {
+      "name": "read_attachment",
+      "description": "Read a synthetic attachment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "read attachment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "search_attachment",
+      "description": "Search a synthetic attachment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "search attachment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "create_attachment",
+      "description": "Create a synthetic attachment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "create attachment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "update_attachment",
+      "description": "Update a synthetic attachment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "update attachment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false
+      }
+    },
+    {
+      "name": "delete_attachment",
+      "description": "Delete a synthetic attachment. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. Use this tool when working with the offline example workspace; identifiers and records in this fixture are entirely fictional. ",
+      "inputSchema": {
+        "type": "object",
+        "title": "delete attachment request",
+        "description": "Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. Synthetic request schema. ",
+        "properties": {
+          "workspace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. A fictional workspace identifier. ",
+            "examples": [
+              "demo"
+            ],
+            "default": "demo"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. The numeric record identifier. "
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. Only open or closed is accepted. "
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). User supplied text (property named description must survive). "
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verbose": {
+                "type": "boolean",
+                "default": false,
+                "description": "Return detailed output. Return detailed output. Return detailed output. Return detailed output. "
+              }
+            },
+            "additionalProperties": false,
+            "$comment": "This is removable schema metadata."
+          }
+        },
+        "required": [
+          "workspace",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true
+      }
+    }
+  ]
+}

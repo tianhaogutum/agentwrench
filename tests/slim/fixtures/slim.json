@@ -1,0 +1,6 @@
+{
+  "allow": ["read_*", "search_*"],
+  "deny": ["*_admin"],
+  "maxDescriptionChars": 160,
+  "stripSchemaAnnotations": ["description", "title", "examples", "$comment"]
+}
