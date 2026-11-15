@@ -1,0 +1,9 @@
+{"type":"system","subtype":"init","session_id":"synthetic-session","cwd":"/workspace/demo","tools":["Read","Bash","Write"]}
+{"type":"assistant","message":{"id":"msg_1","role":"assistant","content":[{"type":"text","text":"I will inspect the app."}]},"parent_tool_use_id":null}
+{"type":"assistant","message":{"id":"msg_1","role":"assistant","content":[{"type":"tool_use","id":"read_1","name":"Read","input":{"file_path":"/workspace/demo/src/app.py"}}]},"parent_tool_use_id":null}
+{"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"read_1","content":"print('hello')","is_error":false}]},"parent_tool_use_id":null}
+{"type":"assistant","message":{"id":"msg_2","role":"assistant","content":[{"type":"tool_use","id":"bash_1","name":"Bash","input":{"command":"python -m pytest -q"}}]},"parent_tool_use_id":null}
+{"type":"assistant","message":{"id":"msg_2","role":"assistant","content":[{"type":"tool_use","id":"write_1","name":"Write","input":{"file_path":"/workspace/demo/src/report.txt","content":"3 passed"}}]},"parent_tool_use_id":null}
+{"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"bash_1","content":"3 passed in 0.02s","is_error":false},{"type":"tool_result","tool_use_id":"write_1","content":"File created","is_error":false}]},"parent_tool_use_id":null}
+{"type":"assistant","message":{"id":"msg_3","role":"assistant","content":[{"type":"text","text":"Done: all tests passed."}]},"parent_tool_use_id":null}
+{"type":"result","subtype":"success","is_error":false,"num_turns":3,"result":"Done: all tests passed.","usage":{"input_tokens":10,"output_tokens":3,"cache_read_input_tokens":4,"cache_creation_input_tokens":2}}

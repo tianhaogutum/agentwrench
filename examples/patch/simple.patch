@@ -1,0 +1,16 @@
+*** Begin Patch
+*** Update File: hello.txt
+@@
+ Hello, world!
+-old value
++new value
+*** Add File: nested/new.txt
++created
+*** Delete File: gone.txt
+*** Update File: old-name.txt
+*** Move to: new-name.txt
+@@
+ rename example
+-before
++after
+*** End Patch

@@ -1,0 +1,7 @@
+[mcp_servers.github]
+command = "npx"
+args = ["WRONG"]
+env = { GITHUB_TOKEN = "${GITHUB_TOKEN}" }
+[mcp_servers."remote.tools"]
+url = "https://mcp.example.test/mcp"
+http_headers = { "X-Region" = "eu" }

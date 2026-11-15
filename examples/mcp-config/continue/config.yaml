@@ -1,0 +1,21 @@
+# Synthetic Continue config
+name: Local test
+version: 1.0.0
+schema: v1
+models: [] # unrelated
+mcpServers:
+  - name: github # retain comment
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-github"]
+    env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    connectionTimeout: 10000
+    customMetadata: {owner: team}
+  - name: remote.tools
+    type: streamable-http
+    url: https://mcp.example.test/mcp
+    requestOptions:
+      headers:
+        X-Region: eu
+      verifySsl: true
+rules: [] # keep trailing content

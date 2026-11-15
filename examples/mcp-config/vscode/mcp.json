@@ -1,0 +1,19 @@
+{
+  // Synthetic VS Code editor-managed config (JSONC)
+  "inputs": [{"id": "github-token", "type": "promptString", "password": true}],
+  "servers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {"GITHUB_TOKEN": "${input:github-token}"},
+      "dev": {"watch": "src/**/*.js"},
+    },
+    "remote.tools": {
+      "type": "http",
+      "url": "https://mcp.example.test/mcp",
+      "headers": {"X-Region": "eu"},
+    },
+  },
+  "sandbox": {"filesystem": {"denyRead": ["private"]}}
+}

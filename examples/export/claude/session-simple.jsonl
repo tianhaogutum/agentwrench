@@ -1,0 +1,9 @@
+{"type":"file-history-snapshot","snapshot":{"trackedFileBackups":{}}}
+{"type":"user","sessionId":"fixture-session","version":"2.1.322","timestamp":"2026-01-01T00:00:01Z","message":{"role":"user","content":[{"type":"text","text":"Fix the failing test."}]},"uuid":"u1","parentUuid":null,"isSidechain":false}
+{"type":"assistant","sessionId":"fixture-session","timestamp":"2026-01-01T00:00:02Z","message":{"id":"m1","role":"assistant","model":"synthetic-model","content":[{"type":"thinking","thinking":"Inspect the failing assertion.","signature":"synthetic"},{"type":"tool_use","id":"call-test","name":"exec_command","input":{"cmd":"python -m pytest -q"}}],"usage":{"input_tokens":100,"cache_read_input_tokens":20,"output_tokens":30}}}
+{"type":"user","timestamp":"2026-01-01T00:00:04Z","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"call-test","content":"1 failed\nProcess exited with code 1","is_error":true}]}}
+{"type":"assistant","timestamp":"2026-01-01T00:00:05Z","message":{"role":"assistant","content":[{"type":"tool_use","id":"call-patch","name":"apply_patch","input":{"raw_input":"*** Begin Patch\n*** Update File: src/math.py\n@@\n-return 0\n+return 1\n*** End Patch"}}]}}
+{"type":"user","timestamp":"2026-01-01T00:00:06Z","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"call-patch","content":[{"type":"text","text":"Success. Updated src/math.py"}]}]}}
+{"type":"assistant","timestamp":"2026-01-01T00:00:07Z","message":{"role":"assistant","content":[{"type":"text","text":"The test failed because the return value was wrong."}]}}
+{"type":"user","isSidechain":true,"message":{"role":"user","content":"Sidechain only"}}
+{"type":"progress","data":{"type":"agent_progress","content":"Do not export as conversation"}}

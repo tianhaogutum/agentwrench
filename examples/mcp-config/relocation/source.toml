@@ -1,0 +1,15 @@
+# Synthetic project config; roots and executables need not exist.
+model = "synthetic-model" # keep document settings
+
+[mcp_servers.worker]
+command = "/old/project/bin/server"
+cwd = "/old/project/work" # project cwd
+args = ["--data", "/old/project/data", "/old/project/literal", "${ROOT}/data"]
+extension = { path = "/old/project/native-literal" }
+
+[mcp_servers.worker.env]
+DATA = "/old/project/data"
+ROOT = "${ROOT}"
+
+[mcp_servers.remote]
+url = "https://example.test/old/project/data"

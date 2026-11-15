@@ -1,0 +1,11 @@
+# Synthetic target; unrelated settings stay intact.
+model = "local-model"
+
+[mcp_servers.worker]
+command = "local-edit" # retain this comment
+args = ["local"]
+env = { REGION = "${REGION}", LOCAL = "eu" }
+extension = { opaque = true }
+
+[mcp_servers.local]
+command = "stay"

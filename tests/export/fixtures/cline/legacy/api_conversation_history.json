@@ -1,0 +1,8 @@
+[
+  {"role":"user","content":[{"type":"text","text":"Write a greeting file."}]},
+  {"role":"assistant","content":[{"type":"text","text":"Creating it.\n<write_to_file>\n<path>hello.txt</path>\n<content>Hello & goodbye</content>\n</write_to_file>"}]},
+  {"role":"user","content":[{"type":"text","text":"[write_to_file for 'hello.txt'] Result:\nSaved successfully."}]},
+  {"role":"assistant","content":"<execute_command><command>printf hello</command><requires_approval>false</requires_approval></execute_command>"},
+  {"role":"user","content":"[execute_command for 'printf hello'] Result:\nhello\nexit_code: 0"},
+  {"role":"assistant","content":"Done."}
+]

@@ -1,0 +1,9 @@
+[
+  {"role":"assistant","content":"I will inspect the app."},
+  {"role":"assistant","content":"","tool_calls":[{"id":"read_1","type":"function","function":{"name":"Read","arguments":"{\"file_path\":\"/workspace/demo/src/app.py\"}"}}]},
+  {"role":"tool","tool_call_id":"read_1","content":"print('hello')"},
+  {"role":"assistant","content":"","tool_calls":[{"id":"bash_1","type":"function","function":{"name":"Bash","arguments":"{\"command\":\"python -m pytest -q\"}"}},{"id":"write_1","type":"function","function":{"name":"Write","arguments":"{\"file_path\":\"/workspace/demo/src/report.txt\",\"content\":\"3 passed\"}"}}]},
+  {"role":"tool","tool_call_id":"bash_1","content":"3 passed in 0.02s"},
+  {"role":"tool","tool_call_id":"write_1","content":"File created"},
+  {"role":"assistant","content":"Done: all tests passed."}
+]

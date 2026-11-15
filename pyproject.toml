@@ -1,0 +1,104 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentwrench"
+version = "0.1.0"
+description = "Offline dev tools for AI coding agents: repair sessions, convert MCP configs, replay MCP servers, gate trajectories in CI, inspect AGENTS.md budgets and apply Codex patches"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY.md"]
+authors = [{ name = "tianhaogutum" }]
+keywords = [
+    "ai-agents", "coding-agents", "claude-code", "codex", "mcp",
+    "model-context-protocol", "agents-md", "langgraph", "apply-patch",
+    "trajectory", "devtools", "cli",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
+]
+dependencies = [
+    # mcp-config: lossless TOML/YAML round-trips (tomlkit 0.15 changes item types)
+    "tomlkit>=0.13.3,<0.15",
+    "ruamel.yaml>=0.18.16,<0.20",
+    # gate: strict YAML policies and bounded regular expressions
+    "PyYAML>=6.0.2",
+    "regex>=2024.11.6",
+]
+
+[project.optional-dependencies]
+# `agentwrench checkpoints` reads LangGraph checkpoints through the official saver.
+langgraph = [
+    "langgraph-checkpoint>=4.3.1,<5",
+    "langgraph-checkpoint-sqlite>=3.1.3,<4",
+]
+# Lets `agentwrench gate export-agentevals` output be scored with AgentEvals.
+agentevals = ["agentevals>=0.0.9"]
+test = [
+    "agentwrench[langgraph,agentevals]",
+    "pytest>=8.4",
+    "langgraph>=1.2.20,<2",
+    "mcp>=1.26,<2",
+    "jsonschema>=4.23",
+    "pydantic>=2.11",
+]
+
+[project.urls]
+Homepage = "https://github.com/tianhaogutum/agentwrench"
+Repository = "https://github.com/tianhaogutum/agentwrench"
+Issues = "https://github.com/tianhaogutum/agentwrench/issues"
+Documentation = "https://github.com/tianhaogutum/agentwrench/tree/main/docs"
+
+[project.scripts]
+agentwrench = "agentwrench.cli:main"
+
+[project.entry-points.pytest11]
+agentwrench_cassette = "agentwrench.cassette.pytest_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentwrench"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/docs",
+    "/examples",
+    "/README.md",
+    "/LICENSE",
+    "/NOTICE",
+    "/THIRD_PARTY.md",
+    "/pyproject.toml",
+]
+exclude = ["__pycache__", "*.pyc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra"]
+
+[tool.ruff]
+target-version = "py311"
+extend-exclude = ["tests/export/vendor"]
+
+[tool.ruff.lint]
+# Correctness-focused set; the merged tools keep their original compact style.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test modules re-export fixtures and helpers across sibling modules and keep a compact style.
+"tests/**" = ["F401", "F811", "F841", "E402", "E701", "E702", "E731"]

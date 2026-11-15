@@ -1,0 +1,5 @@
+{
+  "codex": {"session_id":"fixture-session","version":"0.167.1","step_count":5,"sources":["user","agent","agent","agent","agent"],"timestamps":["2026-01-01T00:00:01Z","2026-01-01T00:00:02Z","2026-01-01T00:00:03Z","2026-01-01T00:00:05Z","2026-01-01T00:00:07Z"],"warnings":{}},
+  "claude": {"session_id":"fixture-session","version":"2.1.322","step_count":4,"sources":["user","agent","agent","agent"],"timestamps":["2026-01-01T00:00:01Z","2026-01-01T00:00:02Z","2026-01-01T00:00:05Z","2026-01-01T00:00:07Z"],"warnings":{}},
+  "cline": {"session_id":"task-1","version":"unknown","step_count":4,"sources":["user","agent","agent","agent"],"timestamps":["2026-01-01T00:00:01Z",null,null,"2026-01-01T00:00:07Z"],"warnings":{}}
+}

@@ -1,0 +1,5 @@
+# These fixtures deliberately contain a UTF-8 BOM and literal CRLF bytes.
+tests/patch/fixtures/bom_tree/app.js -text whitespace=cr-at-eol
+examples/patch/bom_tree/app.js -text whitespace=cr-at-eol
+# Preserve the exact pinned upstream Harbor RFC, including Markdown trailing spaces.
+tests/export/vendor/harbor/ATIF-RFC.md whitespace=-blank-at-eol

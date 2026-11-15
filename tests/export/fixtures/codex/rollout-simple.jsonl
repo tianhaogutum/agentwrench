@@ -1,0 +1,10 @@
+{"timestamp":"2026-01-01T00:00:00Z","type":"session_meta","payload":{"id":"fixture-session","cli_version":"0.167.1","cwd":"/work/demo"}}
+{"timestamp":"2026-01-01T00:00:01Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"Fix the failing test."}]}}
+{"timestamp":"2026-01-01T00:00:02Z","type":"response_item","payload":{"type":"reasoning","summary":[{"type":"summary_text","text":"Inspect the failing assertion."}],"encrypted_content":"synthetic-opaque"}}
+{"timestamp":"2026-01-01T00:00:03Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"python -m pytest -q\"}","call_id":"call-test"}}
+{"timestamp":"2026-01-01T00:00:04Z","type":"response_item","payload":{"type":"function_call_output","call_id":"call-test","output":"1 failed\nProcess exited with code 1"}}
+{"timestamp":"2026-01-01T00:00:05Z","type":"response_item","payload":{"type":"custom_tool_call","name":"apply_patch","input":"*** Begin Patch\n*** Update File: src/math.py\n@@\n-return 0\n+return 1\n*** End Patch","call_id":"call-patch"}}
+{"timestamp":"2026-01-01T00:00:06Z","type":"response_item","payload":{"type":"custom_tool_call_output","call_id":"call-patch","output":"Success. Updated src/math.py"}}
+{"timestamp":"2026-01-01T00:00:07Z","type":"response_item","payload":{"type":"message","role":"assistant","phase":"final_answer","content":[{"type":"output_text","text":"The test failed because the return value was wrong."}]}}
+{"timestamp":"2026-01-01T00:00:08Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":120,"cached_input_tokens":20,"output_tokens":30,"reasoning_output_tokens":10,"total_tokens":150}}}}
+{"timestamp":"2026-01-01T00:00:09Z","type":"event_msg","payload":{"type":"task_complete","last_agent_message":"The test failed because the return value was wrong."}}

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {"id": "lint", "stream": "codex_exec_ok.jsonl"},
+    {"id": "tests", "stream": "codex_exec_violation.jsonl"}
+  ]
+}

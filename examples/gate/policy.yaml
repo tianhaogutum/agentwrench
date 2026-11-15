@@ -1,0 +1,17 @@
+require_command:
+  - pattern: '\bpytest\b'
+    exit_code: 0
+forbid_command:
+  - pattern: '\bcurl\b'
+forbid_file_change:
+  - glob: '.github/**'
+allow_file_change_only: ['src/**', 'tests/**']
+max_tool_calls: 5
+max_commands: 2
+max_total_tokens: 100
+require_final_message:
+  pattern: '^Done:'
+forbid_error_events: true
+order:
+  - ['git status', 'pytest']
+require_success: true

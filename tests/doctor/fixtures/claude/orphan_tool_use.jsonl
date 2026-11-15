@@ -1,0 +1,1 @@
+{"type":"assistant","uuid":"a","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"assistant","content":[{"type":"text","text":"Reading"},{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}

@@ -1,0 +1,51 @@
+agentwrench
+Copyright 2026 tianhaogutum and agentwrench contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+It merges eight tools previously developed as separate projects (rollout-doctor,
+lgckpt-scope, agentsmd-scope, mcpconf-bridge, trajport, mcp-cassette, trajgate
+and v4a-patch-bridge). agentwrench is an independent interoperability project and
+is not affiliated with or endorsed by OpenAI, Anthropic, LangChain, Cline,
+Continue, Microsoft, the Model Context Protocol project or Harbor. Product names
+only identify interoperable file formats. See THIRD_PARTY.md for per-command
+attribution.
+
+-------------------------------------------------------------------------------
+agentwrench doctor (formerly rollout-doctor)
+
+Independent file-format interoperability tool for Codex rollouts and Claude Code
+sessions. No upstream implementation code is included.
+
+-------------------------------------------------------------------------------
+agentwrench agentsmd (formerly agentsmd-scope)
+
+Behavioral port of instruction discovery, byte budgeting and string assembly from:
+OpenAI Codex
+Copyright 2025 OpenAI
+Licensed under the Apache License, Version 2.0.
+https://github.com/openai/codex
+
+No Ratatui code or other Codex third-party implementation is included.
+
+-------------------------------------------------------------------------------
+agentwrench export (formerly trajport)
+
+The test suite includes Harbor ATIF specification and validation resources
+from harbor-framework/harbor, commit 500af91374dcc43b59fac54cf90295646617b14d,
+licensed under Apache License 2.0. Copyright belongs to the Harbor contributors.
+Original attribution and contributor credits are retained in
+tests/export/vendor/harbor. These files are test resources and are not part of
+the installed package. See THIRD_PARTY.md for source paths and the
+generated-schema notice.
+
+-------------------------------------------------------------------------------
+agentwrench patch (formerly v4a-patch-bridge)
+
+Contains semantics derived from OpenAI Codex. The original notice follows:
+
+OpenAI Codex
+Copyright 2025 OpenAI
+
+This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
+Copyright (c) 2016-2022 Florian Dehau
+Copyright (c) 2023-2025 The Ratatui Developers

@@ -1,0 +1,4 @@
+{"type":"user","uuid":"root","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"user","content":[{"type":"text","text":"start"}]}}
+{"type":"assistant","uuid":"sa","parentUuid":"root","sessionId":"synthetic","isSidechain":true,"message":{"role":"assistant","content":[{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}
+{"type":"assistant","uuid":"sb","parentUuid":"root","sessionId":"synthetic","isSidechain":true,"message":{"role":"assistant","content":[{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}
+{"type":"user","uuid":"rb","parentUuid":"sb","sessionId":"synthetic","isSidechain":true,"message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"u1","content":"synthetic output"}]}}

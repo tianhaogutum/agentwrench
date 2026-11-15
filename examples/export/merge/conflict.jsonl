@@ -1,0 +1,2 @@
+{"agent": {"name": "synthetic", "version": "1"}, "extra": {"warnings": {}}, "schema_version": "trajport/v1", "session_id": "A", "type": "trajectory"}
+{"extra": {}, "message": "changed A2", "source": "user", "step_id": 2, "timestamp": "2026-01-01T10:02:00Z", "type": "step"}

@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {"GITHUB_TOKEN": "${GITHUB_TOKEN}"},
+      "disabled": true,
+      "autoApprove": ["read_issue"],
+      "timeout": 90,
+      "metadata": {"owner": "team"},
+      "oauth": {"clientId": "synthetic-public-client"}
+    },
+    "remote.tools": {
+      "type": "streamableHttp",
+      "url": "https://mcp.example.test/mcp",
+      "headers": {"X-Region": "eu"}
+    }
+  }
+}

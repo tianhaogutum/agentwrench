@@ -1,0 +1,21 @@
+# Synthetic Codex config
+model = "example-model" # keep me
+
+[mcp_servers.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+enabled = true
+startup_timeout_sec = 20.5
+tool_timeout_sec = 45
+enabled_tools = ["read"]
+disabled_tools = ["write"]
+custom_metadata = { owner = "team" }
+
+[mcp_servers.github.env]
+GITHUB_TOKEN = "${GITHUB_TOKEN}"
+
+[mcp_servers."remote.tools"]
+url = "https://mcp.example.test/mcp"
+bearer_token_env_var = "MCP_BEARER"
+http_headers = { "X-Region" = "eu" }
+env_http_headers = { "X-API-Key" = "MCP_API_KEY" }

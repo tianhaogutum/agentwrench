@@ -1,0 +1,3 @@
+{"type":"assistant","uuid":"a","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"assistant","content":[{"type":"text","text":"Reading"},{"type":"tool_use","id":"u1","name":"Read","input":{"file_path":"example.txt"}}]}}
+{"type":"user","uuid":"r","parentUuid":"a","sessionId":"synthetic","isSidechain":false,"message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"u1","content":"synthetic output"}]}}
+{"type":"user","uuid":"r2","parentUuid":"r","sessionId":"synthetic","isSidechain":false,"message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"u1","content":"synthetic output"}]}}

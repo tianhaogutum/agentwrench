@@ -1,0 +1,1 @@
+{"type":"user","uuid":"r","parentUuid":null,"sessionId":"synthetic","isSidechain":false,"message":{"role":"user","content":[{"type":"tool_result","content":"missing id"}]}}

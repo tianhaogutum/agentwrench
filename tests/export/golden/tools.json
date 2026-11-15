@@ -1,0 +1,4 @@
+[
+  {"id":"call-test","name":"exec_command","arguments":{"cmd":"python -m pytest -q"},"result":"1 failed\nProcess exited with code 1"},
+  {"id":"call-patch","name":"apply_patch","arguments":{"raw_input":"*** Begin Patch\n*** Update File: src/math.py\n@@\n-return 0\n+return 1\n*** End Patch"},"result":"Success. Updated src/math.py"}
+]

@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "worker": {"command": "new", "args": ["base"], "env": {"REGION": "${REGION}"}}
+  }
+}

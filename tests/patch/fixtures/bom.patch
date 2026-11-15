@@ -1,0 +1,7 @@
+*** Begin Patch
+*** Update File: app.js
+@@
+-console.log("before");
++console.log("after");
+*** End of File
+*** End Patch
