@@ -183,10 +183,12 @@ class ChildProcess:
 
     @classmethod
     async def spawn(cls, command: list[str], *, cwd: str | None = None, env: dict[str, str] | None = None,
-                    stdin_high_water: int = 16384) -> ChildProcess:
-        """Start ``command`` without a shell; raises ``OSError`` if it cannot start."""
+                    stdin_high_water: int = 16384, stderr: Any = None) -> ChildProcess:
+        """Start ``command`` without a shell; raises ``OSError`` if it cannot start.
+
+        ``stderr`` is passed to :class:`subprocess.Popen` (default: inherit ours)."""
         loop = asyncio.get_running_loop()
-        proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=None,
+        proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr,
                                 cwd=cwd, env=env, close_fds=True)
         child = cls(proc, loop)
         threading.Thread(target=child._wait_for_exit, name=f'wait-{proc.pid}', daemon=True).start()

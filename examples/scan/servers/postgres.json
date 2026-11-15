@@ -1,0 +1,61 @@
+{
+ "tools": [
+  {
+   "name": "query",
+   "description": "Run a read-only SQL query against the configured PostgreSQL database and return the rows as JSON.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "sql": {
+      "type": "string",
+      "description": "A single read-only SQL statement. Statements run inside a READ ONLY transaction that is rolled back afterwards."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "sql"
+    ]
+   },
+   "annotations": {
+    "title": "Query"
+   }
+  },
+  {
+   "name": "list_tables",
+   "description": "List tables in a schema with estimated row counts.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "schema": {
+      "type": "string",
+      "description": "Schema name, defaults to public."
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "List tables"
+   }
+  },
+  {
+   "name": "describe_table",
+   "description": "Describe the columns, types, indexes and foreign keys of a table.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "table": {
+      "type": "string",
+      "description": "Table name, optionally schema-qualified."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "table"
+    ]
+   },
+   "annotations": {
+    "title": "Describe table"
+   }
+  }
+ ]
+}

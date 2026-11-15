@@ -8,7 +8,7 @@ import os
 import re
 import signal
 import stat
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Iterable
 from typing import Any
 
 from . import timers
@@ -211,12 +211,17 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
                        request_timeout_ms: int | None = None, discovery_timeout_ms: int | None = None,
                        shutdown_timeout_ms: int | None = None, max_pages: int | None = None,
                        max_tools: int | None = None, max_output_bytes: int | None = None,
-                       max_wire_bytes: int | None = None) -> str:
+                       max_wire_bytes: int | None = None, protocol_versions: Iterable[str] | None = None,
+                       server_stderr: Any = None) -> str:
     """Start ``command``, walk every tools/list page and return the catalogue JSON line.
 
     Options left as ``None`` use their defaults (30 s per request, no overall
     deadline, 1 s shutdown grace, 10,000 pages/tools, 16 MiB, no wire budget).
+    ``protocol_versions`` lists the negotiated protocol versions to accept
+    (default: only :data:`PROTOCOL_VERSION`); ``server_stderr`` is passed to the
+    child process (default: inherit ours, e.g. ``subprocess.DEVNULL`` to discard).
     """
+    accepted = frozenset((PROTOCOL_VERSION,) if protocol_versions is None else protocol_versions)
     request_timeout_ms = validate_request_timeout(DEFAULT_REQUEST_TIMEOUT_MS if request_timeout_ms is None else request_timeout_ms)
     validate_discovery_timeout(discovery_timeout_ms)
     shutdown_timeout_ms = validate_shutdown_timeout(shutdown_timeout_ms)
@@ -267,7 +272,7 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
 
     deadline = DiscoveryDeadline(discovery_timeout_ms, lambda: fail('discovery duration limit exceeded'))
     try:
-        child = await ChildProcess.spawn(command, cwd=cwd, env=env, stdin_high_water=0)
+        child = await ChildProcess.spawn(command, cwd=cwd, env=env, stdin_high_water=0, stderr=server_stderr)
     except OSError:
         fail('cannot start server for discovery')
         deadline.check()
@@ -409,7 +414,8 @@ async def run_discover(command: list[str], config: dict[str, Any], *, server_env
         init = await request('initialize', {'protocolVersion': PROTOCOL_VERSION, 'capabilities': {}, 'clientInfo': dict(CLIENT_INFO)})
         capabilities = init.get('capabilities') if isinstance(init, dict) else None
         server_info = init.get('serverInfo') if isinstance(init, dict) else None
-        if (not isinstance(init, dict) or init.get('protocolVersion') != PROTOCOL_VERSION
+        version = init.get('protocolVersion') if isinstance(init, dict) else None
+        if (not isinstance(init, dict) or not isinstance(version, str) or version not in accepted
                 or not isinstance(capabilities, dict) or not isinstance(capabilities.get('tools'), dict)
                 or not isinstance(server_info, dict) or not isinstance(server_info.get('name'), str)
                 or not isinstance(server_info.get('version'), str)):

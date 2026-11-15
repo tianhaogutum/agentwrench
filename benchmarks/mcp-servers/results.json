@@ -1,0 +1,1578 @@
+{
+  "generatedBy": "benchmarks/mcp-servers/run.py",
+  "date": "2026-11-15",
+  "agentwrench": "0.1.0",
+  "environment": {
+    "platform": "Linux x86_64",
+    "node": "v24.22.2",
+    "uv": "uv 0.11.19 (x86_64-unknown-linux-gnu)",
+    "python": "3.14.4",
+    "tiktoken": "0.14.0"
+  },
+  "estimator": "ceil(UTF-8 bytes / 4) of compact JSON {name, description?, inputSchema} per tool",
+  "tokenizers": [
+    "o200k_base",
+    "cl100k_base"
+  ],
+  "configs": {
+    "trim160": {
+      "maxDescriptionChars": 160
+    },
+    "strip": {
+      "stripSchemaAnnotations": [
+        "description",
+        "title",
+        "examples",
+        "$comment"
+      ]
+    },
+    "floor": {
+      "stripSchemaAnnotations": [
+        "description",
+        "title",
+        "examples",
+        "$comment"
+      ],
+      "maxDescriptionChars": 0
+    },
+    "plan50": "agentwrench slim plan --budget floor(0.5 * before estimate)"
+  },
+  "servers": [
+    {
+      "id": "filesystem",
+      "name": "Filesystem (MCP reference)",
+      "kind": "npm",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "version": "2.3.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/filesystem.json",
+        "--server-cwd",
+        "$WORK/sandbox/filesystem",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/filesystem/node_modules/.bin/mcp-server-filesystem",
+        "$WORK/sandbox/filesystem"
+      ],
+      "tools": 16,
+      "before": {
+        "bytes": 13773,
+        "estimatedTokens": 3444,
+        "o200k_base": 2925,
+        "cl100k_base": 2919
+      },
+      "fullToolObjectBytes": 19352,
+      "largestTools": [
+        {
+          "name": "edit_file",
+          "estimatedTokens": 380
+        },
+        {
+          "name": "directory_tree",
+          "estimatedTokens": 370
+        },
+        {
+          "name": "search_files",
+          "estimatedTokens": 354
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 16,
+          "bytes": 9943,
+          "estimatedTokens": 2486,
+          "savedPercent": 27.8,
+          "o200k_base": 2184,
+          "cl100k_base": 2178,
+          "savedPercent_o200k_base": 25.3,
+          "savedPercent_cl100k_base": 25.4
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 16,
+          "bytes": 9527,
+          "estimatedTokens": 2382,
+          "savedPercent": 30.8,
+          "o200k_base": 2081,
+          "cl100k_base": 2065,
+          "savedPercent_o200k_base": 28.9,
+          "savedPercent_cl100k_base": 29.3
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 16,
+          "bytes": 4022,
+          "estimatedTokens": 1006,
+          "savedPercent": 70.8,
+          "o200k_base": 999,
+          "cl100k_base": 985,
+          "savedPercent_o200k_base": 65.8,
+          "savedPercent_cl100k_base": 66.3
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 253
+          },
+          "tools": 16,
+          "bytes": 6866,
+          "estimatedTokens": 1717,
+          "savedPercent": 50.1,
+          "o200k_base": 1562,
+          "cl100k_base": 1545,
+          "savedPercent_o200k_base": 46.6,
+          "savedPercent_cl100k_base": 47.1,
+          "budget": 1722,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 1722",
+            "original: 13773 B, ~3444 tokens",
+            "strip schema annotations (keep default): 9527 B, ~2382 tokens",
+            "description cap 253 code points: 6866 B, ~1717 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "memory",
+      "name": "Memory (MCP reference)",
+      "kind": "npm",
+      "package": "@modelcontextprotocol/server-memory",
+      "version": "2.1.1",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/memory.json",
+        "--server-cwd",
+        "$WORK/sandbox/memory",
+        "--discovery-timeout-ms",
+        "120000",
+        "--server-env",
+        "MEMORY_FILE_PATH=$WORK/sandbox/memory/memory.jsonl",
+        "--",
+        "$WORK/servers/memory/node_modules/.bin/mcp-server-memory"
+      ],
+      "tools": 9,
+      "before": {
+        "bytes": 8038,
+        "estimatedTokens": 2010,
+        "o200k_base": 1736,
+        "cl100k_base": 1703
+      },
+      "fullToolObjectBytes": 14924,
+      "largestTools": [
+        {
+          "name": "search_nodes",
+          "estimatedTokens": 332
+        },
+        {
+          "name": "open_nodes",
+          "estimatedTokens": 262
+        },
+        {
+          "name": "read_graph",
+          "estimatedTokens": 262
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 9,
+          "bytes": 6595,
+          "estimatedTokens": 1649,
+          "savedPercent": 18.0,
+          "o200k_base": 1436,
+          "cl100k_base": 1406,
+          "savedPercent_o200k_base": 17.3,
+          "savedPercent_cl100k_base": 17.4
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 9,
+          "bytes": 5304,
+          "estimatedTokens": 1326,
+          "savedPercent": 34.0,
+          "o200k_base": 1188,
+          "cl100k_base": 1163,
+          "savedPercent_o200k_base": 31.6,
+          "savedPercent_cl100k_base": 31.7
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 9,
+          "bytes": 3039,
+          "estimatedTokens": 760,
+          "savedPercent": 62.2,
+          "o200k_base": 741,
+          "cl100k_base": 719,
+          "savedPercent_o200k_base": 57.3,
+          "savedPercent_cl100k_base": 57.8
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 231
+          },
+          "tools": 9,
+          "bytes": 3953,
+          "estimatedTokens": 989,
+          "savedPercent": 50.8,
+          "o200k_base": 909,
+          "cl100k_base": 887,
+          "savedPercent_o200k_base": 47.6,
+          "savedPercent_cl100k_base": 47.9,
+          "budget": 1005,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 1005",
+            "original: 8038 B, ~2010 tokens",
+            "strip schema annotations (keep default): 5304 B, ~1326 tokens",
+            "description cap 231 code points: 3953 B, ~989 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sequential-thinking",
+      "name": "Sequential Thinking (MCP reference)",
+      "kind": "npm",
+      "package": "@modelcontextprotocol/server-sequential-thinking",
+      "version": "2.1.1",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/sequential-thinking.json",
+        "--server-cwd",
+        "$WORK/sandbox/sequential-thinking",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/sequential-thinking/node_modules/.bin/mcp-server-sequential-thinking"
+      ],
+      "tools": 1,
+      "before": {
+        "bytes": 2228,
+        "estimatedTokens": 557,
+        "o200k_base": 489,
+        "cl100k_base": 484
+      },
+      "fullToolObjectBytes": 2799,
+      "largestTools": [
+        {
+          "name": "sequentialthinking",
+          "estimatedTokens": 557
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 1,
+          "bytes": 1279,
+          "estimatedTokens": 320,
+          "savedPercent": 42.6,
+          "o200k_base": 295,
+          "cl100k_base": 290,
+          "savedPercent_o200k_base": 39.7,
+          "savedPercent_cl100k_base": 40.1
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 1,
+          "bytes": 1751,
+          "estimatedTokens": 438,
+          "savedPercent": 21.4,
+          "o200k_base": 390,
+          "cl100k_base": 387,
+          "savedPercent_o200k_base": 20.2,
+          "savedPercent_cl100k_base": 20.0
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 1,
+          "bytes": 726,
+          "estimatedTokens": 182,
+          "savedPercent": 67.4,
+          "o200k_base": 184,
+          "cl100k_base": 181,
+          "savedPercent_o200k_base": 62.4,
+          "savedPercent_cl100k_base": 62.6
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 526
+          },
+          "tools": 1,
+          "bytes": 894,
+          "estimatedTokens": 224,
+          "savedPercent": 59.9,
+          "o200k_base": 214,
+          "cl100k_base": 211,
+          "savedPercent_o200k_base": 56.2,
+          "savedPercent_cl100k_base": 56.4,
+          "budget": 278,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 278",
+            "original: 2228 B, ~557 tokens",
+            "strip schema annotations (keep default): 1751 B, ~438 tokens",
+            "description cap 526 code points: 894 B, ~224 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "everything",
+      "name": "Everything (MCP reference test server)",
+      "kind": "npm",
+      "package": "@modelcontextprotocol/server-everything",
+      "version": "2.3.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/everything.json",
+        "--server-cwd",
+        "$WORK/sandbox/everything",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/everything/node_modules/.bin/mcp-server-everything",
+        "stdio"
+      ],
+      "tools": 16,
+      "before": {
+        "bytes": 7430,
+        "estimatedTokens": 1858,
+        "o200k_base": 1721,
+        "cl100k_base": 1702
+      },
+      "fullToolObjectBytes": 25694,
+      "largestTools": [
+        {
+          "name": "gzip-file-as-resource",
+          "estimatedTokens": 274
+        },
+        {
+          "name": "get-header-params",
+          "estimatedTokens": 178
+        },
+        {
+          "name": "trigger-resource-update",
+          "estimatedTokens": 141
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 16,
+          "bytes": 5756,
+          "estimatedTokens": 1439,
+          "savedPercent": 22.5,
+          "o200k_base": 1330,
+          "cl100k_base": 1309,
+          "savedPercent_o200k_base": 22.7,
+          "savedPercent_cl100k_base": 23.1
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 16,
+          "bytes": 6251,
+          "estimatedTokens": 1563,
+          "savedPercent": 15.9,
+          "o200k_base": 1476,
+          "cl100k_base": 1463,
+          "savedPercent_o200k_base": 14.2,
+          "savedPercent_cl100k_base": 14.0
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 16,
+          "bytes": 3619,
+          "estimatedTokens": 905,
+          "savedPercent": 51.3,
+          "o200k_base": 894,
+          "cl100k_base": 881,
+          "savedPercent_o200k_base": 48.1,
+          "savedPercent_cl100k_base": 48.2
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 6
+          },
+          "tools": 16,
+          "bytes": 3712,
+          "estimatedTokens": 928,
+          "savedPercent": 50.0,
+          "o200k_base": 933,
+          "cl100k_base": 920,
+          "savedPercent_o200k_base": 45.8,
+          "savedPercent_cl100k_base": 45.9,
+          "budget": 929,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 929",
+            "original: 7430 B, ~1858 tokens",
+            "strip schema annotations (keep default): 6251 B, ~1563 tokens",
+            "description cap 6 code points: 3712 B, ~928 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "fetch",
+      "name": "Fetch (MCP reference, Python)",
+      "kind": "pypi",
+      "package": "mcp-server-fetch",
+      "version": "2026.11.11",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/fetch.json",
+        "--server-cwd",
+        "$WORK/sandbox/fetch",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/fetch/bin/mcp-server-fetch"
+      ],
+      "tools": 1,
+      "before": {
+        "bytes": 1344,
+        "estimatedTokens": 336,
+        "o200k_base": 296,
+        "cl100k_base": 291
+      },
+      "fullToolObjectBytes": 1447,
+      "largestTools": [
+        {
+          "name": "fetch",
+          "estimatedTokens": 336
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 1,
+          "bytes": 1116,
+          "estimatedTokens": 279,
+          "savedPercent": 17.0,
+          "o200k_base": 249,
+          "cl100k_base": 244,
+          "savedPercent_o200k_base": 15.9,
+          "savedPercent_cl100k_base": 16.2
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 1,
+          "bytes": 714,
+          "estimatedTokens": 179,
+          "savedPercent": 46.9,
+          "o200k_base": 170,
+          "cl100k_base": 165,
+          "savedPercent_o200k_base": 42.6,
+          "savedPercent_cl100k_base": 43.3
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 1,
+          "bytes": 405,
+          "estimatedTokens": 102,
+          "savedPercent": 69.9,
+          "o200k_base": 108,
+          "cl100k_base": 103,
+          "savedPercent_o200k_base": 63.5,
+          "savedPercent_cl100k_base": 64.6
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 306
+          },
+          "tools": 1,
+          "bytes": 636,
+          "estimatedTokens": 159,
+          "savedPercent": 52.7,
+          "o200k_base": 153,
+          "cl100k_base": 148,
+          "savedPercent_o200k_base": 48.3,
+          "savedPercent_cl100k_base": 49.1,
+          "budget": 168,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 168",
+            "original: 1344 B, ~336 tokens",
+            "strip schema annotations (keep default): 714 B, ~179 tokens",
+            "description cap 306 code points: 636 B, ~159 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "git",
+      "name": "Git (MCP reference, Python)",
+      "kind": "pypi",
+      "package": "mcp-server-git",
+      "version": "2026.11.11",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/git.json",
+        "--server-cwd",
+        "$WORK/sandbox/git",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/git/bin/mcp-server-git"
+      ],
+      "tools": 14,
+      "before": {
+        "bytes": 6160,
+        "estimatedTokens": 1540,
+        "o200k_base": 1435,
+        "cl100k_base": 1397
+      },
+      "fullToolObjectBytes": 7624,
+      "largestTools": [
+        {
+          "name": "git_log",
+          "estimatedTokens": 246
+        },
+        {
+          "name": "git_branch",
+          "estimatedTokens": 218
+        },
+        {
+          "name": "git_merge",
+          "estimatedTokens": 176
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 14,
+          "bytes": 6009,
+          "estimatedTokens": 1503,
+          "savedPercent": 2.5,
+          "o200k_base": 1406,
+          "cl100k_base": 1368,
+          "savedPercent_o200k_base": 2.0,
+          "savedPercent_cl100k_base": 2.1
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 14,
+          "bytes": 3834,
+          "estimatedTokens": 959,
+          "savedPercent": 37.8,
+          "o200k_base": 886,
+          "cl100k_base": 850,
+          "savedPercent_o200k_base": 38.3,
+          "savedPercent_cl100k_base": 39.2
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 14,
+          "bytes": 2973,
+          "estimatedTokens": 744,
+          "savedPercent": 51.7,
+          "o200k_base": 699,
+          "cl100k_base": 663,
+          "savedPercent_o200k_base": 51.3,
+          "savedPercent_cl100k_base": 52.5
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 8
+          },
+          "tools": 14,
+          "bytes": 3058,
+          "estimatedTokens": 765,
+          "savedPercent": 50.4,
+          "o200k_base": 733,
+          "cl100k_base": 698,
+          "savedPercent_o200k_base": 48.9,
+          "savedPercent_cl100k_base": 50.0,
+          "budget": 770,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 770",
+            "original: 6160 B, ~1540 tokens",
+            "strip schema annotations (keep default): 3834 B, ~959 tokens",
+            "description cap 8 code points: 3058 B, ~765 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "context7",
+      "name": "Context7 (Upstash)",
+      "kind": "npm",
+      "package": "@upstash/context7-mcp",
+      "version": "4.7.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/context7.json",
+        "--server-cwd",
+        "$WORK/sandbox/context7",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/context7/node_modules/.bin/context7-mcp"
+      ],
+      "tools": 2,
+      "before": {
+        "bytes": 4944,
+        "estimatedTokens": 1236,
+        "o200k_base": 1062,
+        "cl100k_base": 1067
+      },
+      "fullToolObjectBytes": 5218,
+      "largestTools": [
+        {
+          "name": "resolve-library-id",
+          "estimatedTokens": 725
+        },
+        {
+          "name": "query-docs",
+          "estimatedTokens": 512
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 2,
+          "bytes": 2572,
+          "estimatedTokens": 643,
+          "savedPercent": 48.0,
+          "o200k_base": 562,
+          "cl100k_base": 565,
+          "savedPercent_o200k_base": 47.1,
+          "savedPercent_cl100k_base": 47.0
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 2,
+          "bytes": 3094,
+          "estimatedTokens": 774,
+          "savedPercent": 37.4,
+          "o200k_base": 662,
+          "cl100k_base": 662,
+          "savedPercent_o200k_base": 37.7,
+          "savedPercent_cl100k_base": 38.0
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 2,
+          "bytes": 503,
+          "estimatedTokens": 126,
+          "savedPercent": 89.8,
+          "o200k_base": 123,
+          "cl100k_base": 120,
+          "savedPercent_o200k_base": 88.4,
+          "savedPercent_cl100k_base": 88.8
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 1861
+          },
+          "tools": 2,
+          "bytes": 2157,
+          "estimatedTokens": 540,
+          "savedPercent": 56.4,
+          "o200k_base": 474,
+          "cl100k_base": 473,
+          "savedPercent_o200k_base": 55.4,
+          "savedPercent_cl100k_base": 55.7,
+          "budget": 618,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 618",
+            "original: 4944 B, ~1236 tokens",
+            "strip schema annotations (keep default): 3094 B, ~774 tokens",
+            "description cap 1861 code points: 2157 B, ~540 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright MCP (Microsoft)",
+      "kind": "npm",
+      "package": "@playwright/mcp",
+      "version": "0.0.85",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/playwright.json",
+        "--server-cwd",
+        "$WORK/sandbox/playwright",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/playwright/node_modules/.bin/playwright-mcp"
+      ],
+      "tools": 25,
+      "before": {
+        "bytes": 18456,
+        "estimatedTokens": 4614,
+        "o200k_base": 3934,
+        "cl100k_base": 3856
+      },
+      "fullToolObjectBytes": 21151,
+      "largestTools": [
+        {
+          "name": "browser_take_screenshot",
+          "estimatedTokens": 410
+        },
+        {
+          "name": "browser_find",
+          "estimatedTokens": 308
+        },
+        {
+          "name": "browser_emulate_media",
+          "estimatedTokens": 271
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 25,
+          "bytes": 17982,
+          "estimatedTokens": 4496,
+          "savedPercent": 2.6,
+          "o200k_base": 3850,
+          "cl100k_base": 3772,
+          "savedPercent_o200k_base": 2.1,
+          "savedPercent_cl100k_base": 2.2
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 25,
+          "bytes": 10026,
+          "estimatedTokens": 2507,
+          "savedPercent": 45.7,
+          "o200k_base": 2320,
+          "cl100k_base": 2253,
+          "savedPercent_o200k_base": 41.0,
+          "savedPercent_cl100k_base": 41.6
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 25,
+          "bytes": 8043,
+          "estimatedTokens": 2011,
+          "savedPercent": 56.4,
+          "o200k_base": 1917,
+          "cl100k_base": 1851,
+          "savedPercent_o200k_base": 51.3,
+          "savedPercent_cl100k_base": 52.0
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 123
+          },
+          "tools": 25,
+          "bytes": 9215,
+          "estimatedTokens": 2304,
+          "savedPercent": 50.1,
+          "o200k_base": 2165,
+          "cl100k_base": 2098,
+          "savedPercent_o200k_base": 45.0,
+          "savedPercent_cl100k_base": 45.6,
+          "budget": 2307,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 2307",
+            "original: 18456 B, ~4614 tokens",
+            "strip schema annotations (keep default): 10026 B, ~2507 tokens",
+            "description cap 123 code points: 9215 B, ~2304 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "chrome-devtools",
+      "name": "Chrome DevTools MCP (Google)",
+      "kind": "npm",
+      "package": "chrome-devtools-mcp",
+      "version": "1.13.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/chrome-devtools.json",
+        "--server-cwd",
+        "$WORK/sandbox/chrome-devtools",
+        "--discovery-timeout-ms",
+        "120000",
+        "--",
+        "$WORK/servers/chrome-devtools/node_modules/.bin/chrome-devtools-mcp",
+        "--no-usage-statistics"
+      ],
+      "tools": 33,
+      "before": {
+        "bytes": 30251,
+        "estimatedTokens": 7563,
+        "o200k_base": 6751,
+        "cl100k_base": 6646
+      },
+      "fullToolObjectBytes": 32268,
+      "largestTools": [
+        {
+          "name": "emulate",
+          "estimatedTokens": 606
+        },
+        {
+          "name": "set_logpoints",
+          "estimatedTokens": 525
+        },
+        {
+          "name": "evaluate_script",
+          "estimatedTokens": 503
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 33,
+          "bytes": 27870,
+          "estimatedTokens": 6968,
+          "savedPercent": 7.9,
+          "o200k_base": 6272,
+          "cl100k_base": 6169,
+          "savedPercent_o200k_base": 7.1,
+          "savedPercent_cl100k_base": 7.2
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 33,
+          "bytes": 17246,
+          "estimatedTokens": 4312,
+          "savedPercent": 43.0,
+          "o200k_base": 4076,
+          "cl100k_base": 3961,
+          "savedPercent_o200k_base": 39.6,
+          "savedPercent_cl100k_base": 40.4
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 33,
+          "bytes": 12181,
+          "estimatedTokens": 3046,
+          "savedPercent": 59.7,
+          "o200k_base": 3031,
+          "cl100k_base": 2916,
+          "savedPercent_o200k_base": 55.1,
+          "savedPercent_cl100k_base": 56.1
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 165
+          },
+          "tools": 33,
+          "bytes": 15044,
+          "estimatedTokens": 3761,
+          "savedPercent": 50.3,
+          "o200k_base": 3633,
+          "cl100k_base": 3519,
+          "savedPercent_o200k_base": 46.2,
+          "savedPercent_cl100k_base": 47.1,
+          "budget": 3781,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 3781",
+            "original: 30251 B, ~7563 tokens",
+            "strip schema annotations (keep default): 17246 B, ~4312 tokens",
+            "description cap 165 code points: 15044 B, ~3761 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "notion",
+      "name": "Notion MCP (Notion)",
+      "kind": "npm",
+      "package": "@notionhq/notion-mcp-server",
+      "version": "2.6.1",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/notion.json",
+        "--server-cwd",
+        "$WORK/sandbox/notion",
+        "--discovery-timeout-ms",
+        "120000",
+        "--server-env",
+        "NOTION_TOKEN=dummy-not-a-real-token",
+        "--",
+        "$WORK/servers/notion/node_modules/.bin/notion-mcp-server"
+      ],
+      "tools": 24,
+      "before": {
+        "bytes": 74641,
+        "estimatedTokens": 18661,
+        "o200k_base": 17161,
+        "cl100k_base": 16557
+      },
+      "fullToolObjectBytes": 76190,
+      "largestTools": [
+        {
+          "name": "API-update-page-markdown",
+          "estimatedTokens": 1448
+        },
+        {
+          "name": "API-post-search",
+          "estimatedTokens": 1186
+        },
+        {
+          "name": "API-patch-page",
+          "estimatedTokens": 958
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 24,
+          "bytes": 74439,
+          "estimatedTokens": 18610,
+          "savedPercent": 0.3,
+          "o200k_base": 17110,
+          "cl100k_base": 16506,
+          "savedPercent_o200k_base": 0.3,
+          "savedPercent_cl100k_base": 0.3
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 24,
+          "bytes": 66589,
+          "estimatedTokens": 16648,
+          "savedPercent": 10.8,
+          "o200k_base": 15506,
+          "cl100k_base": 14886,
+          "savedPercent_o200k_base": 9.6,
+          "savedPercent_cl100k_base": 10.1
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 24,
+          "bytes": 64679,
+          "estimatedTokens": 16170,
+          "savedPercent": 13.3,
+          "o200k_base": 15026,
+          "cl100k_base": 14406,
+          "savedPercent_o200k_base": 12.4,
+          "savedPercent_cl100k_base": 13.0
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 24,
+          "bytes": 64679,
+          "estimatedTokens": 16170,
+          "savedPercent": 13.3,
+          "o200k_base": 15026,
+          "cl100k_base": 14406,
+          "savedPercent_o200k_base": 12.4,
+          "savedPercent_cl100k_base": 13.0,
+          "budget": 9330,
+          "meetsBudget": false,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 9330",
+            "original: 74641 B, ~18661 tokens",
+            "strip schema annotations (keep default): 66589 B, ~16648 tokens",
+            "description cap 0 code points: 64679 B, ~16170 tokens",
+            "Budget NOT met without removing tools. Config denies nothing.",
+            "Deny suggestion (review manually): \"API-update-page-markdown\" (3795 B); remaining ~15221",
+            "Deny suggestion (review manually): \"API-patch-page\" (3062 B); remaining ~14456",
+            "Deny suggestion (review manually): \"API-query-data-source\" (2988 B); remaining ~13709",
+            "Deny suggestion (review manually): \"API-create-a-comment\" (2919 B); remaining ~12979",
+            "Deny suggestion (review manually): \"API-post-search\" (2894 B); remaining ~12256",
+            "Deny suggestion (review manually): \"API-update-a-data-source\" (2873 B); remaining ~11537",
+            "Deny suggestion (review manually): \"API-post-page\" (2823 B); remaining ~10832",
+            "Deny suggestion (review manually): \"API-create-a-data-source\" (2771 B); remaining ~10139",
+            "Deny suggestion (review manually): \"API-patch-block-children\" (2665 B); remaining ~9473",
+            "Deny suggestion (review manually): \"API-update-a-block\" (2616 B); remaining ~8819"
+          ]
+        }
+      }
+    },
+    {
+      "id": "github",
+      "name": "GitHub MCP (GitHub, default toolsets)",
+      "kind": "github-release",
+      "package": "github/github-mcp-server",
+      "version": "2.1.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/github.json",
+        "--server-cwd",
+        "$WORK/sandbox/github",
+        "--discovery-timeout-ms",
+        "120000",
+        "--server-env",
+        "GITHUB_PERSONAL_ACCESS_TOKEN=dummy-not-a-real-token",
+        "--",
+        "$WORK/servers/github/github-mcp-server",
+        "stdio"
+      ],
+      "tools": 46,
+      "before": {
+        "bytes": 49361,
+        "estimatedTokens": 12341,
+        "o200k_base": 11131,
+        "cl100k_base": 10864
+      },
+      "fullToolObjectBytes": 126553,
+      "largestTools": [
+        {
+          "name": "issue_write",
+          "estimatedTokens": 909
+        },
+        {
+          "name": "pull_request_read",
+          "estimatedTokens": 641
+        },
+        {
+          "name": "list_issues",
+          "estimatedTokens": 585
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 46,
+          "bytes": 46414,
+          "estimatedTokens": 11604,
+          "savedPercent": 6.0,
+          "o200k_base": 10501,
+          "cl100k_base": 10237,
+          "savedPercent_o200k_base": 5.7,
+          "savedPercent_cl100k_base": 5.8
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 46,
+          "bytes": 25881,
+          "estimatedTokens": 6471,
+          "savedPercent": 47.6,
+          "o200k_base": 6215,
+          "cl100k_base": 6004,
+          "savedPercent_o200k_base": 44.2,
+          "savedPercent_cl100k_base": 44.7
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 46,
+          "bytes": 19183,
+          "estimatedTokens": 4796,
+          "savedPercent": 61.1,
+          "o200k_base": 4804,
+          "cl100k_base": 4634,
+          "savedPercent_o200k_base": 56.8,
+          "savedPercent_cl100k_base": 57.3
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 304
+          },
+          "tools": 46,
+          "bytes": 24646,
+          "estimatedTokens": 6162,
+          "savedPercent": 50.1,
+          "o200k_base": 5945,
+          "cl100k_base": 5735,
+          "savedPercent_o200k_base": 46.6,
+          "savedPercent_cl100k_base": 47.2,
+          "budget": 6170,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 6170",
+            "original: 49361 B, ~12341 tokens",
+            "strip schema annotations (keep default): 25881 B, ~6471 tokens",
+            "description cap 304 code points: 24646 B, ~6162 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    },
+    {
+      "id": "github-all",
+      "name": "GitHub MCP (GitHub, --toolsets all)",
+      "kind": "github-release",
+      "package": "github/github-mcp-server",
+      "version": "2.1.0",
+      "command": [
+        "agentwrench",
+        "slim",
+        "discover",
+        "--output",
+        "$WORK/catalogues/github-all.json",
+        "--server-cwd",
+        "$WORK/sandbox/github-all",
+        "--discovery-timeout-ms",
+        "120000",
+        "--server-env",
+        "GITHUB_PERSONAL_ACCESS_TOKEN=dummy-not-a-real-token",
+        "--",
+        "$WORK/servers/github/github-mcp-server",
+        "stdio",
+        "--toolsets",
+        "all"
+      ],
+      "tools": 91,
+      "before": {
+        "bytes": 104209,
+        "estimatedTokens": 26053,
+        "o200k_base": 23138,
+        "cl100k_base": 22675
+      },
+      "fullToolObjectBytes": 259681,
+      "largestTools": [
+        {
+          "name": "projects_write",
+          "estimatedTokens": 1816
+        },
+        {
+          "name": "custom_properties_write",
+          "estimatedTokens": 1015
+        },
+        {
+          "name": "issue_write",
+          "estimatedTokens": 909
+        }
+      ],
+      "variants": {
+        "trim160": {
+          "config": {
+            "maxDescriptionChars": 160
+          },
+          "tools": 91,
+          "bytes": 98987,
+          "estimatedTokens": 24747,
+          "savedPercent": 5.0,
+          "o200k_base": 22048,
+          "cl100k_base": 21589,
+          "savedPercent_o200k_base": 4.7,
+          "savedPercent_cl100k_base": 4.8
+        },
+        "strip": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ]
+          },
+          "tools": 91,
+          "bytes": 52375,
+          "estimatedTokens": 13094,
+          "savedPercent": 49.7,
+          "o200k_base": 12360,
+          "cl100k_base": 11931,
+          "savedPercent_o200k_base": 46.6,
+          "savedPercent_cl100k_base": 47.4
+        },
+        "floor": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 0
+          },
+          "tools": 91,
+          "bytes": 40193,
+          "estimatedTokens": 10049,
+          "savedPercent": 61.4,
+          "o200k_base": 9868,
+          "cl100k_base": 9502,
+          "savedPercent_o200k_base": 57.4,
+          "savedPercent_cl100k_base": 58.1
+        },
+        "plan50": {
+          "config": {
+            "stripSchemaAnnotations": [
+              "description",
+              "title",
+              "examples",
+              "$comment"
+            ],
+            "maxDescriptionChars": 884
+          },
+          "tools": 91,
+          "bytes": 52092,
+          "estimatedTokens": 13023,
+          "savedPercent": 50.0,
+          "o200k_base": 12294,
+          "cl100k_base": 11866,
+          "savedPercent_o200k_base": 46.9,
+          "savedPercent_cl100k_base": 47.7,
+          "budget": 13026,
+          "meetsBudget": true,
+          "planOutput": [
+            "Estimator: ceil(UTF-8 bytes / 4); not a model tokenizer",
+            "Budget: 13026",
+            "original: 104209 B, ~26053 tokens",
+            "strip schema annotations (keep default): 52375 B, ~13094 tokens",
+            "description cap 884 code points: 52092 B, ~13023 tokens",
+            "Budget met. No tools denied."
+          ]
+        }
+      }
+    }
+  ],
+  "stack": {
+    "servers": [
+      "filesystem",
+      "github",
+      "playwright",
+      "context7"
+    ],
+    "before": {
+      "tools": 89,
+      "bytes": 86534,
+      "estimatedTokens": 21635,
+      "o200k_base": 19052,
+      "cl100k_base": 18706
+    },
+    "trim160": {
+      "tools": 89,
+      "bytes": 76911,
+      "estimatedTokens": 19229,
+      "o200k_base": 17097,
+      "cl100k_base": 16752,
+      "savedPercent": 11.1,
+      "savedPercent_o200k_base": 10.3,
+      "savedPercent_cl100k_base": 10.4
+    },
+    "strip": {
+      "tools": 89,
+      "bytes": 48528,
+      "estimatedTokens": 12134,
+      "o200k_base": 11278,
+      "cl100k_base": 10984,
+      "savedPercent": 43.9,
+      "savedPercent_o200k_base": 40.8,
+      "savedPercent_cl100k_base": 41.3
+    },
+    "floor": {
+      "tools": 89,
+      "bytes": 31751,
+      "estimatedTokens": 7939,
+      "o200k_base": 7843,
+      "cl100k_base": 7590,
+      "savedPercent": 63.3,
+      "savedPercent_o200k_base": 58.8,
+      "savedPercent_cl100k_base": 59.4
+    },
+    "plan50": {
+      "tools": 89,
+      "bytes": 42884,
+      "estimatedTokens": 10723,
+      "o200k_base": 10146,
+      "cl100k_base": 9851,
+      "savedPercent": 50.4,
+      "savedPercent_o200k_base": 46.7,
+      "savedPercent_cl100k_base": 47.3
+    }
+  }
+}

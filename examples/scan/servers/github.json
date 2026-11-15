@@ -1,0 +1,1420 @@
+{
+ "tools": [
+  {
+   "name": "get_me",
+   "description": "Get details of the authenticated GitHub user, including login, name, profile URL, plan and organization memberships. Use this when a request refers to 'me', 'my repositories' or 'my pull requests' and you need the current username. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Get me"
+   }
+  },
+  {
+   "name": "search_repositories",
+   "description": "Search GitHub repositories using GitHub's repository search syntax (for example 'language:go stars:>100 topic:cli'). Returns name, owner, description, star count, default branch and last push time for each match. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query using GitHub repository search qualifiers such as language:, topic:, org:, user:, stars:, pushed: and is:public."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "query"
+    ]
+   },
+   "annotations": {
+    "title": "Search repositories"
+   }
+  },
+  {
+   "name": "get_file_contents",
+   "description": "Get the contents of a file or directory from a GitHub repository. For files the decoded text content and SHA are returned; for directories a listing of entries with type, size and path. Binary files are returned as base64 and may be large. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "path": {
+      "type": "string",
+      "description": "Path to the file or directory relative to the repository root, without a leading slash. Use an empty string for the root directory."
+     },
+     "ref": {
+      "type": "string",
+      "description": "Git reference to read from: a branch name, tag or full commit SHA. Defaults to the default branch."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "path"
+    ]
+   },
+   "annotations": {
+    "title": "Get file contents"
+   }
+  },
+  {
+   "name": "create_or_update_file",
+   "description": "Create a new file or replace the contents of an existing file in a GitHub repository with a single commit. To update an existing file you must pass the blob SHA of the version being replaced, which you can obtain with get_file_contents. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "path": {
+      "type": "string",
+      "description": "Path where the file should be created or updated, relative to the repository root."
+     },
+     "content": {
+      "type": "string",
+      "description": "Full new content of the file as UTF-8 text. The previous content is replaced entirely, not merged."
+     },
+     "message": {
+      "type": "string",
+      "description": "Commit message describing the change. Follow the repository's commit message conventions if they are known."
+     },
+     "branch": {
+      "type": "string",
+      "description": "Name of the branch. When omitted, the repository's default branch is used (usually main or master)."
+     },
+     "sha": {
+      "type": "string",
+      "description": "Blob SHA of the file being replaced. Required when updating an existing file; omit when creating a new file."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "path",
+     "content",
+     "message",
+     "branch"
+    ]
+   },
+   "annotations": {
+    "title": "Create or update file"
+   }
+  },
+  {
+   "name": "push_files",
+   "description": "Push multiple files to a branch in a single commit. Use this instead of repeated create_or_update_file calls when a change touches several files, so that the history stays atomic and CI runs once. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "branch": {
+      "type": "string",
+      "description": "Name of the branch. When omitted, the repository's default branch is used (usually main or master)."
+     },
+     "files": {
+      "type": "array",
+      "description": "Files to write in this commit. Each entry needs the path relative to the repository root and the complete new content.",
+      "items": {
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string",
+         "description": "File path relative to the repository root."
+        },
+        "content": {
+         "type": "string",
+         "description": "Complete new file content as UTF-8 text."
+        }
+       },
+       "required": [
+        "path",
+        "content"
+       ]
+      }
+     },
+     "message": {
+      "type": "string",
+      "description": "Commit message for the single commit that contains all files."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "branch",
+     "files",
+     "message"
+    ]
+   },
+   "annotations": {
+    "title": "Push files"
+   }
+  },
+  {
+   "name": "create_repository",
+   "description": "Create a new GitHub repository in your personal account or, when organization is set, in an organization you can create repositories in. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Repository name. Letters, digits, hyphens, underscores and periods are allowed."
+     },
+     "description": {
+      "type": "string",
+      "description": "Short description shown on the repository page."
+     },
+     "private": {
+      "type": "boolean",
+      "description": "Whether the repository should be private. Defaults to false (public)."
+     },
+     "autoInit": {
+      "type": "boolean",
+      "description": "Initialize the repository with a README so that it has a default branch immediately."
+     },
+     "organization": {
+      "type": "string",
+      "description": "Organization that should own the repository. Omit to create it in the authenticated user's account."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "name"
+    ]
+   },
+   "annotations": {
+    "title": "Create repository"
+   }
+  },
+  {
+   "name": "fork_repository",
+   "description": "Fork a GitHub repository to your account or to an organization. Forking is asynchronous on GitHub's side; the fork may take a few seconds before its contents are available. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "organization": {
+      "type": "string",
+      "description": "Organization to fork into. Omit to fork into the authenticated user's account."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "Fork repository"
+   }
+  },
+  {
+   "name": "create_branch",
+   "description": "Create a new branch in a GitHub repository, starting from an existing branch or from the default branch when from_branch is omitted. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "branch": {
+      "type": "string",
+      "description": "Name for the new branch. Must not already exist."
+     },
+     "from_branch": {
+      "type": "string",
+      "description": "Source branch to create the new branch from. Defaults to the repository's default branch."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "branch"
+    ]
+   },
+   "annotations": {
+    "title": "Create branch"
+   }
+  },
+  {
+   "name": "list_branches",
+   "description": "List branches in a GitHub repository with their latest commit SHA and protection status. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "List branches"
+   }
+  },
+  {
+   "name": "list_commits",
+   "description": "Get a list of commits for a branch or path in a GitHub repository, newest first, including author, date, message and SHA. Use sha to select a branch or tag and path to restrict history to a file or directory. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "sha": {
+      "type": "string",
+      "description": "Branch name, tag or commit SHA to start listing commits from. Defaults to the default branch."
+     },
+     "path": {
+      "type": "string",
+      "description": "Only commits containing this file path will be returned."
+     },
+     "author": {
+      "type": "string",
+      "description": "GitHub login or email address by which to filter commits by author."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "List commits"
+   }
+  },
+  {
+   "name": "get_commit",
+   "description": "Get details for a single commit, including the full message, author, committer, parents, statistics and the list of changed files with patches. Patches for large commits are truncated by GitHub. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "sha": {
+      "type": "string",
+      "description": "Commit SHA, branch name or tag name."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "sha"
+    ]
+   },
+   "annotations": {
+    "title": "Get commit"
+   }
+  },
+  {
+   "name": "list_issues",
+   "description": "List issues in a GitHub repository with filtering by state, labels, assignee and update time. Pull requests are excluded. Results include number, title, state, labels, assignees, comment count and timestamps. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "state": {
+      "type": "string",
+      "description": "Filter by issue state.",
+      "enum": [
+       "open",
+       "closed",
+       "all"
+      ]
+     },
+     "labels": {
+      "type": "array",
+      "description": "Only return issues that have all of these label names.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "sort": {
+      "type": "string",
+      "description": "Sort field.",
+      "enum": [
+       "created",
+       "updated",
+       "comments"
+      ]
+     },
+     "direction": {
+      "type": "string",
+      "description": "Sort direction.",
+      "enum": [
+       "asc",
+       "desc"
+      ]
+     },
+     "since": {
+      "type": "string",
+      "description": "Only issues updated at or after this ISO 8601 timestamp (YYYY-MM-DDTHH:MM:SSZ)."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "List issues"
+   }
+  },
+  {
+   "name": "get_issue",
+   "description": "Get the full details of a single issue, including its body, labels, assignees, milestone, reactions and linked pull requests. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "issue_number": {
+      "type": "number",
+      "description": "The number that identifies the issue within the repository, as shown in the issue URL."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "issue_number"
+    ]
+   },
+   "annotations": {
+    "title": "Get issue"
+   }
+  },
+  {
+   "name": "create_issue",
+   "description": "Create a new issue in a GitHub repository. Write a clear title and a body in GitHub-flavored Markdown that includes reproduction steps or acceptance criteria where relevant. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "title": {
+      "type": "string",
+      "description": "Issue title. Keep it short and specific."
+     },
+     "body": {
+      "type": "string",
+      "description": "Issue body in GitHub-flavored Markdown."
+     },
+     "assignees": {
+      "type": "array",
+      "description": "GitHub logins to assign.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "labels": {
+      "type": "array",
+      "description": "Label names to apply. Labels must already exist in the repository.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "milestone": {
+      "type": "number",
+      "description": "Milestone number to associate with the issue."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "title"
+    ]
+   },
+   "annotations": {
+    "title": "Create issue"
+   }
+  },
+  {
+   "name": "update_issue",
+   "description": "Update an existing issue: change its title, body, state, labels, assignees or milestone. Only the fields you pass are changed; labels and assignees replace the current lists. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "issue_number": {
+      "type": "number",
+      "description": "The number that identifies the issue within the repository, as shown in the issue URL."
+     },
+     "title": {
+      "type": "string",
+      "description": "New title."
+     },
+     "body": {
+      "type": "string",
+      "description": "New body in GitHub-flavored Markdown."
+     },
+     "state": {
+      "type": "string",
+      "description": "New state.",
+      "enum": [
+       "open",
+       "closed"
+      ]
+     },
+     "state_reason": {
+      "type": "string",
+      "description": "Reason for the state change.",
+      "enum": [
+       "completed",
+       "not_planned",
+       "reopened"
+      ]
+     },
+     "labels": {
+      "type": "array",
+      "description": "Complete new list of label names.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "assignees": {
+      "type": "array",
+      "description": "Complete new list of assignee logins.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "milestone": {
+      "type": "number",
+      "description": "New milestone number."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "issue_number"
+    ]
+   },
+   "annotations": {
+    "title": "Update issue"
+   }
+  },
+  {
+   "name": "add_issue_comment",
+   "description": "Add a comment to an existing issue or pull request conversation. For line-level review comments on a pull request use the pull request review tools instead. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "issue_number": {
+      "type": "number",
+      "description": "The number that identifies the issue within the repository, as shown in the issue URL."
+     },
+     "body": {
+      "type": "string",
+      "description": "Comment text in GitHub-flavored Markdown."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "issue_number",
+     "body"
+    ]
+   },
+   "annotations": {
+    "title": "Add issue comment"
+   }
+  },
+  {
+   "name": "search_issues",
+   "description": "Search issues and pull requests across GitHub using the issue search syntax (for example 'repo:owner/name is:open label:bug author:octocat'). Use is:issue or is:pr to restrict the type. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query using GitHub issue search qualifiers."
+     },
+     "sort": {
+      "type": "string",
+      "description": "Sort field.",
+      "enum": [
+       "comments",
+       "reactions",
+       "created",
+       "updated",
+       "interactions"
+      ]
+     },
+     "order": {
+      "type": "string",
+      "description": "Sort order.",
+      "enum": [
+       "asc",
+       "desc"
+      ]
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "query"
+    ]
+   },
+   "annotations": {
+    "title": "Search issues"
+   }
+  },
+  {
+   "name": "search_code",
+   "description": "Search for code across GitHub repositories using code search syntax (for example 'repo:owner/name path:src language:python def main'). Returns matching files with repository, path and text fragments. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Code search query with qualifiers such as repo:, org:, path:, language: and extension:."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "query"
+    ]
+   },
+   "annotations": {
+    "title": "Search code"
+   }
+  },
+  {
+   "name": "search_users",
+   "description": "Search GitHub users and organizations by login, name, location or follower count. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "User search query with qualifiers such as type:, location:, followers: and language:."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "query"
+    ]
+   },
+   "annotations": {
+    "title": "Search users"
+   }
+  },
+  {
+   "name": "list_pull_requests",
+   "description": "List pull requests in a repository with filtering by state, head and base branch. Results include number, title, author, draft status, mergeability and review decision when available. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "state": {
+      "type": "string",
+      "description": "Filter by state.",
+      "enum": [
+       "open",
+       "closed",
+       "all"
+      ]
+     },
+     "head": {
+      "type": "string",
+      "description": "Filter by head user or organization and branch name in the format user:ref-name."
+     },
+     "base": {
+      "type": "string",
+      "description": "Filter by base branch name."
+     },
+     "sort": {
+      "type": "string",
+      "description": "Sort field.",
+      "enum": [
+       "created",
+       "updated",
+       "popularity",
+       "long-running"
+      ]
+     },
+     "direction": {
+      "type": "string",
+      "description": "Sort direction.",
+      "enum": [
+       "asc",
+       "desc"
+      ]
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "List pull requests"
+   }
+  },
+  {
+   "name": "get_pull_request",
+   "description": "Get the details of a pull request, including title, body, author, head and base branches, merge state, labels, requested reviewers and statistics. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Get pull request"
+   }
+  },
+  {
+   "name": "create_pull_request",
+   "description": "Create a new pull request from a head branch into a base branch. Write a descriptive title and a body that explains what changed, why, and how it was tested; link related issues with 'Fixes #123' where appropriate. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "title": {
+      "type": "string",
+      "description": "Pull request title."
+     },
+     "body": {
+      "type": "string",
+      "description": "Pull request description in GitHub-flavored Markdown."
+     },
+     "head": {
+      "type": "string",
+      "description": "The branch that contains your changes. For cross-repository pull requests use owner:branch."
+     },
+     "base": {
+      "type": "string",
+      "description": "The branch you want the changes pulled into, usually the default branch."
+     },
+     "draft": {
+      "type": "boolean",
+      "description": "Create the pull request as a draft that cannot be merged until marked ready for review."
+     },
+     "maintainer_can_modify": {
+      "type": "boolean",
+      "description": "Allow maintainers of the base repository to push to the head branch."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "title",
+     "head",
+     "base"
+    ]
+   },
+   "annotations": {
+    "title": "Create pull request"
+   }
+  },
+  {
+   "name": "update_pull_request",
+   "description": "Update an existing pull request's title, body, base branch, state or draft status. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     },
+     "title": {
+      "type": "string",
+      "description": "New title."
+     },
+     "body": {
+      "type": "string",
+      "description": "New description."
+     },
+     "base": {
+      "type": "string",
+      "description": "New base branch."
+     },
+     "state": {
+      "type": "string",
+      "description": "New state.",
+      "enum": [
+       "open",
+       "closed"
+      ]
+     },
+     "draft": {
+      "type": "boolean",
+      "description": "Mark as draft (true) or ready for review (false)."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Update pull request"
+   }
+  },
+  {
+   "name": "get_pull_request_files",
+   "description": "Get the list of files changed in a pull request with additions, deletions, status and patch. Large patches are truncated by GitHub; fetch the file contents directly when you need the complete text. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Get pull request files"
+   }
+  },
+  {
+   "name": "get_pull_request_status",
+   "description": "Get the combined commit status and check-run results for the head commit of a pull request, so you can tell whether CI is passing, failing or still running. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Get pull request status"
+   }
+  },
+  {
+   "name": "get_pull_request_comments",
+   "description": "Get the review comments on a pull request, including the file path, line, diff hunk and author of each comment, in thread order. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Get pull request comments"
+   }
+  },
+  {
+   "name": "get_pull_request_reviews",
+   "description": "Get the reviews submitted on a pull request with reviewer, state (APPROVED, CHANGES_REQUESTED, COMMENTED) and body. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Get pull request reviews"
+   }
+  },
+  {
+   "name": "create_pull_request_review",
+   "description": "Create a review on a pull request: approve it, request changes or leave a comment, optionally with line-level comments attached to specific lines of the diff. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     },
+     "body": {
+      "type": "string",
+      "description": "Overall review comment."
+     },
+     "event": {
+      "type": "string",
+      "description": "Review action to perform.",
+      "enum": [
+       "APPROVE",
+       "REQUEST_CHANGES",
+       "COMMENT"
+      ]
+     },
+     "commitId": {
+      "type": "string",
+      "description": "SHA of the commit to review. Defaults to the latest commit on the pull request."
+     },
+     "comments": {
+      "type": "array",
+      "description": "Line-level comments to attach to the review.",
+      "items": {
+       "type": "object",
+       "properties": {
+        "path": {
+         "type": "string",
+         "description": "File path relative to the repository root."
+        },
+        "line": {
+         "type": "number",
+         "description": "Line number in the file that the comment applies to."
+        },
+        "side": {
+         "type": "string",
+         "description": "Side of the diff.",
+         "enum": [
+          "LEFT",
+          "RIGHT"
+         ]
+        },
+        "body": {
+         "type": "string",
+         "description": "Comment text."
+        }
+       },
+       "required": [
+        "path",
+        "body"
+       ]
+      }
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber",
+     "event"
+    ]
+   },
+   "annotations": {
+    "title": "Create pull request review"
+   }
+  },
+  {
+   "name": "merge_pull_request",
+   "description": "Merge a pull request using a merge commit, squash or rebase. Fails if required checks or reviews are not satisfied or if there are conflicts. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     },
+     "commit_title": {
+      "type": "string",
+      "description": "Title for the merge or squash commit."
+     },
+     "commit_message": {
+      "type": "string",
+      "description": "Extra detail appended to the merge commit message."
+     },
+     "merge_method": {
+      "type": "string",
+      "description": "Merge method to use.",
+      "enum": [
+       "merge",
+       "squash",
+       "rebase"
+      ]
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Merge pull request"
+   }
+  },
+  {
+   "name": "update_pull_request_branch",
+   "description": "Update a pull request branch with the latest upstream changes from its base branch by merging the base into the head. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "pullNumber": {
+      "type": "number",
+      "description": "The number that identifies the pull request within the repository, as shown in the pull request URL."
+     },
+     "expectedHeadSha": {
+      "type": "string",
+      "description": "The expected SHA of the pull request's HEAD ref; the update fails if it does not match."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo",
+     "pullNumber"
+    ]
+   },
+   "annotations": {
+    "title": "Update pull request branch"
+   }
+  },
+  {
+   "name": "list_workflow_runs",
+   "description": "List GitHub Actions workflow runs for a repository or a specific workflow, with status, conclusion, branch, event and timing. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "workflow_id": {
+      "type": "string",
+      "description": "Workflow file name (for example ci.yml) or numeric ID. Omit to list runs for all workflows."
+     },
+     "branch": {
+      "type": "string",
+      "description": "Only runs for this branch."
+     },
+     "status": {
+      "type": "string",
+      "description": "Filter by run status.",
+      "enum": [
+       "queued",
+       "in_progress",
+       "completed",
+       "success",
+       "failure",
+       "cancelled"
+      ]
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "List workflow runs"
+   }
+  },
+  {
+   "name": "get_job_logs",
+   "description": "Download the logs of a GitHub Actions job, or of all failed jobs in a workflow run when failed_only is true. Logs can be very large; use tail_lines to return only the end of each log. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "owner": {
+      "type": "string",
+      "description": "Repository owner: the GitHub username or organization name that owns the repository. Case-insensitive."
+     },
+     "repo": {
+      "type": "string",
+      "description": "Repository name without the owner prefix and without the .git suffix. Case-insensitive."
+     },
+     "job_id": {
+      "type": "number",
+      "description": "ID of a single job to fetch logs for."
+     },
+     "run_id": {
+      "type": "number",
+      "description": "Workflow run ID, used together with failed_only."
+     },
+     "failed_only": {
+      "type": "boolean",
+      "description": "Fetch logs for every failed job in run_id."
+     },
+     "tail_lines": {
+      "type": "number",
+      "description": "Number of lines to return from the end of each log. Defaults to 500."
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "owner",
+     "repo"
+    ]
+   },
+   "annotations": {
+    "title": "Get job logs"
+   }
+  },
+  {
+   "name": "list_notifications",
+   "description": "List GitHub notifications for the authenticated user, such as review requests, mentions and CI failures, newest first. Only use this tool when the user has asked for it or it is clearly required to complete the task; confirm destructive or visible actions with the user first. Results reflect the permissions of the configured token, so missing resources may be private rather than absent.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "filter": {
+      "type": "string",
+      "description": "Which notifications to include.",
+      "enum": [
+       "default",
+       "include_read_notifications",
+       "only_participating"
+      ]
+     },
+     "since": {
+      "type": "string",
+      "description": "Only notifications updated after this ISO 8601 timestamp."
+     },
+     "page": {
+      "type": "number",
+      "description": "Page number for pagination, starting at 1. Use together with perPage to walk through large result sets.",
+      "minimum": 1
+     },
+     "perPage": {
+      "type": "number",
+      "description": "Number of results to return per page (minimum 1, maximum 100). Larger pages use more context; prefer small pages and paginate.",
+      "minimum": 1,
+      "maximum": 100
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "List notifications"
+   }
+  }
+ ]
+}

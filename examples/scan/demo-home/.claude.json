@@ -1,0 +1,35 @@
+{
+  "numStartups": 212,
+  "theme": "dark",
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "../servers/demo_mcp.py",
+        "github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "demo-not-a-real-token"
+      }
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp",
+      "headers": {
+        "Authorization": "Bearer demo-not-a-real-token"
+      }
+    },
+    "sentry": {
+      "type": "stdio",
+      "command": "./bin/sentry-mcp",
+      "args": [
+        "--org",
+        "acme"
+      ],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "demo-not-a-real-token"
+      }
+    }
+  }
+}

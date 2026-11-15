@@ -69,17 +69,28 @@ def imports(text: str) -> list[tuple[str, int]]:
     return result
 
 
-def inspect_claude(cwd: Path, allow_roots: list[Path] | None = None) -> Report:
+def inspect_claude(cwd: Path, allow_roots: list[Path] | None = None, *,
+                   user_dir: Path | None = None) -> Report:
+    """Ancestor CLAUDE.md files of ``cwd`` and their imports.
+
+    With ``user_dir`` (for example ``~/.claude``), its ``CLAUDE.md`` user memory is
+    visited first as scope ``user``; imports may then also resolve inside ``user_dir``.
+    """
     cwd = directory(cwd)
     boundary = find_root(cwd, [".git"]) or cwd
     roots = [boundary.resolve(), *(directory(p).resolve() for p in (allow_roots or []))]
+    user = absolute(user_dir) if user_dir is not None else None
+    if user is not None and user.is_dir():
+        roots.append(user.resolve())
     report = Report("claude", str(cwd), str(boundary))
     report.warnings.append("docs-derived dependency graph; not an exact Claude prompt or subagent prediction")
     reader, visited, active = Reader(), set(), set()
     edges = 0
 
-    def visit(path: Path, depth: int, source: Path | None = None, line: int | None = None) -> None:
+    def visit(path: Path, depth: int, source: Path | None = None, line: int | None = None,
+              scope: str = "ancestor") -> None:
         nonlocal edges
+        scope = "import" if source else scope
         edge = None
         if source is not None:
             edges += 1
@@ -106,11 +117,11 @@ def inspect_claude(cwd: Path, allow_roots: list[Path] | None = None) -> Report:
             if edge is not None:
                 edge["status"] = "error"
                 edge["error"] = message
-            report.entries.append(entry(path, "import" if source else "ancestor", None, "unreadable"))
+            report.entries.append(entry(path, scope, None, "unreadable"))
             return
         visited.add(canonical)
         active.add(canonical)
-        report.entries.append(entry(path, "import" if source else "ancestor", len(data), "loaded", len(data)))
+        report.entries.append(entry(path, scope, len(data), "loaded", len(data)))
         for token, import_line in imports(data.decode("utf-8", "replace")):
             # No home expansion from the host's credentials/config environment.
             if token.startswith("~") or "\x00" in token or "://" in token:
@@ -120,6 +131,9 @@ def inspect_claude(cwd: Path, allow_roots: list[Path] | None = None) -> Report:
             visit(target, depth + 1, path, import_line)
         active.remove(canonical)
 
+    if user is not None:
+        for path in candidates(user, ["CLAUDE.md"], report, "user"):
+            visit(path, 0, scope="user")
     for folder in reversed((cwd, *cwd.parents)):
         for path in candidates(folder, ["CLAUDE.md", ".claude/CLAUDE.md", "CLAUDE.local.md"], report, "ancestor"):
             visit(path, 0)

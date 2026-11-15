@@ -32,7 +32,8 @@ GROUPS = ("Tokens & cost", "Sessions", "MCP", "Instructions", "Other")
 
 COMMANDS: tuple[Command, ...] = (
     Command("scan", "agentwrench.scan.cli",
-            "Find where agent sessions spend tokens and cost", "Tokens & cost"),
+            "Audit context overhead and breakage: MCP tools, AGENTS.md/CLAUDE.md, sessions",
+            "Tokens & cost"),
     Command("slim", "agentwrench.slim.cli",
             "Shrink the tool definitions an MCP server exposes", "Tokens & cost"),
     Command("cache", "agentwrench.cache.cli",

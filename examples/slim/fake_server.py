@@ -77,7 +77,8 @@ for line in sys.stdin.buffer:
             result['nextCursor'] = 'page-2'
         result['_meta'] = {'fixture': True}
         emit({'jsonrpc': '2.0', 'id': m['id'], 'result': result})
-        emit({'jsonrpc': '2.0', 'method': 'notifications/tools/list_changed'})
+        if mode != 'static':  # 'static': a catalogue that never changes (discoverable)
+            emit({'jsonrpc': '2.0', 'method': 'notifications/tools/list_changed'})
     elif method == 'tools/call':
         text = json.dumps(m.get('params'), ensure_ascii=False, separators=(',', ':'))
         emit({'jsonrpc': '2.0', 'id': m['id'], 'result': {'content': [{'type': 'text', 'text': text}]}})

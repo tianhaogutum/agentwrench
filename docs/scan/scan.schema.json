@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tianhaogutum/agentwrench/blob/main/docs/scan/scan.schema.json",
+  "title": "agentwrench scan --json (agentwrench.scan/v1)",
+  "description": "Output of `agentwrench scan --json`. Fields are only added within v1; renames or removals bump the schema string. Never contains environment variable values, header values, tokens, instruction text or session text.",
+  "type": "object",
+  "required": ["schema", "agentwrench_version", "home", "project", "options", "estimator", "elapsed_ms",
+               "summary", "mcp", "instructions", "sessions", "findings"],
+  "properties": {
+    "schema": {"const": "agentwrench.scan/v1"},
+    "agentwrench_version": {"type": "string"},
+    "home": {"type": "string", "description": "Absolute home directory used for ~/.claude.json, ~/.claude and ~/.codex."},
+    "project": {"type": "string", "description": "Absolute project directory."},
+    "options": {
+      "type": "object",
+      "required": ["probe", "timeout_s", "sessions"],
+      "properties": {
+        "probe": {"type": "boolean"},
+        "timeout_s": {"type": "number"},
+        "sessions": {"type": "integer", "minimum": 0}
+      }
+    },
+    "estimator": {"type": "string"},
+    "elapsed_ms": {"type": "integer", "minimum": 0},
+    "summary": {
+      "type": "object",
+      "required": ["clients", "max_fixed_overhead_tokens", "problems", "errors", "warnings", "fail_over",
+                   "over_limit", "top_fixes"],
+      "properties": {
+        "clients": {
+          "type": "object",
+          "required": ["claude-code", "codex"],
+          "additionalProperties": {"$ref": "#/$defs/overhead"}
+        },
+        "max_fixed_overhead_tokens": {"type": "integer", "minimum": 0},
+        "problems": {"type": "integer", "minimum": 0},
+        "errors": {"type": "integer", "minimum": 0},
+        "warnings": {"type": "integer", "minimum": 0},
+        "fail_over": {"type": ["integer", "null"]},
+        "over_limit": {"type": "boolean"},
+        "top_fixes": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/finding"}}
+      }
+    },
+    "mcp": {
+      "type": "object",
+      "required": ["probed", "elapsed_ms", "tokens_per_tool_budget", "servers"],
+      "properties": {
+        "probed": {"type": "boolean"},
+        "elapsed_ms": {"type": ["integer", "null"]},
+        "tokens_per_tool_budget": {"type": "integer"},
+        "servers": {"type": "array", "items": {"$ref": "#/$defs/server"}}
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "required": ["codex", "claude-code"],
+      "properties": {
+        "codex": {"oneOf": [{"$ref": "#/$defs/error"}, {"$ref": "#/$defs/codexInstructions"}]},
+        "claude-code": {"oneOf": [{"$ref": "#/$defs/error"}, {"$ref": "#/$defs/claudeInstructions"}]}
+      }
+    },
+    "sessions": {
+      "type": "object",
+      "required": ["claude-code", "codex"],
+      "additionalProperties": {"$ref": "#/$defs/sessions"}
+    },
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}}
+  },
+  "$defs": {
+    "client": {"enum": ["claude-code", "codex"]},
+    "overhead": {
+      "type": "object",
+      "required": ["fixed_overhead_tokens", "mcp_tokens", "instruction_tokens", "mcp_servers",
+                   "mcp_servers_measured", "complete"],
+      "properties": {
+        "fixed_overhead_tokens": {"type": "integer", "minimum": 0, "description": "Measured MCP tool tokens + instruction tokens."},
+        "mcp_tokens": {"type": ["integer", "null"], "description": "null without --probe."},
+        "instruction_tokens": {"type": "integer", "minimum": 0},
+        "mcp_servers": {"type": "integer", "minimum": 0, "description": "Active (enabled, not overridden) servers."},
+        "mcp_servers_measured": {"type": "integer", "minimum": 0},
+        "complete": {"type": "boolean", "description": "Every active server was measured."}
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["severity", "area", "client", "message", "command", "tokens_saved"],
+      "properties": {
+        "severity": {"enum": ["error", "warning"]},
+        "area": {"enum": ["mcp", "instructions", "sessions"]},
+        "client": {"oneOf": [{"$ref": "#/$defs/client"}, {"type": "null"}]},
+        "message": {"type": "string"},
+        "command": {"type": "array", "items": {"type": "string"}, "description": "Shell commands, one per line; may be empty."},
+        "tokens_saved": {"type": "integer", "minimum": 0, "description": "Estimated tokens saved per turn."}
+      }
+    },
+    "server": {
+      "type": "object",
+      "required": ["client", "scope", "source", "name", "transport", "enabled", "status", "shadowed_by", "command",
+                   "url", "env_keys", "header_keys", "error", "tools", "bytes", "estimated_tokens", "top_tools",
+                   "slim", "duplicate_of"],
+      "properties": {
+        "client": {"$ref": "#/$defs/client"},
+        "scope": {"enum": ["global", "project", "local"]},
+        "source": {"type": "string"},
+        "name": {"type": "string"},
+        "transport": {"type": "string", "description": "stdio, http, sse, ws, unknown or unsupported:<type>."},
+        "enabled": {"type": "boolean"},
+        "status": {"enum": ["listed", "measured", "failed", "remote", "disabled", "shadowed", "invalid"]},
+        "shadowed_by": {"type": ["string", "null"]},
+        "command": {"type": ["array", "null"], "items": {"type": "string"}, "description": "Redacted command and args."},
+        "url": {"type": ["string", "null"], "description": "scheme://host[:port]/path only."},
+        "env_keys": {"type": "array", "items": {"type": "string"}},
+        "header_keys": {"type": "array", "items": {"type": "string"}},
+        "error": {"type": ["string", "null"]},
+        "tools": {"type": ["integer", "null"]},
+        "bytes": {"type": ["integer", "null"]},
+        "estimated_tokens": {"type": ["integer", "null"]},
+        "top_tools": {
+          "type": "array",
+          "items": {"type": "object", "required": ["name", "estimated_tokens"],
+                    "properties": {"name": {"type": "string"}, "estimated_tokens": {"type": "integer"}}}
+        },
+        "slim": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object",
+             "required": ["budget", "estimated_tokens_after", "estimated_tokens_saved", "meets_budget", "config"],
+             "properties": {
+               "budget": {"type": "integer"},
+               "estimated_tokens_after": {"type": "integer"},
+               "estimated_tokens_saved": {"type": "integer"},
+               "meets_budget": {"type": "boolean"},
+               "config": {"type": "object", "description": "The `agentwrench slim` config `slim plan` would print."}
+             }}
+          ]
+        },
+        "duplicate_of": {"type": ["string", "null"]}
+      }
+    },
+    "error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}}},
+    "instructionFile": {
+      "type": "object",
+      "required": ["path", "scope", "bytes", "loaded_bytes", "status"],
+      "properties": {
+        "path": {"type": "string"},
+        "scope": {"enum": ["global", "project", "user", "ancestor", "import"]},
+        "bytes": {"type": ["integer", "null"]},
+        "loaded_bytes": {"type": "integer"},
+        "status": {"type": "string"}
+      }
+    },
+    "codexInstructions": {
+      "type": "object",
+      "required": ["codex_home", "root", "files", "project_bytes", "project_bytes_loaded", "limit_bytes", "usage",
+                   "rendered_bytes", "estimated_tokens", "truncated", "dropped_bytes", "cuts", "errors"],
+      "properties": {
+        "codex_home": {"type": "string"},
+        "root": {"type": ["string", "null"]},
+        "files": {"type": "array", "items": {"$ref": "#/$defs/instructionFile"}},
+        "project_bytes": {"type": "integer"},
+        "project_bytes_loaded": {"type": "integer"},
+        "limit_bytes": {"type": "integer"},
+        "usage": {"type": "number"},
+        "rendered_bytes": {"type": "integer"},
+        "estimated_tokens": {"type": "integer"},
+        "truncated": {"type": "boolean"},
+        "dropped_bytes": {"type": "integer"},
+        "cuts": {
+          "type": "array",
+          "items": {"type": "object", "required": ["path", "line", "heading", "dropped_headings"],
+                    "properties": {"path": {"type": "string"}, "line": {"type": "integer"},
+                                   "heading": {"type": ["string", "null"]},
+                                   "dropped_headings": {"type": "array", "items": {"type": "string"}}}}
+        },
+        "errors": {"type": "array", "items": {"type": "object", "required": ["path", "error"]}}
+      }
+    },
+    "claudeInstructions": {
+      "type": "object",
+      "required": ["files", "imports", "loaded_bytes", "estimated_tokens", "errors"],
+      "properties": {
+        "files": {"type": "array", "items": {"$ref": "#/$defs/instructionFile"}},
+        "imports": {"type": "integer"},
+        "loaded_bytes": {"type": "integer"},
+        "estimated_tokens": {"type": "integer"},
+        "errors": {"type": "array", "items": {"type": "object", "required": ["path", "error"]}}
+      }
+    },
+    "sessions": {
+      "type": "object",
+      "required": ["root", "checked", "clean", "broken", "live", "errors", "elapsed_ms", "files", "example_command"],
+      "properties": {
+        "root": {"type": "string"},
+        "checked": {"type": "integer"},
+        "clean": {"type": "integer"},
+        "broken": {"type": "integer"},
+        "live": {"type": "integer", "description": "Recently written files whose only problem is a pending call."},
+        "errors": {"type": "integer"},
+        "elapsed_ms": {"type": "integer"},
+        "files": {
+          "type": "array",
+          "description": "Files that are not clean.",
+          "items": {"type": "object", "required": ["path", "status", "issues"],
+                    "properties": {"path": {"type": "string"},
+                                   "status": {"enum": ["broken", "live", "error", "skipped"]},
+                                   "issues": {"type": "object", "additionalProperties": {"type": "integer"},
+                                              "description": "agentwrench doctor issue code -> count"},
+                                   "first_issue_line": {"type": "integer"},
+                                   "error": {"type": "string"}}}
+        },
+        "example_command": {"type": ["array", "null"], "items": {"type": "string"}}
+      }
+    }
+  }
+}

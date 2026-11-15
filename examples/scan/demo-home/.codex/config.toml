@@ -1,0 +1,12 @@
+model = "gpt-5-codex"
+approval_policy = "on-request"
+
+[mcp_servers.github]
+command = "python3"
+args = ["../servers/demo_mcp.py", "github"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "demo-not-a-real-token" }
+
+[mcp_servers.postgres]
+command = "python3"
+args = ["../servers/demo_mcp.py", "postgres"]
+env = { DATABASE_URL = "postgresql://app:demo-password@localhost:5432/acme" }
