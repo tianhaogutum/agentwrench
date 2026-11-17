@@ -1,0 +1,362 @@
+{
+  "redact": [
+    [
+      "Bearer abc.def",
+      "Bearer [REDACTED]"
+    ],
+    [
+      "Authorization: Basic xyz",
+      "Authorization: [REDACTED]"
+    ],
+    [
+      "proxy-authorization=abc def",
+      "proxy-authorization=[REDACTED]"
+    ],
+    [
+      "postgres://u:p@host/db",
+      "postgres://[REDACTED]@host/db"
+    ],
+    [
+      "api_key='x y' tail",
+      "api_key=[REDACTED] tail"
+    ],
+    [
+      "token=abc;rest",
+      "token=[REDACTED];rest"
+    ],
+    [
+      "\u001b[31mred\u001b[0m\u0007bell",
+      "redbell"
+    ],
+    [
+      "-----BEGIN RSA PRIVATE KEY-----\nAAA\n-----END RSA PRIVATE KEY-----tail",
+      "[REDACTED PRIVATE KEY]tail"
+    ],
+    [
+      "-----BEGIN PRIVATE KEY-----\nunterminated",
+      "[REDACTED PRIVATE KEY]"
+    ],
+    [
+      "ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa x",
+      "[REDACTED TOKEN] x"
+    ],
+    [
+      "sk-proj-abcdefghijklmnop",
+      "[REDACTED TOKEN]"
+    ],
+    [
+      "AKIAAAAAAAAAAAAAAAAA",
+      "[REDACTED TOKEN]"
+    ],
+    [
+      "passwordless login",
+      "passwordless login"
+    ],
+    [
+      "my_secret: \"q r\"",
+      "my_secret: [REDACTED]"
+    ],
+    [
+      "x Bearer tok",
+      "x Bearer [REDACTED]"
+    ],
+    [
+      "BEARER zzz",
+      "Bearer [REDACTED]"
+    ],
+    [
+      "ſecret=1",
+      "ſecret=1"
+    ],
+    [
+      "PASSWORD = hunter2, next",
+      "PASSWORD = [REDACTED], next"
+    ],
+    [
+      "\"apiKey\": \"v\"",
+      "\"apiKey\": [REDACTED]"
+    ],
+    [
+      "line1\r\nauthorization: x\nok",
+      "line1\r\nauthorization: [REDACTED]\nok"
+    ]
+  ],
+  "redactCommand": [
+    [
+      [
+        "tool",
+        "--api-key",
+        "X",
+        "--token=Y",
+        "plain"
+      ],
+      [
+        "tool",
+        "--api-key",
+        "[REDACTED ARGUMENT]",
+        "--token=[REDACTED]",
+        "plain"
+      ]
+    ],
+    [
+      [
+        "-p",
+        "--password"
+      ],
+      [
+        "-p",
+        "--password"
+      ]
+    ],
+    [
+      [
+        "--secret-file",
+        "f",
+        "--PASSWORD",
+        "g"
+      ],
+      [
+        "--secret-file",
+        "[REDACTED ARGUMENT]",
+        "--PASSWORD",
+        "[REDACTED ARGUMENT]"
+      ]
+    ],
+    [
+      [
+        "run",
+        "Bearer abc"
+      ],
+      [
+        "run",
+        "Bearer [REDACTED]"
+      ]
+    ]
+  ],
+  "sensitivePath": [
+    [
+      ".env",
+      true
+    ],
+    [
+      ".env.local",
+      true
+    ],
+    [
+      "a/.ENV",
+      true
+    ],
+    [
+      "config/credentials.json",
+      true
+    ],
+    [
+      "secret",
+      true
+    ],
+    [
+      "secrets.yaml",
+      true
+    ],
+    [
+      "id_rsa.pub",
+      true
+    ],
+    [
+      "key.PEM",
+      true
+    ],
+    [
+      "x.keystore",
+      true
+    ],
+    [
+      "notes/.envrc",
+      true
+    ],
+    [
+      ".git",
+      true
+    ],
+    [
+      "README.md",
+      false
+    ],
+    [
+      "a\\b\\.ssh",
+      true
+    ],
+    [
+      ".env\nx",
+      false
+    ],
+    [
+      "my.key.txt",
+      false
+    ],
+    [
+      ".yarnrc.yml",
+      true
+    ],
+    [
+      "credential",
+      true
+    ],
+    [
+      "src/env.ts",
+      false
+    ]
+  ],
+  "safeName": [
+    [
+      "plain.txt",
+      "plain.txt"
+    ],
+    [
+      "api_key=SECRET.txt",
+      "api_key=[REDACTED] [path-id:db3767e8278b]"
+    ],
+    [
+      "中文.txt",
+      "中文.txt"
+    ],
+    [
+      "Bearer xyz",
+      "Bearer [REDACTED] [path-id:cf273736dc60]"
+    ]
+  ],
+  "clipped": [
+    [
+      "a🚀🚀🚀",
+      4,
+      "a🚀\ud83d\n[TRUNCATED]"
+    ],
+    [
+      "abc",
+      3,
+      "abc"
+    ],
+    [
+      "xxxxxxxxxxtoken=zz",
+      12,
+      "xxxxxxxxxxto\n[TRUNCATED]"
+    ],
+    [
+      "🚀",
+      1,
+      "\ud83d\n[TRUNCATED]"
+    ]
+  ],
+  "object": {
+    "text": "{\"b\":1,\"a\":[true,null,\"é\",1.0,-0.0,100,1e-7,123456789012345680000],\"🚀\":0.5,\"｡\":1e21,\"10\":2,\"2\":3,\"nested\":{\"z\":-0,\"y\":1.5e-7,\"x\":\"\\u0001\\u001f\\u007f \"}}",
+    "canonical": "{\"10\":2,\"2\":3,\"a\":[true,null,\"é\",1,0,100,1e-7,123456789012345680000],\"b\":1,\"nested\":{\"x\":\"\\u0001\\u001f \",\"y\":1.5e-7,\"z\":0},\"🚀\":0.5,\"｡\":1e+21}",
+    "digest": "a9295c81b8b8f2a542b8db05d9b771c5a409c91e14e85bc72cbf5d1f15233819",
+    "pretty": "{\n  \"2\": 3,\n  \"10\": 2,\n  \"b\": 1,\n  \"a\": [\n    true,\n    null,\n    \"é\",\n    1,\n    0,\n    100,\n    1e-7,\n    123456789012345680000\n  ],\n  \"🚀\": 0.5,\n  \"｡\": 1e+21,\n  \"nested\": {\n    \"z\": 0,\n    \"y\": 1.5e-7,\n    \"x\": \"\\u0001\\u001f \"\n  }\n}"
+  },
+  "task": {
+    "input": {
+      "goal": " Ship it ",
+      "completed": [
+        "a",
+        "password=x"
+      ],
+      "blockers": []
+    },
+    "output": {
+      "goal": {
+        "text": " Ship it ",
+        "source": "user_input",
+        "verification": "unverified"
+      },
+      "completed": {
+        "status": "provided",
+        "source": "user_input",
+        "items": [
+          {
+            "text": "a",
+            "source": "user_input",
+            "verification": "unverified"
+          },
+          {
+            "text": "password=[REDACTED]",
+            "source": "user_input",
+            "verification": "unverified"
+          }
+        ]
+      },
+      "pending": {
+        "status": "unknown",
+        "source": "not_provided",
+        "items": []
+      },
+      "blockers": {
+        "status": "provided",
+        "source": "user_input",
+        "items": []
+      },
+      "next": {
+        "status": "unknown",
+        "source": "not_provided",
+        "items": []
+      }
+    }
+  },
+  "dates": [
+    [
+      "2026-11-17T10:00:00.000Z",
+      true
+    ],
+    [
+      "2026-11-17",
+      true
+    ],
+    [
+      "2026-11",
+      true
+    ],
+    [
+      "2026",
+      true
+    ],
+    [
+      "2026-11-17T10:00",
+      true
+    ],
+    [
+      "2026-11-17T10:00:00+05:30",
+      true
+    ],
+    [
+      "2026-11-17T24:00:00Z",
+      true
+    ],
+    [
+      "2026-11-17T24:00:01Z",
+      false
+    ],
+    [
+      "2026-13-01",
+      false
+    ],
+    [
+      "+275760-09-13T00:00:00Z",
+      true
+    ],
+    [
+      "-000000-01-01",
+      true
+    ],
+    [
+      "2026-11-17T10:00:00.123456Z",
+      true
+    ],
+    [
+      "not a date",
+      false
+    ],
+    [
+      "",
+      false
+    ]
+  ]
+}

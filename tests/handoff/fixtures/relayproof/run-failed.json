@@ -1,0 +1,26 @@
+{
+  "schema": "relayproof-evidence/1",
+  "policy": "relayproof-scope-v1",
+  "source": "relayproof-local-execution",
+  "label": "unit tests",
+  "command": [
+    "sh",
+    "-c",
+    "printf \"h\\xc3\\xa9llo \\xe4\\xb8\\xad\\xe6\\x96\\x87 \\xf0\\x9f\\x9a\\x80\\n\"; echo \"token=[REDACTED] >&2; exit 3"
+  ],
+  "commandRedacted": true,
+  "startedAt": "2026-11-17T16:40:05.808Z",
+  "finishedAt": "2026-11-17T16:40:05.816Z",
+  "durationMs": 7,
+  "before": "71df478f78eee77eadc97bb93c7e379f8050063141048138e63039119dbe7294",
+  "after": "71df478f78eee77eadc97bb93c7e379f8050063141048138e63039119dbe7294",
+  "exitCode": 3,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdout": "héllo 中文 🚀\n",
+  "stderr": "token=[REDACTED]\n",
+  "stdoutTruncated": false,
+  "stderrTruncated": false,
+  "id": "bbfa4428e05ab1fcd95373937ccc8e400b64a92c25673ad0d6953e3790888792"
+}

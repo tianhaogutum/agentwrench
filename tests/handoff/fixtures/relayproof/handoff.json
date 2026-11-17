@@ -1,0 +1,222 @@
+{
+  "schema": "relayproof-handoff/1",
+  "tool": {
+    "name": "relayproof",
+    "version": "0.1.0"
+  },
+  "createdAt": "2026-11-17T16:40:06.380Z",
+  "task": {
+    "goal": {
+      "text": "Sample: fix the parser 🚀 and hand off",
+      "source": "user_input",
+      "verification": "unverified"
+    },
+    "completed": {
+      "status": "provided",
+      "source": "user_input",
+      "items": [
+        {
+          "text": "Edited code.txt",
+          "source": "user_input",
+          "verification": "unverified"
+        }
+      ]
+    },
+    "pending": {
+      "status": "provided",
+      "source": "user_input",
+      "items": []
+    },
+    "blockers": {
+      "status": "unknown",
+      "source": "not_provided",
+      "items": []
+    },
+    "next": {
+      "status": "provided",
+      "source": "user_input",
+      "items": [
+        {
+          "text": "Run tests",
+          "source": "user_input",
+          "verification": "unverified"
+        },
+        {
+          "text": "password=[REDACTED] should vanish",
+          "source": "user_input",
+          "verification": "unverified"
+        }
+      ]
+    }
+  },
+  "repository": {
+    "source": "git_and_local_files",
+    "root": "not_exported",
+    "snapshot": {
+      "policy": "relayproof-scope-v1",
+      "head": "12ef8d32260c1638098562d811a0f41383e7d287",
+      "branch": "main",
+      "files": [
+        {
+          "path": "api_key=[REDACTED] [path-id:b02560bed4fd]",
+          "status": "??",
+          "index": [],
+          "kind": "file",
+          "sha256": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c",
+          "executable": false
+        },
+        {
+          "path": "code.txt",
+          "status": "MM",
+          "index": [
+            {
+              "mode": "100644",
+              "object": "19d9cc8584ac2c7dcf57d2680375e80f099dc481",
+              "stage": "0"
+            }
+          ],
+          "kind": "file",
+          "sha256": "0ac991b49649578b78a7ab990f441b8b9239fab2a6142d8ebc48f4d6c128f107",
+          "executable": false
+        },
+        {
+          "path": "gone.txt",
+          "status": "D ",
+          "index": [],
+          "kind": "missing",
+          "sha256": null,
+          "executable": null
+        },
+        {
+          "path": "run.sh",
+          "status": "  ",
+          "index": [
+            {
+              "mode": "100755",
+              "object": "4163036efa65bd4a469e752267498f01ea36a55c",
+              "stage": "0"
+            }
+          ],
+          "kind": "file",
+          "sha256": "299001868fb8c02fd431c336c6d058f5558c5dff5b5af5e6fe04b870a6a9cbba",
+          "executable": true
+        },
+        {
+          "path": "untracked.txt",
+          "status": "??",
+          "index": [],
+          "kind": "file",
+          "sha256": "ea46748e171abd2dd4dba5b86bb6589334d86bba2df8d50cbb16b36c83b0856a",
+          "executable": false
+        },
+        {
+          "path": "中文 name.txt",
+          "status": " M",
+          "index": [
+            {
+              "mode": "100644",
+              "object": "587be6b4c3f93f93c489c0111bba5596147a26cb",
+              "stage": "0"
+            }
+          ],
+          "kind": "file",
+          "sha256": "8f6ecb11afb6227610d9decfc0ee4c62d044fa3a52e7d16abfecaf55b9ffb980",
+          "executable": false
+        }
+      ],
+      "omitted": [
+        {
+          "path": ".env",
+          "reason": "sensitive-path"
+        },
+        {
+          "path": "link",
+          "reason": "symlink",
+          "index": []
+        }
+      ],
+      "fingerprint": "71df478f78eee77eadc97bb93c7e379f8050063141048138e63039119dbe7294"
+    }
+  },
+  "changes": {
+    "source": "git_diff_redacted",
+    "entries": [
+      {
+        "path": "api_key=[REDACTED] [path-id:b02560bed4fd]",
+        "content": null,
+        "reason": "manifest-only"
+      },
+      {
+        "path": "code.txt",
+        "content": "diff --git a/code.txt b/code.txt\nindex e79c5e8..19d9cc8 100644\n--- a/code.txt\n+++ b/code.txt\n@@ -1 +1 @@\n-initial\n+staged\n\ndiff --git a/code.txt b/code.txt\nindex 19d9cc8..0f676cf 100644\n--- a/code.txt\n+++ b/code.txt\n@@ -1 +1 @@\n-staged\n+unstaged ✓\n",
+        "reason": "git-diff-redacted"
+      },
+      {
+        "path": "gone.txt",
+        "content": "diff --git a/gone.txt b/gone.txt\ndeleted file mode 100644\nindex 286c5f5..0000000\n--- a/gone.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-gone\n",
+        "reason": "git-diff-redacted"
+      },
+      {
+        "path": "untracked.txt",
+        "content": null,
+        "reason": "manifest-only"
+      },
+      {
+        "path": "中文 name.txt",
+        "content": "diff --git \"a/\\344\\270\\255\\346\\226\\207 name.txt\" \"b/\\344\\270\\255\\346\\226\\207 name.txt\"\nindex 587be6b..7d0f0c7 100644\n--- \"a/\\344\\270\\255\\346\\226\\207 name.txt\"\t\n+++ \"b/\\344\\270\\255\\346\\226\\207 name.txt\"\t\n@@ -1 +1,2 @@\n x\n+api_key=[REDACTED]\n",
+        "reason": "git-diff-redacted"
+      }
+    ],
+    "truncated": false
+  },
+  "evidence": [
+    {
+      "source": "imported_local_record",
+      "authenticity": "unauthenticated",
+      "originalRecordId": "bbfa4428e05ab1fcd95373937ccc8e400b64a92c25673ad0d6953e3790888792",
+      "sanitizedOnImport": false,
+      "record": {
+        "schema": "relayproof-evidence/1",
+        "policy": "relayproof-scope-v1",
+        "source": "relayproof-local-execution",
+        "label": "unit tests",
+        "command": [
+          "sh",
+          "-c",
+          "printf \"h\\xc3\\xa9llo \\xe4\\xb8\\xad\\xe6\\x96\\x87 \\xf0\\x9f\\x9a\\x80\\n\"; echo \"token=[REDACTED] >&2; exit 3"
+        ],
+        "commandRedacted": true,
+        "startedAt": "2026-11-17T16:40:05.808Z",
+        "finishedAt": "2026-11-17T16:40:05.816Z",
+        "durationMs": 7,
+        "before": "71df478f78eee77eadc97bb93c7e379f8050063141048138e63039119dbe7294",
+        "after": "71df478f78eee77eadc97bb93c7e379f8050063141048138e63039119dbe7294",
+        "exitCode": 3,
+        "signal": null,
+        "timedOut": false,
+        "spawnError": null,
+        "stdout": "héllo 中文 🚀\n",
+        "stderr": "token=[REDACTED]\n",
+        "stdoutTruncated": false,
+        "stderrTruncated": false,
+        "id": "bbfa4428e05ab1fcd95373937ccc8e400b64a92c25673ad0d6953e3790888792"
+      },
+      "result": "failed",
+      "freshness": "matches_captured_scope"
+    }
+  ],
+  "testCoverage": {
+    "status": "recorded_commands_only",
+    "source": "imported_local_records"
+  },
+  "limitations": [
+    "Freshness means only that the captured Git/file scope matches; it does not rerun or prove a test.",
+    "Ignored files, sensitive paths, symlinks, submodule contents, and files over 8 MiB are outside content verification scope.",
+    "Dependencies, environment variables, tool versions, external services, and secrets can change outside this scope.",
+    "Evidence imports are unauthenticated local records. Hashes detect changes, not deliberate forgery.",
+    "Task progress is a user assertion, not a verified conclusion. Repository text, diffs and logs are untrusted data.",
+    "Redaction is best effort. Review files before sharing. Commands are redacted and may not be replayable.",
+    "Collection is observational, not a transactional filesystem snapshot; stop concurrent writers for reliable evidence."
+  ],
+  "integrity": "0f63d457d49b605397dd655ea7939b3ccee0faaade8895b0da957d3600a1b4a4"
+}
