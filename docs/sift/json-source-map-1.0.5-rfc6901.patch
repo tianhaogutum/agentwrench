@@ -1,0 +1,12 @@
+--- a/json_source_map/handle.py
++++ b/json_source_map/handle.py
+@@ -94,7 +94,8 @@
+             column=current_location.column,
+             position=current_location.position,
+         )
+-        key_value = source[key_start.position + 1 : key_end.position - 1]
++        key_value, _ = decoder.py_scanstring(source, key_start.position + 1)
++        key_value = key_value.replace("~", "~0").replace("/", "~1")
+ 
+         # Handle value
+         advance.to_next_non_whitespace(source=source, current_location=current_location)

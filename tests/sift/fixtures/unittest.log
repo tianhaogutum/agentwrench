@@ -1,0 +1,174 @@
+test_checksum (upstream_unittest.CheckoutTests.test_checksum) ... cache probe 0: heartbeat ok
+cache probe 1: heartbeat ok
+cache probe 2: heartbeat ok
+cache probe 3: heartbeat ok
+cache probe 4: heartbeat ok
+cache probe 5: heartbeat ok
+cache probe 6: heartbeat ok
+cache probe 7: heartbeat ok
+cache probe 8: heartbeat ok
+cache probe 9: heartbeat ok
+cache probe 10: heartbeat ok
+cache probe 11: heartbeat ok
+cache probe 12: heartbeat ok
+cache probe 13: heartbeat ok
+cache probe 14: heartbeat ok
+cache probe 15: heartbeat ok
+cache probe 16: heartbeat ok
+cache probe 17: heartbeat ok
+cache probe 18: heartbeat ok
+cache probe 19: heartbeat ok
+cache probe 20: heartbeat ok
+cache probe 21: heartbeat ok
+cache probe 22: heartbeat ok
+cache probe 23: heartbeat ok
+cache probe 24: heartbeat ok
+cache probe 25: heartbeat ok
+cache probe 26: heartbeat ok
+cache probe 27: heartbeat ok
+cache probe 28: heartbeat ok
+cache probe 29: heartbeat ok
+cache probe 30: heartbeat ok
+cache probe 31: heartbeat ok
+cache probe 32: heartbeat ok
+cache probe 33: heartbeat ok
+cache probe 34: heartbeat ok
+cache probe 35: heartbeat ok
+cache probe 36: heartbeat ok
+cache probe 37: heartbeat ok
+cache probe 38: heartbeat ok
+cache probe 39: heartbeat ok
+cache probe 40: heartbeat ok
+cache probe 41: heartbeat ok
+cache probe 42: heartbeat ok
+cache probe 43: heartbeat ok
+cache probe 44: heartbeat ok
+cache probe 45: heartbeat ok
+cache probe 46: heartbeat ok
+cache probe 47: heartbeat ok
+cache probe 48: heartbeat ok
+cache probe 49: heartbeat ok
+cache probe 50: heartbeat ok
+cache probe 51: heartbeat ok
+cache probe 52: heartbeat ok
+cache probe 53: heartbeat ok
+cache probe 54: heartbeat ok
+cache probe 55: heartbeat ok
+cache probe 56: heartbeat ok
+cache probe 57: heartbeat ok
+cache probe 58: heartbeat ok
+cache probe 59: heartbeat ok
+cache probe 60: heartbeat ok
+cache probe 61: heartbeat ok
+cache probe 62: heartbeat ok
+cache probe 63: heartbeat ok
+cache probe 64: heartbeat ok
+cache probe 65: heartbeat ok
+cache probe 66: heartbeat ok
+cache probe 67: heartbeat ok
+cache probe 68: heartbeat ok
+cache probe 69: heartbeat ok
+cache probe 70: heartbeat ok
+cache probe 71: heartbeat ok
+cache probe 72: heartbeat ok
+cache probe 73: heartbeat ok
+cache probe 74: heartbeat ok
+cache probe 75: heartbeat ok
+cache probe 76: heartbeat ok
+cache probe 77: heartbeat ok
+cache probe 78: heartbeat ok
+cache probe 79: heartbeat ok
+cache probe 80: heartbeat ok
+cache probe 81: heartbeat ok
+cache probe 82: heartbeat ok
+cache probe 83: heartbeat ok
+cache probe 84: heartbeat ok
+cache probe 85: heartbeat ok
+cache probe 86: heartbeat ok
+cache probe 87: heartbeat ok
+cache probe 88: heartbeat ok
+cache probe 89: heartbeat ok
+cache probe 90: heartbeat ok
+cache probe 91: heartbeat ok
+cache probe 92: heartbeat ok
+cache probe 93: heartbeat ok
+cache probe 94: heartbeat ok
+cache probe 95: heartbeat ok
+cache probe 96: heartbeat ok
+cache probe 97: heartbeat ok
+cache probe 98: heartbeat ok
+cache probe 99: heartbeat ok
+cache probe 100: heartbeat ok
+cache probe 101: heartbeat ok
+cache probe 102: heartbeat ok
+cache probe 103: heartbeat ok
+cache probe 104: heartbeat ok
+cache probe 105: heartbeat ok
+cache probe 106: heartbeat ok
+cache probe 107: heartbeat ok
+cache probe 108: heartbeat ok
+cache probe 109: heartbeat ok
+cache probe 110: heartbeat ok
+cache probe 111: heartbeat ok
+cache probe 112: heartbeat ok
+cache probe 113: heartbeat ok
+cache probe 114: heartbeat ok
+cache probe 115: heartbeat ok
+cache probe 116: heartbeat ok
+cache probe 117: heartbeat ok
+cache probe 118: heartbeat ok
+cache probe 119: heartbeat ok
+cache probe 120: heartbeat ok
+cache probe 121: heartbeat ok
+cache probe 122: heartbeat ok
+cache probe 123: heartbeat ok
+cache probe 124: heartbeat ok
+cache probe 125: heartbeat ok
+cache probe 126: heartbeat ok
+cache probe 127: heartbeat ok
+cache probe 128: heartbeat ok
+cache probe 129: heartbeat ok
+cache probe 130: heartbeat ok
+cache probe 131: heartbeat ok
+cache probe 132: heartbeat ok
+cache probe 133: heartbeat ok
+cache probe 134: heartbeat ok
+cache probe 135: heartbeat ok
+cache probe 136: heartbeat ok
+cache probe 137: heartbeat ok
+cache probe 138: heartbeat ok
+cache probe 139: heartbeat ok
+cache probe 140: heartbeat ok
+cache probe 141: heartbeat ok
+cache probe 142: heartbeat ok
+cache probe 143: heartbeat ok
+cache probe 144: heartbeat ok
+cache probe 145: heartbeat ok
+cache probe 146: heartbeat ok
+cache probe 147: heartbeat ok
+cache probe 148: heartbeat ok
+cache probe 149: heartbeat ok
+FAIL
+test_database (upstream_unittest.CheckoutTests.test_database) ... ERROR
+test_pass (upstream_unittest.CheckoutTests.test_pass) ... ok
+
+======================================================================
+ERROR: test_database (upstream_unittest.CheckoutTests.test_database)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/sift-fixtures/examples/upstream_unittest.py", line 13, in test_database
+    raise ConnectionError("checkout-db.local refused connection")
+ConnectionError: checkout-db.local refused connection
+
+======================================================================
+FAIL: test_checksum (upstream_unittest.CheckoutTests.test_checksum)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/sift-fixtures/examples/upstream_unittest.py", line 10, in test_checksum
+    self.assertEqual(41, 42, "invalid invoice checksum for café/注文")
+AssertionError: 41 != 42 : invalid invoice checksum for café/注文
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+FAILED (failures=1, errors=1)

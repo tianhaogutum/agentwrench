@@ -1,0 +1,39 @@
+{
+  "origin": "Generated locally by actual pytest and pytest-reportlog, not handwritten output",
+  "command": [
+    "/work/sift-fixtures/.venv-pytest7/bin/python",
+    "-m",
+    "pytest",
+    "examples/upstream_suite.py",
+    "--color=yes",
+    "--tb=long",
+    "-rA",
+    "--report-log=/work/sift-fixtures/tests/fixtures/pytest7-report.jsonl",
+    "-o",
+    "console_output_style=classic",
+    "-o",
+    "cache_dir=.pytest_cache/fixture",
+    "-p",
+    "pytest_reportlog.plugin"
+  ],
+  "versions": {
+    "pytest": "7.4.4",
+    "pytest-reportlog": "1.0.0"
+  },
+  "expected_exit_code": 1,
+  "files": {
+    "pytest7-report.jsonl": {
+      "bytes": 69460,
+      "sha256": "626fc1b6908aafe4e5228bc327e5da36799c4e14e45545bd3df11e8fe5fa8cb4"
+    },
+    "pytest7-color.log": {
+      "bytes": 25650,
+      "sha256": "762418e860c72de2a196cc0309527dd13ea93ad63d66a66dc50db2fcdda04d82"
+    },
+    "pytest7-result.json": {
+      "bytes": 81475,
+      "sha256": "91a606425eeb27b4e429b6f939cf46cb841645bbae93814742d61e54834b7ef1"
+    }
+  },
+  "normalized": "After generation, the absolute path of the generating checkout was replaced by /work/sift-fixtures (and its directory name by sift-fixtures) in every fixture; the bytes and sha256 values in this file describe the normalized fixtures. The producer sources ran from examples/ at generation time and are kept in producers/."
+}

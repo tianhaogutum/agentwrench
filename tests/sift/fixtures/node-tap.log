@@ -1,0 +1,415 @@
+{"event":"cache_probe","order":0,"attempt":0,"ok":true}
+{"event":"cache_probe","order":0,"attempt":1,"ok":true}
+{"event":"cache_probe","order":0,"attempt":2,"ok":true}
+{"event":"cache_probe","order":0,"attempt":3,"ok":true}
+{"event":"cache_probe","order":0,"attempt":4,"ok":true}
+{"event":"cache_probe","order":0,"attempt":5,"ok":true}
+{"event":"cache_probe","order":0,"attempt":6,"ok":true}
+{"event":"cache_probe","order":0,"attempt":7,"ok":true}
+{"event":"cache_probe","order":0,"attempt":8,"ok":true}
+{"event":"cache_probe","order":0,"attempt":9,"ok":true}
+{"event":"cache_probe","order":0,"attempt":10,"ok":true}
+{"event":"cache_probe","order":0,"attempt":11,"ok":true}
+{"event":"cache_probe","order":0,"attempt":12,"ok":true}
+{"event":"cache_probe","order":0,"attempt":13,"ok":true}
+{"event":"cache_probe","order":0,"attempt":14,"ok":true}
+{"event":"cache_probe","order":0,"attempt":15,"ok":true}
+{"event":"cache_probe","order":0,"attempt":16,"ok":true}
+{"event":"cache_probe","order":0,"attempt":17,"ok":true}
+{"event":"cache_probe","order":0,"attempt":18,"ok":true}
+{"event":"cache_probe","order":0,"attempt":19,"ok":true}
+{"event":"cache_probe","order":0,"attempt":20,"ok":true}
+{"event":"cache_probe","order":0,"attempt":21,"ok":true}
+{"event":"cache_probe","order":0,"attempt":22,"ok":true}
+{"event":"cache_probe","order":0,"attempt":23,"ok":true}
+{"event":"cache_probe","order":0,"attempt":24,"ok":true}
+{"event":"cache_probe","order":1,"attempt":0,"ok":true}
+{"event":"cache_probe","order":1,"attempt":1,"ok":true}
+{"event":"cache_probe","order":1,"attempt":2,"ok":true}
+{"event":"cache_probe","order":1,"attempt":3,"ok":true}
+{"event":"cache_probe","order":1,"attempt":4,"ok":true}
+{"event":"cache_probe","order":1,"attempt":5,"ok":true}
+{"event":"cache_probe","order":1,"attempt":6,"ok":true}
+{"event":"cache_probe","order":1,"attempt":7,"ok":true}
+{"event":"cache_probe","order":1,"attempt":8,"ok":true}
+{"event":"cache_probe","order":1,"attempt":9,"ok":true}
+{"event":"cache_probe","order":1,"attempt":10,"ok":true}
+{"event":"cache_probe","order":1,"attempt":11,"ok":true}
+{"event":"cache_probe","order":1,"attempt":12,"ok":true}
+{"event":"cache_probe","order":1,"attempt":13,"ok":true}
+{"event":"cache_probe","order":1,"attempt":14,"ok":true}
+{"event":"cache_probe","order":1,"attempt":15,"ok":true}
+{"event":"cache_probe","order":1,"attempt":16,"ok":true}
+{"event":"cache_probe","order":1,"attempt":17,"ok":true}
+{"event":"cache_probe","order":1,"attempt":18,"ok":true}
+{"event":"cache_probe","order":1,"attempt":19,"ok":true}
+{"event":"cache_probe","order":1,"attempt":20,"ok":true}
+{"event":"cache_probe","order":1,"attempt":21,"ok":true}
+{"event":"cache_probe","order":1,"attempt":22,"ok":true}
+{"event":"cache_probe","order":1,"attempt":23,"ok":true}
+{"event":"cache_probe","order":1,"attempt":24,"ok":true}
+{"event":"cache_probe","order":2,"attempt":0,"ok":true}
+{"event":"cache_probe","order":2,"attempt":1,"ok":true}
+{"event":"cache_probe","order":2,"attempt":2,"ok":true}
+{"event":"cache_probe","order":2,"attempt":3,"ok":true}
+{"event":"cache_probe","order":2,"attempt":4,"ok":true}
+{"event":"cache_probe","order":2,"attempt":5,"ok":true}
+{"event":"cache_probe","order":2,"attempt":6,"ok":true}
+{"event":"cache_probe","order":2,"attempt":7,"ok":true}
+{"event":"cache_probe","order":2,"attempt":8,"ok":true}
+{"event":"cache_probe","order":2,"attempt":9,"ok":true}
+{"event":"cache_probe","order":2,"attempt":10,"ok":true}
+{"event":"cache_probe","order":2,"attempt":11,"ok":true}
+{"event":"cache_probe","order":2,"attempt":12,"ok":true}
+{"event":"cache_probe","order":2,"attempt":13,"ok":true}
+{"event":"cache_probe","order":2,"attempt":14,"ok":true}
+{"event":"cache_probe","order":2,"attempt":15,"ok":true}
+{"event":"cache_probe","order":2,"attempt":16,"ok":true}
+{"event":"cache_probe","order":2,"attempt":17,"ok":true}
+{"event":"cache_probe","order":2,"attempt":18,"ok":true}
+{"event":"cache_probe","order":2,"attempt":19,"ok":true}
+{"event":"cache_probe","order":2,"attempt":20,"ok":true}
+{"event":"cache_probe","order":2,"attempt":21,"ok":true}
+{"event":"cache_probe","order":2,"attempt":22,"ok":true}
+{"event":"cache_probe","order":2,"attempt":23,"ok":true}
+{"event":"cache_probe","order":2,"attempt":24,"ok":true}
+{"event":"cache_probe","order":3,"attempt":0,"ok":true}
+{"event":"cache_probe","order":3,"attempt":1,"ok":true}
+{"event":"cache_probe","order":3,"attempt":2,"ok":true}
+{"event":"cache_probe","order":3,"attempt":3,"ok":true}
+{"event":"cache_probe","order":3,"attempt":4,"ok":true}
+{"event":"cache_probe","order":3,"attempt":5,"ok":true}
+{"event":"cache_probe","order":3,"attempt":6,"ok":true}
+{"event":"cache_probe","order":3,"attempt":7,"ok":true}
+{"event":"cache_probe","order":3,"attempt":8,"ok":true}
+{"event":"cache_probe","order":3,"attempt":9,"ok":true}
+{"event":"cache_probe","order":3,"attempt":10,"ok":true}
+{"event":"cache_probe","order":3,"attempt":11,"ok":true}
+{"event":"cache_probe","order":3,"attempt":12,"ok":true}
+{"event":"cache_probe","order":3,"attempt":13,"ok":true}
+{"event":"cache_probe","order":3,"attempt":14,"ok":true}
+{"event":"cache_probe","order":3,"attempt":15,"ok":true}
+{"event":"cache_probe","order":3,"attempt":16,"ok":true}
+{"event":"cache_probe","order":3,"attempt":17,"ok":true}
+{"event":"cache_probe","order":3,"attempt":18,"ok":true}
+{"event":"cache_probe","order":3,"attempt":19,"ok":true}
+{"event":"cache_probe","order":3,"attempt":20,"ok":true}
+{"event":"cache_probe","order":3,"attempt":21,"ok":true}
+{"event":"cache_probe","order":3,"attempt":22,"ok":true}
+{"event":"cache_probe","order":3,"attempt":23,"ok":true}
+{"event":"cache_probe","order":3,"attempt":24,"ok":true}
+{"event":"cache_probe","order":4,"attempt":0,"ok":true}
+{"event":"cache_probe","order":4,"attempt":1,"ok":true}
+{"event":"cache_probe","order":4,"attempt":2,"ok":true}
+{"event":"cache_probe","order":4,"attempt":3,"ok":true}
+{"event":"cache_probe","order":4,"attempt":4,"ok":true}
+{"event":"cache_probe","order":4,"attempt":5,"ok":true}
+{"event":"cache_probe","order":4,"attempt":6,"ok":true}
+{"event":"cache_probe","order":4,"attempt":7,"ok":true}
+{"event":"cache_probe","order":4,"attempt":8,"ok":true}
+{"event":"cache_probe","order":4,"attempt":9,"ok":true}
+{"event":"cache_probe","order":4,"attempt":10,"ok":true}
+{"event":"cache_probe","order":4,"attempt":11,"ok":true}
+{"event":"cache_probe","order":4,"attempt":12,"ok":true}
+{"event":"cache_probe","order":4,"attempt":13,"ok":true}
+{"event":"cache_probe","order":4,"attempt":14,"ok":true}
+{"event":"cache_probe","order":4,"attempt":15,"ok":true}
+{"event":"cache_probe","order":4,"attempt":16,"ok":true}
+{"event":"cache_probe","order":4,"attempt":17,"ok":true}
+{"event":"cache_probe","order":4,"attempt":18,"ok":true}
+{"event":"cache_probe","order":4,"attempt":19,"ok":true}
+{"event":"cache_probe","order":4,"attempt":20,"ok":true}
+{"event":"cache_probe","order":4,"attempt":21,"ok":true}
+{"event":"cache_probe","order":4,"attempt":22,"ok":true}
+{"event":"cache_probe","order":4,"attempt":23,"ok":true}
+{"event":"cache_probe","order":4,"attempt":24,"ok":true}
+{"event":"cache_probe","order":5,"attempt":0,"ok":true}
+{"event":"cache_probe","order":5,"attempt":1,"ok":true}
+{"event":"cache_probe","order":5,"attempt":2,"ok":true}
+{"event":"cache_probe","order":5,"attempt":3,"ok":true}
+{"event":"cache_probe","order":5,"attempt":4,"ok":true}
+{"event":"cache_probe","order":5,"attempt":5,"ok":true}
+{"event":"cache_probe","order":5,"attempt":6,"ok":true}
+{"event":"cache_probe","order":5,"attempt":7,"ok":true}
+{"event":"cache_probe","order":5,"attempt":8,"ok":true}
+{"event":"cache_probe","order":5,"attempt":9,"ok":true}
+{"event":"cache_probe","order":5,"attempt":10,"ok":true}
+{"event":"cache_probe","order":5,"attempt":11,"ok":true}
+{"event":"cache_probe","order":5,"attempt":12,"ok":true}
+{"event":"cache_probe","order":5,"attempt":13,"ok":true}
+{"event":"cache_probe","order":5,"attempt":14,"ok":true}
+{"event":"cache_probe","order":5,"attempt":15,"ok":true}
+{"event":"cache_probe","order":5,"attempt":16,"ok":true}
+{"event":"cache_probe","order":5,"attempt":17,"ok":true}
+{"event":"cache_probe","order":5,"attempt":18,"ok":true}
+{"event":"cache_probe","order":5,"attempt":19,"ok":true}
+{"event":"cache_probe","order":5,"attempt":20,"ok":true}
+{"event":"cache_probe","order":5,"attempt":21,"ok":true}
+{"event":"cache_probe","order":5,"attempt":22,"ok":true}
+{"event":"cache_probe","order":5,"attempt":23,"ok":true}
+{"event":"cache_probe","order":5,"attempt":24,"ok":true}
+{"event":"cache_probe","order":6,"attempt":0,"ok":true}
+{"event":"cache_probe","order":6,"attempt":1,"ok":true}
+{"event":"cache_probe","order":6,"attempt":2,"ok":true}
+{"event":"cache_probe","order":6,"attempt":3,"ok":true}
+{"event":"cache_probe","order":6,"attempt":4,"ok":true}
+{"event":"cache_probe","order":6,"attempt":5,"ok":true}
+{"event":"cache_probe","order":6,"attempt":6,"ok":true}
+{"event":"cache_probe","order":6,"attempt":7,"ok":true}
+{"event":"cache_probe","order":6,"attempt":8,"ok":true}
+{"event":"cache_probe","order":6,"attempt":9,"ok":true}
+{"event":"cache_probe","order":6,"attempt":10,"ok":true}
+{"event":"cache_probe","order":6,"attempt":11,"ok":true}
+{"event":"cache_probe","order":6,"attempt":12,"ok":true}
+{"event":"cache_probe","order":6,"attempt":13,"ok":true}
+{"event":"cache_probe","order":6,"attempt":14,"ok":true}
+{"event":"cache_probe","order":6,"attempt":15,"ok":true}
+{"event":"cache_probe","order":6,"attempt":16,"ok":true}
+{"event":"cache_probe","order":6,"attempt":17,"ok":true}
+{"event":"cache_probe","order":6,"attempt":18,"ok":true}
+{"event":"cache_probe","order":6,"attempt":19,"ok":true}
+{"event":"cache_probe","order":6,"attempt":20,"ok":true}
+{"event":"cache_probe","order":6,"attempt":21,"ok":true}
+{"event":"cache_probe","order":6,"attempt":22,"ok":true}
+{"event":"cache_probe","order":6,"attempt":23,"ok":true}
+{"event":"cache_probe","order":6,"attempt":24,"ok":true}
+{"event":"cache_probe","order":7,"attempt":0,"ok":true}
+{"event":"cache_probe","order":7,"attempt":1,"ok":true}
+{"event":"cache_probe","order":7,"attempt":2,"ok":true}
+{"event":"cache_probe","order":7,"attempt":3,"ok":true}
+{"event":"cache_probe","order":7,"attempt":4,"ok":true}
+{"event":"cache_probe","order":7,"attempt":5,"ok":true}
+{"event":"cache_probe","order":7,"attempt":6,"ok":true}
+{"event":"cache_probe","order":7,"attempt":7,"ok":true}
+{"event":"cache_probe","order":7,"attempt":8,"ok":true}
+{"event":"cache_probe","order":7,"attempt":9,"ok":true}
+{"event":"cache_probe","order":7,"attempt":10,"ok":true}
+{"event":"cache_probe","order":7,"attempt":11,"ok":true}
+{"event":"cache_probe","order":7,"attempt":12,"ok":true}
+{"event":"cache_probe","order":7,"attempt":13,"ok":true}
+{"event":"cache_probe","order":7,"attempt":14,"ok":true}
+{"event":"cache_probe","order":7,"attempt":15,"ok":true}
+{"event":"cache_probe","order":7,"attempt":16,"ok":true}
+{"event":"cache_probe","order":7,"attempt":17,"ok":true}
+{"event":"cache_probe","order":7,"attempt":18,"ok":true}
+{"event":"cache_probe","order":7,"attempt":19,"ok":true}
+{"event":"cache_probe","order":7,"attempt":20,"ok":true}
+{"event":"cache_probe","order":7,"attempt":21,"ok":true}
+{"event":"cache_probe","order":7,"attempt":22,"ok":true}
+{"event":"cache_probe","order":7,"attempt":23,"ok":true}
+{"event":"cache_probe","order":7,"attempt":24,"ok":true}
+{"event":"cache_probe","order":8,"attempt":0,"ok":true}
+{"event":"cache_probe","order":8,"attempt":1,"ok":true}
+{"event":"cache_probe","order":8,"attempt":2,"ok":true}
+{"event":"cache_probe","order":8,"attempt":3,"ok":true}
+{"event":"cache_probe","order":8,"attempt":4,"ok":true}
+{"event":"cache_probe","order":8,"attempt":5,"ok":true}
+{"event":"cache_probe","order":8,"attempt":6,"ok":true}
+{"event":"cache_probe","order":8,"attempt":7,"ok":true}
+{"event":"cache_probe","order":8,"attempt":8,"ok":true}
+{"event":"cache_probe","order":8,"attempt":9,"ok":true}
+{"event":"cache_probe","order":8,"attempt":10,"ok":true}
+{"event":"cache_probe","order":8,"attempt":11,"ok":true}
+{"event":"cache_probe","order":8,"attempt":12,"ok":true}
+{"event":"cache_probe","order":8,"attempt":13,"ok":true}
+{"event":"cache_probe","order":8,"attempt":14,"ok":true}
+{"event":"cache_probe","order":8,"attempt":15,"ok":true}
+{"event":"cache_probe","order":8,"attempt":16,"ok":true}
+{"event":"cache_probe","order":8,"attempt":17,"ok":true}
+{"event":"cache_probe","order":8,"attempt":18,"ok":true}
+{"event":"cache_probe","order":8,"attempt":19,"ok":true}
+{"event":"cache_probe","order":8,"attempt":20,"ok":true}
+{"event":"cache_probe","order":8,"attempt":21,"ok":true}
+{"event":"cache_probe","order":8,"attempt":22,"ok":true}
+{"event":"cache_probe","order":8,"attempt":23,"ok":true}
+{"event":"cache_probe","order":8,"attempt":24,"ok":true}
+{"event":"cache_probe","order":9,"attempt":0,"ok":true}
+{"event":"cache_probe","order":9,"attempt":1,"ok":true}
+{"event":"cache_probe","order":9,"attempt":2,"ok":true}
+{"event":"cache_probe","order":9,"attempt":3,"ok":true}
+{"event":"cache_probe","order":9,"attempt":4,"ok":true}
+{"event":"cache_probe","order":9,"attempt":5,"ok":true}
+{"event":"cache_probe","order":9,"attempt":6,"ok":true}
+{"event":"cache_probe","order":9,"attempt":7,"ok":true}
+{"event":"cache_probe","order":9,"attempt":8,"ok":true}
+{"event":"cache_probe","order":9,"attempt":9,"ok":true}
+{"event":"cache_probe","order":9,"attempt":10,"ok":true}
+{"event":"cache_probe","order":9,"attempt":11,"ok":true}
+{"event":"cache_probe","order":9,"attempt":12,"ok":true}
+{"event":"cache_probe","order":9,"attempt":13,"ok":true}
+{"event":"cache_probe","order":9,"attempt":14,"ok":true}
+{"event":"cache_probe","order":9,"attempt":15,"ok":true}
+{"event":"cache_probe","order":9,"attempt":16,"ok":true}
+{"event":"cache_probe","order":9,"attempt":17,"ok":true}
+{"event":"cache_probe","order":9,"attempt":18,"ok":true}
+{"event":"cache_probe","order":9,"attempt":19,"ok":true}
+{"event":"cache_probe","order":9,"attempt":20,"ok":true}
+{"event":"cache_probe","order":9,"attempt":21,"ok":true}
+{"event":"cache_probe","order":9,"attempt":22,"ok":true}
+{"event":"cache_probe","order":9,"attempt":23,"ok":true}
+{"event":"cache_probe","order":9,"attempt":24,"ok":true}
+{"event":"cache_probe","order":10,"attempt":0,"ok":true}
+{"event":"cache_probe","order":10,"attempt":1,"ok":true}
+{"event":"cache_probe","order":10,"attempt":2,"ok":true}
+{"event":"cache_probe","order":10,"attempt":3,"ok":true}
+{"event":"cache_probe","order":10,"attempt":4,"ok":true}
+{"event":"cache_probe","order":10,"attempt":5,"ok":true}
+{"event":"cache_probe","order":10,"attempt":6,"ok":true}
+{"event":"cache_probe","order":10,"attempt":7,"ok":true}
+{"event":"cache_probe","order":10,"attempt":8,"ok":true}
+{"event":"cache_probe","order":10,"attempt":9,"ok":true}
+{"event":"cache_probe","order":10,"attempt":10,"ok":true}
+{"event":"cache_probe","order":10,"attempt":11,"ok":true}
+{"event":"cache_probe","order":10,"attempt":12,"ok":true}
+{"event":"cache_probe","order":10,"attempt":13,"ok":true}
+{"event":"cache_probe","order":10,"attempt":14,"ok":true}
+{"event":"cache_probe","order":10,"attempt":15,"ok":true}
+{"event":"cache_probe","order":10,"attempt":16,"ok":true}
+{"event":"cache_probe","order":10,"attempt":17,"ok":true}
+{"event":"cache_probe","order":10,"attempt":18,"ok":true}
+{"event":"cache_probe","order":10,"attempt":19,"ok":true}
+{"event":"cache_probe","order":10,"attempt":20,"ok":true}
+{"event":"cache_probe","order":10,"attempt":21,"ok":true}
+{"event":"cache_probe","order":10,"attempt":22,"ok":true}
+{"event":"cache_probe","order":10,"attempt":23,"ok":true}
+{"event":"cache_probe","order":10,"attempt":24,"ok":true}
+{"event":"cache_probe","order":11,"attempt":0,"ok":true}
+{"event":"cache_probe","order":11,"attempt":1,"ok":true}
+{"event":"cache_probe","order":11,"attempt":2,"ok":true}
+{"event":"cache_probe","order":11,"attempt":3,"ok":true}
+{"event":"cache_probe","order":11,"attempt":4,"ok":true}
+{"event":"cache_probe","order":11,"attempt":5,"ok":true}
+{"event":"cache_probe","order":11,"attempt":6,"ok":true}
+{"event":"cache_probe","order":11,"attempt":7,"ok":true}
+{"event":"cache_probe","order":11,"attempt":8,"ok":true}
+{"event":"cache_probe","order":11,"attempt":9,"ok":true}
+{"event":"cache_probe","order":11,"attempt":10,"ok":true}
+{"event":"cache_probe","order":11,"attempt":11,"ok":true}
+{"event":"cache_probe","order":11,"attempt":12,"ok":true}
+{"event":"cache_probe","order":11,"attempt":13,"ok":true}
+{"event":"cache_probe","order":11,"attempt":14,"ok":true}
+{"event":"cache_probe","order":11,"attempt":15,"ok":true}
+{"event":"cache_probe","order":11,"attempt":16,"ok":true}
+{"event":"cache_probe","order":11,"attempt":17,"ok":true}
+{"event":"cache_probe","order":11,"attempt":18,"ok":true}
+{"event":"cache_probe","order":11,"attempt":19,"ok":true}
+{"event":"cache_probe","order":11,"attempt":20,"ok":true}
+{"event":"cache_probe","order":11,"attempt":21,"ok":true}
+{"event":"cache_probe","order":11,"attempt":22,"ok":true}
+{"event":"cache_probe","order":11,"attempt":23,"ok":true}
+{"event":"cache_probe","order":11,"attempt":24,"ok":true}
+TAP version 13
+# Subtest: checkout order 0
+ok 1 - checkout order 0
+  ---
+  duration_ms: 0.993375
+  type: 'test'
+  ...
+# Subtest: checkout order 1
+ok 2 - checkout order 1
+  ---
+  duration_ms: 0.124625
+  type: 'test'
+  ...
+# Subtest: checkout order 2
+ok 3 - checkout order 2
+  ---
+  duration_ms: 0.086167
+  type: 'test'
+  ...
+# Subtest: checkout order 3
+ok 4 - checkout order 3
+  ---
+  duration_ms: 0.141584
+  type: 'test'
+  ...
+# Subtest: checkout order 4
+not ok 5 - checkout order 4
+  ---
+  duration_ms: 0.7635
+  type: 'test'
+  location: '/work/sift-fixtures/examples/upstream-node.test.cjs:6:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    invalid invoice checksum for café/注文/4
+    
+    41 !== 42
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 42
+  actual: 41
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/work/sift-fixtures/examples/upstream-node.test.cjs:11:14)
+    Test.runInAsyncScope (node:async_hooks:226:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: checkout order 5
+ok 6 - checkout order 5
+  ---
+  duration_ms: 0.0875
+  type: 'test'
+  ...
+# Subtest: checkout order 6
+ok 7 - checkout order 6
+  ---
+  duration_ms: 0.083791
+  type: 'test'
+  ...
+# Subtest: checkout order 7
+ok 8 - checkout order 7
+  ---
+  duration_ms: 0.076042
+  type: 'test'
+  ...
+# Subtest: checkout order 8
+ok 9 - checkout order 8
+  ---
+  duration_ms: 0.076167
+  type: 'test'
+  ...
+# Subtest: checkout order 9
+not ok 10 - checkout order 9
+  ---
+  duration_ms: 0.109167
+  type: 'test'
+  location: '/work/sift-fixtures/examples/upstream-node.test.cjs:6:3'
+  failureType: 'testCodeFailure'
+  error: 'checkout-db.local returned an invalid invoice payload'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (/work/sift-fixtures/examples/upstream-node.test.cjs:14:13)
+    Test.runInAsyncScope (node:async_hooks:226:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: checkout order 10
+ok 11 - checkout order 10
+  ---
+  duration_ms: 0.090291
+  type: 'test'
+  ...
+# Subtest: checkout order 11
+ok 12 - checkout order 11
+  ---
+  duration_ms: 0.591083
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 10
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11.646041

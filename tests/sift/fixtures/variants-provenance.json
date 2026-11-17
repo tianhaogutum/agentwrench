@@ -1,0 +1,40 @@
+{
+  "origin": "Real locally generated upstream runner output; no hand-authored logs",
+  "node": "v26.9.0",
+  "python": "3.12.14 (main, Sep  1 2026, 14:09:38) [Clang 22.1.3 ]",
+  "fixtures": [
+    {
+      "file": "node-tap.log",
+      "command": [
+        "node",
+        "--test",
+        "--test-isolation=none",
+        "--test-concurrency=1",
+        "--test-reporter=tap",
+        "examples/upstream-node.test.cjs"
+      ],
+      "exit_code": 1,
+      "bytes": 19835,
+      "sha256": "5e0ed860952a7bca006948469f47747155d301e3d780d1d1378050c24c9bce3c"
+    },
+    {
+      "file": "unittest.log",
+      "command": [
+        "/work/sift-fixtures/.venv/bin/python",
+        "-u",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "examples",
+        "-p",
+        "upstream_unittest.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "bytes": 5647,
+      "sha256": "527e52c86af330fc6e9a06d9f612780f7602b8dc5138ff7d00abe0d0958843ea"
+    }
+  ],
+  "normalized": "After generation, the absolute path of the generating checkout was replaced by /work/sift-fixtures (and its directory name by sift-fixtures) in every fixture; the bytes and sha256 values in this file describe the normalized fixtures. The producer sources ran from examples/ at generation time and are kept in producers/."
+}
