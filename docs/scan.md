@@ -4,9 +4,11 @@
 Claude Code / Codex setup spend before I type anything**, and **what in it is broken**.
 It reads your MCP server configs, the AGENTS.md / CLAUDE.md files loaded for a project,
 and your most recent session files, then names the agentwrench command that fixes each
-problem, ordered by tokens saved.
+problem, ordered by tokens saved. If the project holds an `agentwrench handoff` pack,
+it also tells you whether that pack has gone stale.
 
-It is read-only and offline. Only `--probe` executes anything (see [Privacy and safety](#privacy-and-safety)).
+It is read-only and offline. Only `--probe` executes configured code (see
+[Privacy and safety](#privacy-and-safety)).
 
 ```sh
 uvx agentwrench scan                 # this project, your real ~/.claude* and ~/.codex
@@ -168,12 +170,34 @@ agentwrench doctor repair <session.jsonl> --dry-run
 agentwrench doctor repair <session.jsonl> --in-place --backup
 ```
 
+### 4. Handoff packs
+
+Shown only when the project holds a plain [`agentwrench handoff`](handoff.md) pack
+(a directory with a `handoff.json` of schema `relayproof-handoff/1`) up to three
+directories below the project, for example `.handoff/pack-01/`. Symlinks are not
+followed and `.git`, `node_modules` and virtualenv directories are skipped; at most 10
+packs are checked. For each one, scan runs the same check as
+`agentwrench handoff verify PACK --repo <project>`: read-only `git` commands on the
+project's repository (optional locks, fsmonitor, filters and the pager off) and a hash
+of every file in scope. It needs no optional extra.
+
+* A pack whose snapshot no longer matches the repository is a warning that names the
+  first change; one whose run records no longer match is also a warning.
+* A pack that fails its integrity check is an error.
+* If the project is not inside a Git worktree, the packs are listed as *not checked*.
+
+Each finding carries the `agentwrench handoff verify ...` command. A pack's own files
+count as changes unless the pack sits at a Git-ignored path, which is where
+`agentwrench handoff pack` writes inside a repository. In-toto receipt packages need the
+`handoff` extra and are not checked. Without a pack, nothing is run and the section is
+omitted from the text output.
+
 ### Summary
 
 * **Fixed context overhead per turn**, per client: measured MCP tool tokens of the servers
   that client loads + its instruction tokens. Without `--probe` only instructions are
   counted. The model's own system prompt and built-in tools are not included.
-* **Problems**: every finding (errors and warnings) from the three sections.
+* **Problems**: every finding (errors and warnings) from the sections above.
 * **Top fixes**: the three findings with a command, ordered by estimated tokens saved per
   turn, then by severity.
 
@@ -234,6 +258,10 @@ line.
                     "example_command": ["agentwrench doctor repair ... --dry-run", "agentwrench doctor repair ... --in-place --backup"]},
     "codex": { "...": "same shape" }
   },
+  "handoff": {"repository": "/home/me/src/app",
+              "packs": [{"path": "/home/me/src/app/.handoff/pack-01", "status": "stale_or_unbound",
+                         "captured_at": "2026-11-17T09:12:44.120Z", "changes": ["File/index changed: src/retry.py"],
+                         "evidence": {"records": 1, "matching": 0}, "error": null}]},
   "findings": [{"severity": "warning", "area": "mcp", "client": "claude-code",
                 "message": "trim 'github' tool definitions (Claude Code + Codex): 10,425 -> ~6,370 tokens",
                 "command": ["agentwrench slim discover ...", "agentwrench slim plan github.tools.json --budget 6600"],
@@ -249,6 +277,8 @@ Issue codes in `sessions.*.files[].issues` are `agentwrench doctor` codes (see
 
 * **Never modifies files.** Configs are parsed in memory; session files are opened
   read-only with a shared lock. The scan never creates caches, backups or temp files.
+  The `git` commands for handoff packs run with optional locks off, so they do not
+  rewrite the Git index either.
 * **No network.** scan itself opens no sockets. Remote MCP servers are listed, never
   contacted. `--probe` starts only *stdio* servers, and those run your own configured
   code, which may do whatever that code does.

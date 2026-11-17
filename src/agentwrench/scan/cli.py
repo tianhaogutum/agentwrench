@@ -11,6 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from .common import Finding, Locations
+from .handoff import scan_handoff
 from .instructions import scan_instructions
 from .mcp import collect_servers, mcp_findings, probe
 from .report import build, render_text
@@ -19,11 +20,14 @@ from .sessions import scan_sessions
 DESCRIPTION = """\
 Show where your Claude Code and Codex setup spends context tokens on every turn,
 and what is broken: MCP tool definitions, AGENTS.md / CLAUDE.md instructions and
-recent session files. Each problem comes with the agentwrench command that fixes it.
+recent session files, plus any `agentwrench handoff` pack in the project that has
+gone stale. Each problem comes with the agentwrench command that fixes it.
 
 Read-only and offline: scan reads config, instruction and session files under
---home and --project, never writes a file and never uses the network.
---probe is the only option that executes anything: it starts each configured
+--home and --project, never writes a file and never uses the network. When the
+project holds a handoff pack, scan runs read-only `git` commands (no hooks,
+filters or fsmonitor) on its repository to check it.
+--probe is the only option that executes configured code: it starts each configured
 stdio MCP server locally (its own command, args, env and cwd, as the client
 would), lists its tools, and stops it. Those servers run your configured code,
 which may itself do anything that code does (an `npx` server may download).
@@ -117,12 +121,13 @@ def main(argv: list[str] | None = None) -> int:
         findings += mcp_findings(servers, project, args.probe)
         instructions = scan_instructions(loc, findings)
         sessions = scan_sessions(loc, args.sessions, findings)
+        handoff = scan_handoff(loc, findings)
     except KeyboardInterrupt:
         print("agentwrench scan: interrupted", file=sys.stderr)
         return 130
     options = {"probe": args.probe, "timeout_s": args.timeout, "sessions": args.sessions}
     doc = build(loc, servers=servers, probed=args.probe, probe_seconds=probe_seconds,
-                instructions=instructions, sessions=sessions, findings=findings, options=options,
+                instructions=instructions, sessions=sessions, handoff=handoff, findings=findings, options=options,
                 elapsed=time.monotonic() - started, fail_over=args.fail_over)
     try:
         if args.json:

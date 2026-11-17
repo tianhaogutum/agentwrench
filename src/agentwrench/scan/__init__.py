@@ -2,8 +2,9 @@
 
 Combines the other subpackages: :mod:`agentwrench.mcpconfig` (MCP server inventory),
 :mod:`agentwrench.slim` (optional ``--probe`` discovery and token estimates),
-:mod:`agentwrench.agentsmd` (AGENTS.md / CLAUDE.md budgets) and
-:mod:`agentwrench.doctor` (session tool-call pairing).
+:mod:`agentwrench.agentsmd` (AGENTS.md / CLAUDE.md budgets),
+:mod:`agentwrench.doctor` (session tool-call pairing) and the plain-pack half of
+:mod:`agentwrench.handoff` (staleness of handoff packs found in the project).
 """
 
 from agentwrench import __version__  # noqa: F401

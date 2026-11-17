@@ -5,7 +5,7 @@
   "description": "Output of `agentwrench scan --json`. Fields are only added within v1; renames or removals bump the schema string. Never contains environment variable values, header values, tokens, instruction text or session text.",
   "type": "object",
   "required": ["schema", "agentwrench_version", "home", "project", "options", "estimator", "elapsed_ms",
-               "summary", "mcp", "instructions", "sessions", "findings"],
+               "summary", "mcp", "instructions", "sessions", "handoff", "findings"],
   "properties": {
     "schema": {"const": "agentwrench.scan/v1"},
     "agentwrench_version": {"type": "string"},
@@ -64,6 +64,34 @@
       "required": ["claude-code", "codex"],
       "additionalProperties": {"$ref": "#/$defs/sessions"}
     },
+    "handoff": {
+      "type": "object",
+      "description": "Plain `agentwrench handoff` packs (relayproof-handoff/1) found up to three directories below the project, checked against its Git repository. Empty when none is found; Git is not run then.",
+      "required": ["repository", "packs"],
+      "properties": {
+        "repository": {"type": ["string", "null"], "description": "Absolute root of the Git worktree the packs were checked against."},
+        "packs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "status", "captured_at", "changes", "evidence", "error"],
+            "properties": {
+              "path": {"type": "string", "description": "Absolute pack directory."},
+              "status": {"enum": ["matches_captured_scope", "stale_or_unbound", "invalid", "not_checked"]},
+              "captured_at": {"type": ["string", "null"]},
+              "changes": {"type": "array", "items": {"type": "string"}, "description": "First 20 differences reported by `agentwrench handoff verify`."},
+              "evidence": {
+                "oneOf": [{"type": "null"},
+                          {"type": "object", "required": ["records", "matching"],
+                           "properties": {"records": {"type": "integer", "minimum": 0},
+                                          "matching": {"type": "integer", "minimum": 0}}}]
+              },
+              "error": {"type": ["string", "null"]}
+            }
+          }
+        }
+      }
+    },
     "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}}
   },
   "$defs": {
@@ -86,7 +114,7 @@
       "required": ["severity", "area", "client", "message", "command", "tokens_saved"],
       "properties": {
         "severity": {"enum": ["error", "warning"]},
-        "area": {"enum": ["mcp", "instructions", "sessions"]},
+        "area": {"enum": ["mcp", "instructions", "sessions", "handoff"]},
         "client": {"oneOf": [{"$ref": "#/$defs/client"}, {"type": "null"}]},
         "message": {"type": "string"},
         "command": {"type": "array", "items": {"type": "string"}, "description": "Shell commands, one per line; may be empty."},

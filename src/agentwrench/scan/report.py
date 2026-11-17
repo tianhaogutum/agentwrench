@@ -50,10 +50,10 @@ def top_fixes(findings: list[Finding], limit: int = 3) -> list[Finding]:
 
 def build(loc: Locations, *, servers: list[Server], probed: bool, probe_seconds: float | None,
           instructions: dict, sessions: dict, findings: list[Finding], options: dict,
-          elapsed: float, fail_over: int | None) -> dict:
+          elapsed: float, fail_over: int | None, handoff: dict | None = None) -> dict:
     clients = overhead(servers, instructions, probed, unreadable_clients(findings))
     peak = max(c["fixed_overhead_tokens"] for c in clients.values())
-    order = {"mcp": 0, "instructions": 1, "sessions": 2}
+    order = {"mcp": 0, "instructions": 1, "sessions": 2, "handoff": 3}
     findings.sort(key=lambda f: (order[f.area], SEVERITY_RANK[f.severity], -f.tokens_saved))
     return {
         "schema": SCHEMA,
@@ -81,6 +81,7 @@ def build(loc: Locations, *, servers: list[Server], probed: bool, probe_seconds:
         },
         "instructions": instructions,
         "sessions": sessions,
+        "handoff": handoff if handoff is not None else {"repository": None, "packs": []},
         "findings": [f.to_dict() for f in findings],
     }
 
@@ -295,6 +296,30 @@ class Text:
             self.out(line)
         self.area_findings("sessions")
 
+    def handoff(self) -> None:
+        """Shown only when the project holds a handoff pack."""
+        s, packs = self.s, self.doc["handoff"]["packs"]
+        if not packs:
+            return
+        self.out()
+        self.out(s.bold("4. Handoff packs") + s.dim("  (`agentwrench handoff` packs in the project, read-only Git check)"))
+        labels = {"matches_captured_scope": s.green("current"), "stale_or_unbound": s.yellow("stale"),
+                  "invalid": s.red("invalid"), "not_checked": s.dim("not checked")}
+        rows = []
+        for pack in packs:
+            status = labels.get(pack["status"], pack["status"])
+            if pack["status"] == "stale_or_unbound" and not pack["changes"]:
+                status = s.yellow("runs unbound")
+            records = pack["evidence"]
+            runs = ""
+            if records:
+                runs = (f"{records['matching']}/{plural(records['records'], 'run record')} current"
+                        if records["records"] else "no run records")
+            rows.append([clean(show_path(pack["path"])), status, runs])
+        for line in table(rows, set()):
+            self.out(line)
+        self.area_findings("handoff")
+
     def summary(self) -> None:
         s, summary = self.s, self.doc["summary"]
         self.out()
@@ -346,6 +371,7 @@ class Text:
         self.mcp()
         self.instructions()
         self.sessions()
+        self.handoff()
         self.summary()
         return "\n".join(self.lines) + "\n"
 

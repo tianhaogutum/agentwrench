@@ -39,7 +39,7 @@ class Locations:
 @dataclass
 class Finding:
     severity: str  # "error" | "warning"
-    area: str      # "mcp" | "instructions" | "sessions"
+    area: str      # "mcp" | "instructions" | "sessions" | "handoff"
     client: str | None
     message: str
     command: list[str] = field(default_factory=list)  # one shell command per line
