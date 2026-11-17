@@ -254,7 +254,7 @@ not independently reproduced upstream defect claims.
 
 `agentwrench sift` was previously published as the standalone project tool-sift
 (distribution `tool-sift-evidence`) under the MIT License, "Copyright (c) 2026
-tool-sift contributors". It was written by the same authors and is relicensed under
+tianhaogutum". It was written by the same authors and is relicensed under
 Apache-2.0 within agentwrench. The original MIT notice is retained in
 [licenses/tool-sift-LICENSE.txt](licenses/tool-sift-LICENSE.txt).
 
@@ -285,8 +285,7 @@ The absolute path of the generating directory was normalized to
 ## `agentwrench fence` (formerly symbol-fence)
 
 `agentwrench fence` was previously a separate Node.js project, symbol-fence, by the
-same authors, released under the MIT License ("Copyright (c) 2026 symbol-fence
-contributors"). It is relicensed under Apache-2.0 as part of agentwrench; the
+same authors, released under the MIT License ("Copyright (c) 2026 tianhaogutum"). It is relicensed under Apache-2.0 as part of agentwrench; the
 original MIT notice is retained in
 [licenses/symbol-fence-LICENSE.txt](licenses/symbol-fence-LICENSE.txt). The Python
 code is a port of the original JavaScript; behavioural differences are listed in

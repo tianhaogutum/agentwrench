@@ -1,5 +1,5 @@
 agentwrench
-Copyright 2026 tianhaogutum and agentwrench contributors
+Copyright 2026 tianhaogutum
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 It merges tools previously developed as separate projects (rollout-doctor,
@@ -54,8 +54,7 @@ Copyright (c) 2023-2025 The Ratatui Developers
 -------------------------------------------------------------------------------
 agentwrench sift (formerly tool-sift)
 
-Previously a separate MIT-licensed project ("Copyright (c) 2026 tool-sift
-contributors") by the same authors; relicensed under Apache-2.0 here. The original
+Previously a separate MIT-licensed project ("Copyright (c) 2026 tianhaogutum") by the same authors; relicensed under Apache-2.0 here. The original
 MIT notice is retained in licenses/tool-sift-LICENSE.txt. Uses shrinkfit, tiktoken,
 json-source-map, jsonpointer and strip-ansi as optional installed dependencies (no
 code copied). docs/sift/json-source-map-1.0.5-rfc6901.patch is a documentation-only
@@ -66,7 +65,7 @@ license is retained in licenses/json-source-map-LICENSE.txt.
 agentwrench fence (formerly symbol-fence)
 
 Previously a separate MIT-licensed Node.js project ("Copyright (c) 2026
-symbol-fence contributors") by the same authors; ported to Python and relicensed
+tianhaogutum") by the same authors; ported to Python and relicensed
 under Apache-2.0 here. The original MIT notice is retained in
 licenses/symbol-fence-LICENSE.txt. Includes a Python reimplementation of parts of
 jsdiff, Copyright (c) 2009-2015, Kevin Decker (BSD-3-Clause; notice retained in
