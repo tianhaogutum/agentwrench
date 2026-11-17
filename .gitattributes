@@ -3,3 +3,8 @@ tests/patch/fixtures/bom_tree/app.js -text whitespace=cr-at-eol
 examples/patch/bom_tree/app.js -text whitespace=cr-at-eol
 # Preserve the exact pinned upstream Harbor RFC, including Markdown trailing spaces.
 tests/export/vendor/harbor/ATIF-RFC.md whitespace=-blank-at-eol
+# fence fixtures: upstream CRLF bytes are part of the evidence (the formatter patch SHA-256 is pinned).
+tests/fence/fixtures/upstream/typescript-path.ts -text whitespace=cr-at-eol
+tests/fence/fixtures/formatter/compiler-prettier.patch -text whitespace=cr-at-eol
+tests/fence/fixtures/upstream/TypeScript-LICENSE.txt -text
+licenses/fence-fixture-TypeScript-LICENSE.txt -text

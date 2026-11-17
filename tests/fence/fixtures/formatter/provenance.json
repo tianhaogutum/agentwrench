@@ -1,0 +1,23 @@
+{
+  "formatter": "prettier",
+  "version": "3.6.2",
+  "options": {
+    "parser": "typescript",
+    "useTabs": true,
+    "singleQuote": false,
+    "semi": true,
+    "trailingComma": "none",
+    "endOfLine": "lf"
+  },
+  "source": "../upstream/typescript-path.ts (TypeScript v5.9.3)",
+  "intentionalEdit": "isUrl: < 0 becomes <= -1 before formatting",
+  "sourceSha256": "4b777f1a03b9f39b4864106e60a43828b5b749a5fae00f68d6faf8f02e0c91bc",
+  "candidateSha256": "550210dfa30788098adbb94cbdb2d08fb7dc4b2a144ed2140551becfa6615e5f",
+  "patchSha256": "e2bf922ce8a133c009a0c2e90012741cd8b2706bfd075c6eb836054f80d25cd0",
+  "verdict": "rejected",
+  "accepted": [
+    "isUrl"
+  ],
+  "outsideChanges": 138,
+  "truncated": true
+}
