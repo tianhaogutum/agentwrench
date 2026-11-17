@@ -1,0 +1,20 @@
+{
+  "in_toto_version": "3.0.0",
+  "python_version": "3.12.14",
+  "git_version": "git version 2.54.0 (Apple Git-157)",
+  "source": "retry.py defines attempts() returning 5, committed with native Git",
+  "command": [
+    "python3",
+    "-B",
+    "-c",
+    "from retry import attempts; assert attempts() == 5; print('checks passed')"
+  ],
+  "methods": [
+    "in_toto_run",
+    "Metablock.create_signature",
+    "Envelope.from_signable",
+    "in-toto-run CLI",
+    "in-toto-record start/stop CLI"
+  ],
+  "private_key": "temporary private file removed; only public key retained"
+}

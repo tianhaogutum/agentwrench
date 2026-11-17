@@ -1,0 +1,29 @@
+{
+ "signatures": [],
+ "signed": {
+  "_type": "link",
+  "byproducts": {
+   "return-value": 0,
+   "stderr": "",
+   "stdout": "checks passed\n"
+  },
+  "command": [
+   "python3",
+   "-B",
+   "-c",
+   "from retry import attempts; assert attempts() == 5; print('checks passed')"
+  ],
+  "environment": {},
+  "materials": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  },
+  "name": "retry-check",
+  "products": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "signatures": [
+  {
+   "keyid": "8a8fcd5314d47f691c7415909119603ebc51abec9381862ee3c30381a82a63cf",
+   "sig": "51ddae8b83f821e9cda8af179a4c6f1e24fbbb423534849f7252db397a52ca3c6c0bfff33bd9ea54f6dcec02b1c5332c3ec6abacaff6a0ca92b94623ab9e8b469d5a22d784ecb29aa87caf73333a3401e7b91d88c39072bc06fe1a6093ba42cd622f4079a50312ec971c519315fa944d4271a9cabbf658a1e7bc484fb652adfe0f9deb5c0fe1d8010c14b57ac431aa8adaa00565dd7f8ceddc6714d7e37374258cf7c32c44ba5acb21605cccd991d8857a72bbaef0b80a27fa10f2a5dc967e45a62b74356d78df559c114c718ed041a16e078fc544c8737f128397a858db7ec7e4b7728fc44b9a25d64ca9f60af9adff60fd28a03945da80294106a0d0b737ce"
+  }
+ ],
+ "signed": {
+  "_type": "link",
+  "byproducts": {
+   "return-value": 0,
+   "stderr": "",
+   "stdout": ""
+  },
+  "command": [
+   "python3",
+   "-B",
+   "-c",
+   "from retry import attempts; assert attempts() == 5"
+  ],
+  "environment": {},
+  "materials": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  },
+  "name": "legacy-retry-check",
+  "products": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  }
+ }
+}

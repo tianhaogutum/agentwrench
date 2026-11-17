@@ -1,0 +1,25 @@
+{
+ "signatures": [
+  {
+   "keyid": "2a420c2046e5224eb090da5eb4b6ea6b248f9d648563b857d85e0f0317aa13bb",
+   "sig": "a87ffc0531cdd35d4f426b66971a9c5d803ac5115b0d2464e9bfb3104f63314913110ad2320b9eae69285ed192d3891f532ab6f767877b16e734817b114dd408"
+  }
+ ],
+ "signed": {
+  "_type": "link",
+  "byproducts": {},
+  "command": [],
+  "environment": {},
+  "materials": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  },
+  "name": "cli-split",
+  "products": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  }
+ }
+}

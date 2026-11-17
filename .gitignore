@@ -20,6 +20,9 @@ htmlcov/
 # Lock files are not committed for this library; CI resolves fresh dependencies.
 uv.lock
 
+# Example output (agentwrench handoff demos)
+examples/handoff/demo-output/
+
 # Editors / OS
 .idea/
 .vscode/

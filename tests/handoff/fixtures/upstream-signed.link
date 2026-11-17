@@ -1,0 +1,34 @@
+{
+ "signatures": [
+  {
+   "keyid": "2a420c2046e5224eb090da5eb4b6ea6b248f9d648563b857d85e0f0317aa13bb",
+   "sig": "4abdd76c6d602c94b8eafe50f1c926807fe435b5f9a9a29f58e23882391fb9182e12087050f9b5a6719283459777044043b7e803148cb62e42a7c3d1df060004"
+  }
+ ],
+ "signed": {
+  "_type": "link",
+  "byproducts": {
+   "return-value": 0,
+   "stderr": "",
+   "stdout": "checks passed\n"
+  },
+  "command": [
+   "python3",
+   "-B",
+   "-c",
+   "from retry import attempts; assert attempts() == 5; print('checks passed')"
+  ],
+  "environment": {},
+  "materials": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  },
+  "name": "retry-check",
+  "products": {
+   "retry.py": {
+    "sha256": "522780eb673a44d391a1bfbd631b0d8c4269ad00d4dbe497d4c7c905d1c8b1a6"
+   }
+  }
+ }
+}

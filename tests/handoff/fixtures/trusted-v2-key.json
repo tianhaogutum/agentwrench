@@ -1,0 +1,12 @@
+{
+  "keytype": "rsa",
+  "scheme": "rsassa-pss-sha256",
+  "keyid": "8a8fcd5314d47f691c7415909119603ebc51abec9381862ee3c30381a82a63cf",
+  "keyid_hash_algorithms": [
+    "sha256",
+    "sha512"
+  ],
+  "keyval": {
+    "public": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3H/i1TSLW/4zmIWeEnwH\naQ2auctViQps/2L6AKkY7HtT74fB+7CySD86awt98rqVX+aNofUrGEHXoI4fXx28\ne7/vLyTiDJcTouRM2ObrAhkoMo3af/tWfViONqtE8uI2P9o99E4l7GMCqRrN/H5y\nuMsXRIUxD4HUUsGTU3Kp5ixpKh1OSRN6OuJeW2ZJPsbHCu9hjPMY/s7+5QPX6tzZ\npG9cQrXqRDpMn3YMSZ2VQ7Yr0B50IFGNbh6+Fb3mMwQo8+1e5nVmejK561FkynX3\nfyIaYfK+9cG3qSOw5vlpGd6DFP9oBrQNt188X+Kq+NwgPvSAObOSp0rwfIFkt9vx\nIwIDAQAB\n-----END PUBLIC KEY-----"
+  }
+}
