@@ -65,7 +65,8 @@ fence = [
     "tree-sitter>=0.23,<0.27",
     "tree-sitter-typescript>=0.23.2,<0.24",
 ]
-# `agentwrench handoff` records and verifies in-toto command receipts with strict Pydantic models.
+# `agentwrench handoff` in-toto receipt mode (record, capture, inspect, diff, schema; verify of receipt
+# packages) uses in-toto and strict Pydantic models. Plain handoff packs need no extra.
 handoff = [
     "in-toto>=3.0,<4",
     "pydantic>=2.10,<3",

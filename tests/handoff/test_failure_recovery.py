@@ -15,7 +15,7 @@ pytest.importorskip("pydantic")
 
 from securesystemslib.exceptions import StorageError
 
-import agentwrench.handoff.cli as cli
+import agentwrench.handoff.receipts as receipts
 import agentwrench.handoff.core as core
 import agentwrench.handoff.io as local_io
 from agentwrench.handoff.cli import main
@@ -124,7 +124,7 @@ def test_cli_reports_disk_full_without_echoing_input_paths(tmp_path, monkeypatch
     def disk_full(**kwargs):
         raise OSError(errno.ENOSPC, "No space left on device", marker)
 
-    monkeypatch.setattr(cli, "capture", disk_full)
+    monkeypatch.setattr(receipts, "capture", disk_full)
     assert main(["capture", "--repo", marker, "--task", "task.json", "--output", "handoff.json"]) == 2
     stderr = capsys.readouterr().err
     assert marker not in stderr

@@ -26,6 +26,8 @@ class Command:
     group: str
     extra: str | None = None
     requires: tuple[str, ...] = ()
+    # False: the command runs without its extra and gates only the subcommands that need it.
+    gated: bool = True
 
 
 GROUPS = ("Tokens & cost", "Sessions", "MCP", "Instructions", "Review", "Other")
@@ -58,8 +60,8 @@ COMMANDS: tuple[Command, ...] = (
             "Check that a unified diff to TypeScript only edits the symbols you allowed", "Review",
             extra="fence", requires=("tree_sitter", "tree_sitter_typescript")),
     Command("handoff", "agentwrench.handoff.cli",
-            "Package Git state, in-toto command receipts and task claims; verify them later", "Review",
-            extra="handoff", requires=("in_toto", "pydantic")),
+            "Hand work to the next agent: a task pack that detects when it went stale; in-toto receipts",
+            "Review", extra="handoff", requires=("in_toto", "pydantic"), gated=False),
     Command("patch", "agentwrench.patch.cli",
             "Parse, apply, convert and explain Codex apply_patch (V4A) patches", "Other"),
     Command("checkpoints", "agentwrench.checkpoints.cli",
@@ -74,7 +76,7 @@ LEGACY = {
     "mcpconf": "mcp-config", "trajport": "export", "mcp-cassette": "cassette",
     "trajgate": "gate", "v4a": "patch", "mcp-slim": "slim", "prefix-drift": "cache",
     "tool-sift": "sift", "structured-truncate": "sift", "symbol-fence": "fence",
-    "anchored-handoff": "handoff",
+    "anchored-handoff": "handoff", "relayproof": "handoff",
 }
 
 
@@ -96,6 +98,17 @@ def _missing_requirements(command: Command) -> bool:
 def _install_hint(command: Command) -> str:
     return (f"{PROG} {command.name}: missing optional dependencies; "
             f"install them with: pip install '{PROG}[{command.extra}]'")
+
+
+def extra_hint(name: str, *, force: bool = False) -> str | None:
+    """The install hint of command ``name`` when its extra is missing (or ``force``), else None.
+
+    Used by commands with ``gated=False`` for the subcommands that need the extra.
+    """
+    command = BY_NAME[name]
+    if command.extra and (force or _missing_requirements(command)):
+        return _install_hint(command)
+    return None
 
 
 def _help_without_extra(command: Command) -> str:
@@ -128,7 +141,8 @@ def overview() -> str:
             if not _installed(command):
                 note = "  (coming soon)"
             elif command.extra and _missing_requirements(command):
-                note = f"  (needs {PROG}[{command.extra}])"
+                note = (f"  (needs {PROG}[{command.extra}])" if command.gated
+                        else f"  (some subcommands need {PROG}[{command.extra}])")
             lines.append(f"  {command.name.ljust(width)}{command.summary}{note}")
     lines += [
         "",
@@ -159,7 +173,7 @@ def run(command: Command, argv: list[str]) -> int:
         sys.stderr.write(f"{PROG}: command {command.name!r} is not available in "
                          f"{PROG} {__version__} yet; see {REPO_URL}\n")
         return 2
-    if command.extra and _missing_requirements(command):
+    if command.extra and command.gated and _missing_requirements(command):
         if any(arg in ("-h", "--help") for arg in argv):
             sys.stdout.write(_help_without_extra(command))
             sys.stdout.write(_install_hint(command) + "\n")

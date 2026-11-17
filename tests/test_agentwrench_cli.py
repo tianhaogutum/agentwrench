@@ -20,13 +20,26 @@ sys.meta_path.insert(0, Block())
 from agentwrench.cli import main
 raise SystemExit(main(sys.argv[1:]))
 """
-# Commands whose optional extra can be missing: (command, extra, a module of that extra to block).
-EXTRA_COMMANDS = [("sift", "sift", "shrinkfit"), ("fence", "fence", "tree_sitter"),
-                  ("handoff", "handoff", "in_toto")]
+# Commands gated on an optional extra: (command, extra, a module of that extra to block).
+EXTRA_COMMANDS = [("sift", "sift", "shrinkfit"), ("fence", "fence", "tree_sitter")]
+HANDOFF_HINT = ("agentwrench handoff: missing optional dependencies; "
+                "install them with: pip install 'agentwrench[handoff]'\n")
 
 
 def block_module(module):
     return BLOCK_LANGGRAPH.replace('"langgraph"', repr(module)).replace('"langgraph."', repr(module + "."))
+
+
+BLOCK_HANDOFF_EXTRA = """
+import sys
+class Block:
+    def find_spec(self, name, path=None, target=None):
+        if name.split(".")[0] in ("in_toto", "pydantic"):
+            raise ModuleNotFoundError(f"No module named {name!r}", name=name)
+sys.meta_path.insert(0, Block())
+from agentwrench.cli import main
+raise SystemExit(main(sys.argv[1:]))
+"""
 
 
 def run(*args, module=("-m", "agentwrench")):
@@ -145,8 +158,35 @@ def test_new_command_help_without_extra_prints_usage_and_hint(command, extra, mo
     assert missing.stderr.endswith(f"pip install 'agentwrench[{extra}]'\n")
 
 
+def test_handoff_without_extra_runs_plain_packs_and_hints_for_receipts(tmp_path):
+    """handoff is not gated: help and the pack subcommands need no extra; in-toto subcommands print the hint."""
+    def blocked(*args):
+        return run(*args, module=("-c", BLOCK_HANDOFF_EXTRA))
+
+    for args in (["handoff", "--help"], ["help", "handoff"], ["handoff", "pack", "--help"],
+                 ["handoff", "capture", "--help"], ["handoff", "verify", "--help"]):
+        result = blocked(*args)
+        assert result.returncode == 0, (args, result.stderr)
+        assert result.stdout.startswith("usage: agentwrench handoff"), args
+    overview = blocked("handoff", "--help").stdout
+    for sub in SUBCOMMANDS["handoff"]:
+        assert f"\n    {sub} " in overview, sub
+    for args in (["schema"], ["inspect", str(tmp_path / "x.json")],
+                 ["capture", "--task", "t.json", "--output", str(tmp_path / "o.json")],
+                 ["record", "--output", str(tmp_path / "o.link"), "--", "true"]):
+        result = blocked("handoff", *args)
+        assert result.returncode == 2 and result.stdout == "", args
+        assert result.stderr == HANDOFF_HINT, args
+    receipt_handoff = tmp_path / "receipts.json"
+    receipt_handoff.write_text('{\n  "schema_version": "1"\n}\n')
+    result = blocked("handoff", "verify", str(receipt_handoff))
+    assert result.returncode == 2 and result.stderr == HANDOFF_HINT
+    assert "(some subcommands need agentwrench[handoff])" in blocked("--help").stdout
+
+
 @pytest.mark.parametrize("legacy,command", [("tool-sift", "sift"), ("structured-truncate", "sift"),
-                                            ("symbol-fence", "fence"), ("anchored-handoff", "handoff")])
+                                            ("symbol-fence", "fence"), ("anchored-handoff", "handoff"),
+                                            ("relayproof", "handoff")])
 def test_new_legacy_names_point_to_new_command(legacy, command, capsys):
     assert cli.main([legacy]) == 2
     assert f"{legacy} is now 'agentwrench {command}'" in capsys.readouterr().err
@@ -180,7 +220,7 @@ SUBCOMMANDS = {
     "checkpoints": ["threads", "stats", "diff", "prune", "snapshot", "plan-status", "budget", "compare-plans"],
     "sift": ["summarize", "recover", "verify"],
     "fence": ["check", "symbols"],
-    "handoff": ["capture", "verify", "record", "inspect", "diff", "schema"],
+    "handoff": ["pack", "run", "verify", "render", "record", "capture", "inspect", "diff", "schema"],
 }
 ALL_HELP = [(name, None) for name in SUBCOMMANDS] + [(name, sub) for name, subs in SUBCOMMANDS.items() for sub in subs]
 

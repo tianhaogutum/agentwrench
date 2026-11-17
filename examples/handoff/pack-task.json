@@ -1,0 +1,7 @@
+{
+  "goal": "SAMPLE DATA: fix addition in the tiny calculator and hand the work to another agent",
+  "completed": ["Inspected the example calculator (user assertion)"],
+  "pending": ["Fix addition and rerun the real test command"],
+  "blockers": [],
+  "next": ["Read the recorded failure, inspect calculator.py, apply the fix, rerun tests"]
+}
