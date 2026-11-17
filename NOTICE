@@ -4,7 +4,7 @@ Copyright 2026 tianhaogutum
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
 It merges tools previously developed as separate projects (rollout-doctor,
 lgckpt-scope, agentsmd-scope, mcpconf-bridge, trajport, mcp-cassette, trajgate,
-v4a-patch-bridge, tool-sift, symbol-fence and anchored-handoff). agentwrench is an
+v4a-patch-bridge, tool-sift, symbol-fence, anchored-handoff and relayproof). agentwrench is an
 independent interoperability project and is not affiliated with or endorsed by
 OpenAI, Anthropic, LangChain, Cline, Continue, Microsoft, the Model Context
 Protocol project, Harbor, the in-toto project or Tree-sitter. Product names
@@ -72,3 +72,14 @@ jsdiff, Copyright (c) 2009-2015, Kevin Decker (BSD-3-Clause; notice retained in
 licenses/fence-jsdiff-LICENSE.txt). Test fixtures from Microsoft TypeScript and
 ReactiveX RxJS (Apache-2.0) and TanStack Query (MIT) keep their licenses in
 licenses/fence-fixture-*-LICENSE.txt.
+
+-------------------------------------------------------------------------------
+agentwrench handoff (formerly anchored-handoff and relayproof)
+
+Combines two projects by the same authors. anchored-handoff (Apache-2.0)
+provides the in-toto receipt mode. relayproof, previously a separate
+MIT-licensed Node.js project ("Copyright (c) 2026 tianhaogutum"), provides the
+plain handoff packs; it is ported to Python and relicensed under Apache-2.0
+here. The original MIT notice is retained in licenses/relayproof-LICENSE.txt.
+in-toto (Apache-2.0) and Pydantic (MIT) are optional installed dependencies;
+no code from them is included.

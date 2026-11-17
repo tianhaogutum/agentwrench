@@ -2,8 +2,11 @@
 
 `agentwrench handoff` supplies a machine-checkable evidence attachment for a
 session handoff. Keep your existing tool's context extraction, decisions and
-summaries; attach the handoff package and have the receiver verify it.
-See [../handoff.md](../handoff.md) for the command reference.
+summaries; attach the handoff package and have the receiver verify it. This page
+uses the in-toto receipt mode (`pip install 'agentwrench[handoff]'`); a plain
+pack directory can be attached the same way and checked with
+`agentwrench handoff verify PACK --repo .`. See [../handoff.md](../handoff.md)
+for the command reference.
 
 ## agentwrench export summary
 

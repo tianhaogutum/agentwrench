@@ -58,6 +58,7 @@ Install it for good with `pipx install agentwrench` or `pip install agentwrench`
 | MCP tool definitions | Tokens each server's tools cost per turn, per client and scope (Claude Code global/local/project, Codex global/project) | Servers worth slimming, servers that fail to start, the same server loaded by two clients | [`slim`](#cut-mcp-tool-definitions-in-half-slim) |
 | Instructions loaded every turn | The AGENTS.md chain against Codex's 32 KiB project budget; CLAUDE.md plus its `@imports` | Bytes Codex silently drops and the headings it never sees; `@imports` Claude Code silently skips | [`agentsmd`](docs/agentsmd.md) |
 | Sessions | Tool-call pairing in the 50 most recent session files per client | Sessions that will fail on `--resume` | [`doctor`](docs/doctor.md) |
+| Handoff packs (shown only when the project holds one) | Whether each `agentwrench handoff` pack in the project still matches the repository | Packs that went stale or were edited | [`handoff`](#tests-pass-but-against-which-code--handoff) |
 
 The summary adds it up per client ("fixed context overhead per turn, before you type anything") and lists the top three fixes by tokens saved, each with the exact command. `--json` prints a stable schema ([`agentwrench.scan/v1`](docs/scan.md#json-output)); `--fail-over 30000` exits 1 above 30k tokens of overhead, for CI. Details: [docs/scan.md](docs/scan.md).
 
@@ -184,12 +185,12 @@ agentwrench fence check --repo . --base HEAD --patch candidate.patch --allow 'sr
 
 ### "Tests pass", but against which code? → `handoff`
 
-Record a check with in-toto, then package the Git source fingerprint, that receipt and the task's claims and open questions into one JSON. The receiver verifies it against their checkout without running anything and sees drift, stale receipts and unverified claims. Needs the `handoff` extra. [docs/handoff.md](docs/handoff.md)
+Write a handoff pack for the next agent: the task (kept as unverified claims), a Git file manifest, redacted diffs and records of real test runs, as `handoff.json` plus a readable `handoff.md`. Secrets such as `.env` files are left out. The receiver runs `verify` and learns whether the repository has moved on since, without rerunning anything. No extra needed. When a check's author must be authenticated or CI must require a passing run bound to the exact source state, use the in-toto receipt mode (`record`, `capture`; `handoff` extra). [docs/handoff.md](docs/handoff.md)
 
 ```sh
-agentwrench handoff record --output ../evidence/check.link -- python -m pytest -q
-agentwrench handoff capture --task task.json --log ../evidence/check.link --output ../evidence/handoff.json
-agentwrench handoff verify ../evidence/handoff.json --require-current-pass
+agentwrench handoff run --output ../handoff/tests.json -- python -m pytest -q
+agentwrench handoff pack --goal "Cap retries at five" --evidence ../handoff/tests.json --output ../handoff/pack-01
+agentwrench handoff verify ../handoff/pack-01    # exit 1 once the code no longer matches
 ```
 
 ### Your LangGraph checkpoint database keeps growing → `checkpoints`
@@ -204,7 +205,7 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 
 - **Offline, no telemetry.** agentwrench itself sends no data anywhere and collects nothing. One exception to "no network": the first time `sift` uses a tiktoken encoding, tiktoken downloads that encoding's public vocabulary file (no input data is sent); point `TIKTOKEN_CACHE_DIR` at a prepared directory to keep it offline. Remote MCP servers are listed by `scan`, never contacted.
 - **Read-only by default.** `scan`, `check`, `explain`, `report` and `measure` never modify your inputs (`gate check --junit` writes only the report file you name). Commands that change files need an explicit target or flag (`--out`, `-o`, `--in-place --backup`, `--root`), most have `--dry-run`, and most refuse to overwrite an existing output file.
-- **What runs code.** `scan --probe` starts each configured stdio MCP server with its own command, args, env and cwd, lists its tools, and stops it. Those are your servers, so they do what they do (an `npx` server may download). `slim discover`, `slim proxy` and `cassette record` run the server command you pass them, and `handoff record` runs the check command you pass it. `handoff` and `fence --repo` call your local `git` read-only. Nothing else executes anything.
+- **What runs code.** `scan --probe` starts each configured stdio MCP server with its own command, args, env and cwd, lists its tools, and stops it. Those are your servers, so they do what they do (an `npx` server may download). `slim discover`, `slim proxy` and `cassette record` run the server command you pass them, and `handoff run` and `handoff record` run the check command you pass them. `handoff`, `fence --repo` and `scan` (only when the project holds a handoff pack) call your local `git` read-only. Nothing else executes anything.
 - **No secrets in output.** `scan` reports environment variables and headers by name only, masks tokens in commands, and never prints instruction or session text.
 - **Estimates are labelled.** `scan` and `slim` print `ceil(UTF-8 bytes / 4)` estimates. Against tiktoken `o200k_base` they run 7–18% high on raw tool lists and overstate savings by up to 6 points, so the numbers in this README come from the tokenizer. There is no offline Claude tokenizer; treat all counts as roughly ±15%.
 - **Tested.** 9,000+ tests; CI on Python 3.11 to 3.14 on Linux, plus macOS on Python 3.13. Requires Python 3.11+. Apache-2.0.
@@ -223,7 +224,11 @@ agentwrench is independent and not affiliated with Anthropic, OpenAI or the Mode
 | Review | `fence`, `handoff` | [fence](docs/fence.md) · [handoff](docs/handoff.md) |
 | Other | `patch`, `checkpoints` | [patch](docs/patch.md) · [checkpoints](docs/checkpoints.md) |
 
-`agentwrench <command> --help` lists every subcommand and option. `sift`, `fence`, `handoff` and `checkpoints` need an extra: `pip install 'agentwrench[sift,fence,handoff,langgraph]'` (or only the ones you use). Bug reports and feature requests: [issues](https://github.com/tianhaogutum/agentwrench/issues).
+`agentwrench <command> --help` lists every subcommand and option. `sift`, `fence` and `checkpoints` need an extra, and so do the in-toto receipt subcommands of `handoff`: `pip install 'agentwrench[sift,fence,handoff,langgraph]'` (or only the ones you use). Bug reports and feature requests: [issues](https://github.com/tianhaogutum/agentwrench/issues).
+
+## Related
+
+[rewind](https://github.com/tianhaogutum/rewind) is a separate Go tool that snapshots your files at every Codex turn, so `rewind to N` can undo a turn.
 
 ---
 

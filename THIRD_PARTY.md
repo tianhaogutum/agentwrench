@@ -52,8 +52,9 @@ LangChain and LangSmith packages, requests, urllib3, certifi, idna and
 charset-normalizer through tiktoken, and Windows-only colorama) retain their own
 licenses, which can differ from MIT. Python itself is distributed under the PSF
 license. System Git (GPL-2.0-only) is used as an external executable: at runtime by
-`agentwrench handoff` and by `agentwrench fence --repo`, and by some `patch`,
-`fence` and `handoff` tests. It is never bundled or linked.
+`agentwrench handoff`, by `agentwrench fence --repo` and by `agentwrench scan` when
+the project holds a handoff pack, and by some `patch`, `fence`, `handoff` and
+`scan` tests. It is never bundled or linked.
 
 The LangGraph libraries are used under the following MIT notice:
 
@@ -329,7 +330,43 @@ code is a port of the original JavaScript; behavioural differences are listed in
   The original's development-only TypeScript compiler and fast-check dependencies
   are not used.
 
-## `agentwrench handoff` (formerly anchored-handoff)
+## `agentwrench handoff` (formerly anchored-handoff and relayproof)
+
+The command joins two former projects by the same authors: relayproof (plain
+handoff packs, standard library only) and anchored-handoff (in-toto receipts,
+optional `handoff` extra).
+
+### Plain packs: relayproof
+
+relayproof was a separate Node.js project released under the MIT License
+("Copyright (c) 2026 tianhaogutum"). It is relicensed under Apache-2.0 as part of
+agentwrench; the original MIT notice is retained in
+[licenses/relayproof-LICENSE.txt](licenses/relayproof-LICENSE.txt). The Python code
+in `src/agentwrench/handoff/pack*.py` is a port of the original JavaScript; its
+on-disk formats (`relayproof-handoff/1`, `relayproof-evidence/1`,
+`relayproof-scope-v1`, `relayproof-verification/1`) are kept unchanged.
+Behavioural differences are listed in
+[docs/handoff.md](docs/handoff.md#coming-from-relayproof-or-anchored-handoff).
+
+relayproof had no npm dependencies at all (its lock file lists none), so no npm
+library behaviour is reimplemented. To keep packs byte-compatible, the port
+reproduces behaviour of the Node.js runtime (MIT) from its documentation and from
+observed output, without copying Node.js source: `JSON.stringify` (2-space and
+compact forms, number formatting, lone-surrogate escapes), `JSON.parse` (all
+numbers as doubles, integer-like keys first), string length, slicing and default
+sort order in UTF-16 code units, `String.prototype.trim` and the regular-expression
+semantics the original relied on (`\s`, ASCII-only `\w`, `\b` and `/i`, `$` and `.`),
+`Date.prototype.toISOString`, `Date.parse` for ISO 8601 strings, `Math.round`,
+`Buffer` UTF-8 decoding with replacement characters, `TextDecoder` with
+`fatal: true` (one leading BOM dropped), `crypto.createHash` over strings,
+`path.resolve`, and `child_process.spawn` results (error codes such as `ENOENT`,
+signal names, process-group kill at the timeout). The JSON and string parts reuse
+`src/agentwrench/cache/jscompat.py`. `tests/handoff/fixtures/relayproof/` holds output
+of the original CLI and its helpers on synthetic data (see its README). Repomix
+(https://github.com/yamadashy/repomix, MIT) was consulted when scoping relayproof;
+no code from it is used.
+
+### In-toto receipts: anchored-handoff
 
 Previously the standalone Apache-2.0 project anchored-handoff by the same authors.
 The command composes three existing components and vendors none of them: in-toto

@@ -58,6 +58,7 @@ uvx agentwrench scan --home examples/scan/demo-home --project examples/scan/demo
 | MCP 工具定义 | 每个服务器的工具每轮占多少 token，按客户端和作用域分开（Claude Code 的 global/local/project，Codex 的 global/project） | 值得精简的服务器、启动失败的服务器、被两个客户端重复加载的服务器 | [`slim`](#把-mcp-工具定义砍掉一半slim) |
 | 每轮都加载的指令文件 | AGENTS.md 链对照 Codex 32 KiB 的项目预算；CLAUDE.md 及其 `@import` | Codex 悄悄丢掉的字节和它永远看不到的标题；Claude Code 悄悄跳过的 `@import` | [`agentsmd`](docs/agentsmd.md) |
 | 会话 | 每个客户端最近 50 个会话文件里工具调用是否成对 | 一 `--resume` 就会失败的会话 | [`doctor`](docs/doctor.md) |
+| 交接包（仅当项目里有交接包时显示） | 项目里每个 `agentwrench handoff` 交接包是否仍与仓库一致 | 已过期或被改动过的交接包 | [`handoff`](#测试通过了可到底是哪份代码-handoff) |
 
 最后的汇总按客户端算出"你还没打字，每轮就已经固定占用的上下文"，并按节省的 token 排出前三个修复，每个都附上可以直接运行的命令。`--json` 输出稳定的 schema（[`agentwrench.scan/v1`](docs/scan.md#json-output)）；`--fail-over 30000` 在固定开销超过 3 万 token 时以退出码 1 结束，适合放进 CI。详见 [docs/scan.md](docs/scan.md)。
 
@@ -184,12 +185,12 @@ agentwrench fence check --repo . --base HEAD --patch candidate.patch --allow 'sr
 
 ### “测试通过了”，可到底是哪份代码？→ `handoff`
 
-用 in-toto 记录一次检查，再把 Git 源码状态指纹、这份执行回执，以及任务声明和未决问题打包成一个 JSON。接手的人在自己的检出目录上校验，不会执行其中的任何命令，就能看到代码漂移、过期回执和尚未验证的声明。需要安装 `handoff` 扩展。[docs/handoff.md](docs/handoff.md)
+给下一个智能体写一份交接包：任务（始终标为未验证的声明）、Git 文件清单、脱敏后的 diff 和真实测试运行的记录，输出为 `handoff.json` 和便于阅读的 `handoff.md`。`.env` 之类的敏感文件不会进包。接手方运行 `verify`，不重跑任何命令，就能知道仓库从那以后有没有变。无需额外安装。如果需要验证检查是谁跑的，或者要在 CI 里要求“有一次绑定到当前源码状态的通过运行”，就用 in-toto 回执模式（`record`、`capture`；需要 `handoff` 扩展）。[docs/handoff.md](docs/handoff.md)
 
 ```sh
-agentwrench handoff record --output ../evidence/check.link -- python -m pytest -q
-agentwrench handoff capture --task task.json --log ../evidence/check.link --output ../evidence/handoff.json
-agentwrench handoff verify ../evidence/handoff.json --require-current-pass
+agentwrench handoff run --output ../handoff/tests.json -- python -m pytest -q
+agentwrench handoff pack --goal "把重试次数上限设为 5" --evidence ../handoff/tests.json --output ../handoff/pack-01
+agentwrench handoff verify ../handoff/pack-01    # 代码一旦对不上就以退出码 1 结束
 ```
 
 ### LangGraph 的 checkpoint 数据库越来越大 → `checkpoints`
@@ -204,7 +205,7 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 
 - **离线，无遥测。** agentwrench 不向任何地方发送数据，也不收集任何数据。唯一的联网例外：`sift` 第一次使用某个 tiktoken 编码时，tiktoken 会下载该编码公开的词表文件（不会发送任何输入数据）；把 `TIKTOKEN_CACHE_DIR` 指向一个已准备好的目录即可保持离线。远程 MCP 服务器只会被 `scan` 列出来，从不连接。
 - **默认只读。** `scan`、`check`、`explain`、`report` 和 `measure` 从不修改你的输入文件（`gate check --junit` 只写你指定的报告文件）。会改文件的命令都要显式给出目标或开关（`--out`、`-o`、`--in-place --backup`、`--root`），大多数提供 `--dry-run`，大多数拒绝覆盖已存在的输出文件。
-- **哪些会执行代码。** `scan --probe` 用你配置里的命令、参数、环境变量和工作目录启动每个 stdio MCP 服务器，列出工具后关掉。这些是你自己的服务器，它们会做它们本来就做的事（`npx` 服务器可能会下载）。`slim discover`、`slim proxy` 和 `cassette record` 会运行你传给它们的服务器命令，`handoff record` 会运行你传给它的检查命令。`handoff` 和 `fence --repo` 会以只读方式调用本地 `git`。除此之外不执行任何东西。
+- **哪些会执行代码。** `scan --probe` 用你配置里的命令、参数、环境变量和工作目录启动每个 stdio MCP 服务器，列出工具后关掉。这些是你自己的服务器，它们会做它们本来就做的事（`npx` 服务器可能会下载）。`slim discover`、`slim proxy` 和 `cassette record` 会运行你传给它们的服务器命令，`handoff run` 和 `handoff record` 会运行你传给它们的检查命令。`handoff`、`fence --repo` 以及 `scan`（仅当项目里有交接包时）会以只读方式调用本地 `git`。除此之外不执行任何东西。
 - **输出里没有密钥。** `scan` 对环境变量和请求头只报名字，会遮掉命令里的 token，也从不打印指令文件或会话的正文。
 - **估算会标明。** `scan` 和 `slim` 打印的是 `ceil(UTF-8 字节数 / 4)` 估算值。和 tiktoken `o200k_base` 相比，它在原始工具列表上偏高 7–18%，对节省比例最多高估 6 个百分点，所以本文的数字都来自分词器实测。目前没有可离线使用的 Claude 分词器，所有数字请按 ±15% 理解。
 - **有测试。** 9,000+ 个测试；CI 在 Linux 上覆盖 Python 3.11 到 3.14，另在 macOS 上跑 Python 3.13。需要 Python 3.11+。Apache-2.0 许可。
@@ -223,7 +224,11 @@ agentwrench 是独立项目，与 Anthropic、OpenAI 和 Model Context Protocol 
 | 审查 | `fence`、`handoff` | [fence](docs/fence.md) · [handoff](docs/handoff.md) |
 | 其他 | `patch`、`checkpoints` | [patch](docs/patch.md) · [checkpoints](docs/checkpoints.md) |
 
-`agentwrench <命令> --help` 会列出所有子命令和选项。`sift`、`fence`、`handoff` 和 `checkpoints` 需要额外安装扩展：`pip install 'agentwrench[sift,fence,handoff,langgraph]'`（也可以只装用到的）。问题反馈和功能建议请提 [issue](https://github.com/tianhaogutum/agentwrench/issues)。
+`agentwrench <命令> --help` 会列出所有子命令和选项。`sift`、`fence` 和 `checkpoints` 需要额外安装扩展，`handoff` 的 in-toto 回执子命令也一样：`pip install 'agentwrench[sift,fence,handoff,langgraph]'`（也可以只装用到的）。问题反馈和功能建议请提 [issue](https://github.com/tianhaogutum/agentwrench/issues)。
+
+## 相关项目
+
+[rewind](https://github.com/tianhaogutum/rewind) 是一个独立的 Go 工具：它在 Codex 的每一轮都给你的文件做快照，`rewind to N` 就能撤销某一轮。
 
 ---
 
