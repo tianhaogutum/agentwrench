@@ -1,14 +1,16 @@
 # Third-party sources and attribution
 
 agentwrench is licensed under Apache-2.0 (see [LICENSE](LICENSE) and [NOTICE](NOTICE)).
-Its eight commands were previously separate projects (some MIT, some Apache-2.0)
-written by the same authors and are relicensed here under Apache-2.0. Unless a
+Most of its commands were previously separate projects (some MIT, some Apache-2.0)
+written by the same authors and are relicensed here under Apache-2.0; where a
+section below says so, the original MIT notice is kept in [licenses/](licenses/). Unless a
 section below says otherwise, all code, synthetic fixtures, tests and documentation
 are original work; they contain no production data, real user sessions, tokens,
 API responses, model weights or copied issue attachments.
 
 agentwrench is not affiliated with or endorsed by OpenAI, Anthropic, LangChain,
-Cline, Continue, Microsoft, the Model Context Protocol project or Harbor. Product
+Cline, Continue, Microsoft, the Model Context Protocol project, Harbor, the in-toto
+project, Tree-sitter or the shrinkfit authors. Product
 names identify interoperable file formats only. This file is attribution; it does
 not relicense any dependency or upstream material.
 
@@ -16,7 +18,8 @@ not relicense any dependency or upstream material.
 
 Dependencies are installed by your package manager under their own licenses and
 keep their own notices in their distributions. The agentwrench wheel contains only
-the `agentwrench` package and these project notices.
+the `agentwrench` package and these project notices, including the license texts in
+[licenses/](licenses/).
 
 | Package | License | Used by | Kind |
 | --- | --- | --- | --- |
@@ -24,21 +27,33 @@ the `agentwrench` package and these project notices.
 | [ruamel.yaml](https://yaml.dev/doc/ruamel.yaml/) | MIT, copyright Anthon van der Neut and contributors; incorporates work by Kirill Simonov | `mcp-config` | runtime |
 | [PyYAML](https://github.com/yaml/pyyaml) | MIT | `gate` (safe YAML parsing with additional duplicate-key / alias rejection) | runtime |
 | [regex](https://github.com/mrabarnett/mrab-regex) | Apache-2.0 AND CNRI-Python | `gate` (regular expressions with a per-match timeout) | runtime |
+| [shrinkfit](https://github.com/timesler/shrinkfit) | Apache-2.0 | `sift` (selection proposals; hosted scoring disabled) | optional extra `sift` |
+| [tiktoken](https://github.com/openai/tiktoken) | MIT, Copyright (c) 2022 OpenAI, Shantanu Jain | `sift` (exact token counts; downloads a public vocabulary on first use) | optional extra `sift` |
+| [json-source-map](https://github.com/open-alchemy/json-source-map) | MIT, Copyright (c) 2021 open-alchemy (LICENSE file; the 1.0.5 wheel's classifier says Apache) | `sift` (JSON Pointer to source offsets) | optional extra `sift` |
+| [jsonpointer](https://github.com/stefankoegl/python-json-pointer) | BSD-3-Clause | `sift` (RFC 6901 pointer parsing) | optional extra `sift` |
+| [strip-ansi](https://github.com/gwennlbh/python-strip-ansi) | MIT (repository LICENSE; the 0.1.1 wheel declares no license metadata) | `sift` (ANSI removal for log classification only) | optional extra `sift` |
+| [py-tree-sitter](https://github.com/tree-sitter/py-tree-sitter) (`tree-sitter`) | MIT | `fence` (parser runtime) | optional extra `fence` |
+| [tree-sitter-typescript](https://github.com/tree-sitter/tree-sitter-typescript) | MIT, Max Brunsfeld, Amaan Qureshi and contributors | `fence` (TypeScript and TSX grammars) | optional extra `fence` |
+| [in-toto](https://github.com/in-toto/in-toto) | Apache-2.0 | `handoff` (Link metadata, artifact hashing, command execution, signing) | optional extra `handoff` |
+| [securesystemslib](https://github.com/secure-systems-lab/securesystemslib) | MIT | `handoff` (key loading and signing; installed with in-toto) | optional extra `handoff` (transitive) |
+| [cryptography](https://github.com/pyca/cryptography) | Apache-2.0 OR BSD-3-Clause | `handoff` (PEM key loading; installed with in-toto) | optional extra `handoff` (transitive) |
 | [langgraph-checkpoint](https://github.com/langchain-ai/langgraph) | MIT, Copyright (c) 2024 LangChain, Inc. | `checkpoints` | optional extra `langgraph` |
 | [langgraph-checkpoint-sqlite](https://github.com/langchain-ai/langgraph) | MIT, Copyright (c) 2024 LangChain, Inc. | `checkpoints` | optional extra `langgraph` |
 | [agentevals](https://github.com/langchain-ai/agentevals) | MIT | `gate` (optional local deterministic trajectory matching; required by its integration test) | optional extra `agentevals` |
 | [langgraph](https://github.com/langchain-ai/langgraph) | MIT, Copyright (c) 2024 LangChain, Inc. | `checkpoints` tests and `examples/checkpoints/make_fixture.py` | test |
 | [mcp](https://github.com/modelcontextprotocol/python-sdk) (official MCP Python SDK) | [MIT](https://github.com/modelcontextprotocol/python-sdk/blob/main/LICENSE), Copyright (c) 2024 Anthropic, PBC | `cassette` end-to-end tests and `examples/cassette/echo_client.py` | test |
 | [jsonschema](https://github.com/python-jsonschema/jsonschema) | MIT | `export` tests | test |
-| [Pydantic](https://github.com/pydantic/pydantic) / pydantic-core | MIT | `export` tests (loading the Harbor models) | test |
+| [Pydantic](https://github.com/pydantic/pydantic) / pydantic-core | MIT | `handoff` (strict manifest models and JSON Schema); `export` tests (loading the Harbor models) | optional extra `handoff`; test |
 | [pytest](https://github.com/pytest-dev/pytest) | MIT, pytest developers | test runner; host for the `cassette` pytest plugin | test / optional plugin host |
 | [Hatchling](https://github.com/pypa/hatch) | MIT, Ofek Lev and contributors | build backend | build |
 
 Transitive dependencies (for example iniconfig, packaging, pluggy, Pygments,
-LangChain and LangSmith packages, and Windows-only colorama) retain their own
+LangChain and LangSmith packages, requests, urllib3, certifi, idna and
+charset-normalizer through tiktoken, and Windows-only colorama) retain their own
 licenses, which can differ from MIT. Python itself is distributed under the PSF
-license. System Git (GPL-2.0-only) is used as an external executable by some
-`patch` tests; it is not bundled, linked, or required at runtime.
+license. System Git (GPL-2.0-only) is used as an external executable: at runtime by
+`agentwrench handoff` and by `agentwrench fence --repo`, and by some `patch`,
+`fence` and `handoff` tests. It is never bundled or linked.
 
 The LangGraph libraries are used under the following MIT notice:
 
@@ -234,3 +249,111 @@ synthetic examples.
 All test text and JavaScript fixtures are synthetic. Evidence issue titles/URLs
 were recorded for traceability; issue reports are evidence of user experiences,
 not independently reproduced upstream defect claims.
+
+## `agentwrench sift` (formerly tool-sift)
+
+`agentwrench sift` was previously published as the standalone project tool-sift
+(distribution `tool-sift-evidence`) under the MIT License, "Copyright (c) 2026
+tool-sift contributors". It was written by the same authors and is relicensed under
+Apache-2.0 within agentwrench. The original MIT notice is retained in
+[licenses/tool-sift-LICENSE.txt](licenses/tool-sift-LICENSE.txt).
+
+It is an adapter around [shrinkfit](https://github.com/timesler/shrinkfit)
+(Apache-2.0), used as an installed dependency for selection proposals only. No
+shrinkfit code is copied. Token counts come from tiktoken; JSON Pointer source
+offsets come from json-source-map; pointer handling uses jsonpointer; strip-ansi is
+used only to classify log lines. All are installed by the optional `sift` extra and
+are not vendored. The `tool-sift/v1` schema id of the evidence envelope is kept
+unchanged for compatibility.
+
+[docs/sift/json-source-map-1.0.5-rfc6901.patch](docs/sift/json-source-map-1.0.5-rfc6901.patch)
+is a two-line draft patch against json-source-map 1.0.5 (MIT, Copyright (c) 2021
+open-alchemy), kept only as documentation for an unsubmitted upstream report. It is
+not applied or shipped in the wheel. The json-source-map license text is retained in
+[licenses/json-source-map-LICENSE.txt](licenses/json-source-map-LICENSE.txt).
+
+Related tools consulted when scoping the command (no code used): MCP Compressor
+(Atlassian Labs), contextlens-mcp, tool-output-truncate and Repomix.
+
+The test fixtures in `tests/sift/fixtures/` are original output of intentionally
+failing synthetic test suites (the producer sources are in
+`tests/sift/fixtures/producers/`). They were generated with pytest 9.2.0 and 7.4.4
+plus pytest-reportlog 1.0.0, Python unittest, and Node's `node:test` TAP reporter.
+The absolute path of the generating directory was normalized to
+`/work/sift-fixtures` afterwards. They contain no third-party data.
+
+## `agentwrench fence` (formerly symbol-fence)
+
+`agentwrench fence` was previously a separate Node.js project, symbol-fence, by the
+same authors, released under the MIT License ("Copyright (c) 2026 symbol-fence
+contributors"). It is relicensed under Apache-2.0 as part of agentwrench; the
+original MIT notice is retained in
+[licenses/symbol-fence-LICENSE.txt](licenses/symbol-fence-LICENSE.txt). The Python
+code is a port of the original JavaScript; behavioural differences are listed in
+[docs/fence.md](docs/fence.md#differences-from-the-node-original).
+
+- **Tree-sitter** (py-tree-sitter, MIT) and **tree-sitter-typescript** (MIT, Max
+  Brunsfeld, Amaan Qureshi and contributors) parse TypeScript and TSX. They are
+  optional runtime dependencies (`agentwrench[fence]`) and are not vendored. The
+  original used the Node bindings `tree-sitter` 0.21.1 and `tree-sitter-typescript`
+  0.23.2 (both MIT); the same grammar release is used here.
+- **jsdiff** (npm `diff` 9.0.0, BSD-3-Clause, Copyright (c) 2009-2015, Kevin Decker):
+  the original depended on it for unified-patch parsing, in-memory application and
+  the Myers array diff. Its behaviour is reimplemented in Python for the parts used:
+  `parsePatch` (Git extended headers, quoted file names, hunk parsing and its
+  line-count checks), `applyPatch` restricted to `fuzzFactor: 0` without line-ending
+  conversion (including its hunk placement), and `diffArrays` (Myers diff with
+  diagonal pruning, `maxEditLength`, `timeout`), in
+  `src/agentwrench/fence/jsdiff.py`. The test helper `tests/fence/support.py`
+  translates `createTwoFilesPatch` (`structuredPatch`/`formatPatch`) to generate
+  jsdiff-identical patches. The BSD-3-Clause notice is retained in
+  [licenses/fence-jsdiff-LICENSE.txt](licenses/fence-jsdiff-LICENSE.txt).
+- Test fixtures under `tests/fence/fixtures/` are unmodified upstream sources, kept
+  with their licenses next to them and copied to `licenses/`:
+  - Microsoft TypeScript v5.9.3 `src/compiler/path.ts` (Apache-2.0):
+    [licenses/fence-fixture-TypeScript-LICENSE.txt](licenses/fence-fixture-TypeScript-LICENSE.txt);
+  - ReactiveX RxJS 7.8.2 `src/internal/util/pipe.ts` (Apache-2.0):
+    [licenses/fence-fixture-RxJS-LICENSE.txt](licenses/fence-fixture-RxJS-LICENSE.txt);
+  - @tanstack/react-query 5.90.7 `QueryClientProvider.tsx` and `HydrationBoundary.tsx`
+    (MIT, Copyright (c) 2021-present Tanner Linsley):
+    [licenses/fence-fixture-TanStack-LICENSE.txt](licenses/fence-fixture-TanStack-LICENSE.txt);
+  - `compiler-prettier.patch`: a patch generated from the TypeScript fixture after
+    formatting with Prettier 3.6.2 (no Prettier code retained; derived TypeScript code
+    under the TypeScript license).
+
+  Provenance: `tests/fence/fixtures/upstream/SOURCES.md`,
+  `tests/fence/fixtures/formatter/SOURCES.md` and
+  `tests/fence/fixtures/formatter/provenance.json`.
+- Prior art surveyed for the original design (not used or vendored): ast-grep
+  (structural search), Difftastic and diffsitter (structural diff), CodeTruss,
+  SpecLock and Codify/Hyperfide (task contracts, file zones, declared-symbol drift).
+  The original's development-only TypeScript compiler and fast-check dependencies
+  are not used.
+
+## `agentwrench handoff` (formerly anchored-handoff)
+
+Previously the standalone Apache-2.0 project anchored-handoff by the same authors.
+The command composes three existing components and vendors none of them: in-toto
+(Link metadata, artifact hashing, command execution, signing and DSSE envelopes),
+Git (native binary diffs and NUL-delimited index/file enumeration, run as an
+external executable) and Pydantic (strict manifest models and JSON Schema). The
+in-toto `environment` key `anchored_handoff` and the manifest fields are kept
+unchanged for compatibility.
+
+- in-toto (https://github.com/in-toto/in-toto, Apache-2.0) is a runtime dependency
+  (`in_toto.runlib`, `in_toto.models`). Receipts are standard in-toto Links; the
+  source-state receipt is an extra object in the Link's `environment`.
+- securesystemslib (MIT) and cryptography (Apache-2.0 OR BSD-3-Clause) are installed
+  through in-toto and used directly for PEM key loading and signing.
+- Test fixtures in `tests/handoff/fixtures/` are metadata generated by running
+  in-toto 3.0.0 (`in_toto_run`, `in-toto-run`, `in-toto-record`) and in-toto 2.3.0
+  with securesystemslib 0.31.0 against a synthetic one-file repository, with
+  throwaway keys (public halves only). See `tests/handoff/fixtures/README.md`. They
+  contain no third-party code.
+- Related projects (design context only, no code or schema used): Portable Handoff
+  (https://github.com/legoambarish/portable-handoff), AgentCarry
+  (https://github.com/Jettlin927/agentcarry), Agents Handoff
+  (https://github.com/Ryujin-Labs/agents-handoff) and Proofline
+  (https://pypi.org/project/proofline/).
+  `examples/handoff/portable_handoff_recipe.py` drives Portable Handoff through its
+  own CLI when the user installs it.

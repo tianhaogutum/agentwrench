@@ -2,11 +2,12 @@ agentwrench
 Copyright 2026 tianhaogutum and agentwrench contributors
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
-It merges eight tools previously developed as separate projects (rollout-doctor,
-lgckpt-scope, agentsmd-scope, mcpconf-bridge, trajport, mcp-cassette, trajgate
-and v4a-patch-bridge). agentwrench is an independent interoperability project and
-is not affiliated with or endorsed by OpenAI, Anthropic, LangChain, Cline,
-Continue, Microsoft, the Model Context Protocol project or Harbor. Product names
+It merges tools previously developed as separate projects (rollout-doctor,
+lgckpt-scope, agentsmd-scope, mcpconf-bridge, trajport, mcp-cassette, trajgate,
+v4a-patch-bridge, tool-sift, symbol-fence and anchored-handoff). agentwrench is an
+independent interoperability project and is not affiliated with or endorsed by
+OpenAI, Anthropic, LangChain, Cline, Continue, Microsoft, the Model Context
+Protocol project, Harbor, the in-toto project or Tree-sitter. Product names
 only identify interoperable file formats. See THIRD_PARTY.md for per-command
 attribution.
 
@@ -49,3 +50,26 @@ Copyright 2025 OpenAI
 This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
 Copyright (c) 2016-2022 Florian Dehau
 Copyright (c) 2023-2025 The Ratatui Developers
+
+-------------------------------------------------------------------------------
+agentwrench sift (formerly tool-sift)
+
+Previously a separate MIT-licensed project ("Copyright (c) 2026 tool-sift
+contributors") by the same authors; relicensed under Apache-2.0 here. The original
+MIT notice is retained in licenses/tool-sift-LICENSE.txt. Uses shrinkfit, tiktoken,
+json-source-map, jsonpointer and strip-ansi as optional installed dependencies (no
+code copied). docs/sift/json-source-map-1.0.5-rfc6901.patch is a documentation-only
+draft patch against json-source-map (MIT, Copyright (c) 2021 open-alchemy); its
+license is retained in licenses/json-source-map-LICENSE.txt.
+
+-------------------------------------------------------------------------------
+agentwrench fence (formerly symbol-fence)
+
+Previously a separate MIT-licensed Node.js project ("Copyright (c) 2026
+symbol-fence contributors") by the same authors; ported to Python and relicensed
+under Apache-2.0 here. The original MIT notice is retained in
+licenses/symbol-fence-LICENSE.txt. Includes a Python reimplementation of parts of
+jsdiff, Copyright (c) 2009-2015, Kevin Decker (BSD-3-Clause; notice retained in
+licenses/fence-jsdiff-LICENSE.txt). Test fixtures from Microsoft TypeScript and
+ReactiveX RxJS (Apache-2.0) and TanStack Query (MIT) keep their licenses in
+licenses/fence-fixture-*-LICENSE.txt.

@@ -107,6 +107,14 @@ agentwrench slim measure fs.tools.json --config fs.slim.json         # 对比前
 agentwrench cache analyze requests.jsonl --fail-on tool_reordered,system_changed
 ```
 
+### 工具结果或测试日志太大 → `sift`
+
+一份 80 KB 的 pytest 报告或 MCP 结果，要么塞满上下文，要么被盲目截断。`sift` 按源文件原样保留失败记录、退出码和 `isError`，附上字节范围以及 JSON Pointer 或行号，列出每一段被省略的范围，并让整个结果符合 tiktoken 计量的 token 预算。`recover` 可以从原文件取回任意被省略的范围。需要安装 `sift` 扩展。[docs/sift.md](docs/sift.md)
+
+```sh
+agentwrench sift summarize report.json --format json --budget 1500 --keep /exit_code > evidence.json
+```
+
 ### Codex 没读到 AGENTS.md 的后半段 → `agentsmd`
 
 Codex 默认最多加载 32 KiB 的项目指令文件，超出的部分直接丢弃，不给任何提示。`agentsmd` 列出加载了哪些文件、截断发生在哪个字节哪一行，以及代理永远看不到的每个标题。它也会检查 CLAUDE.md 的 `@import`。[docs/agentsmd.md](docs/agentsmd.md)
@@ -166,6 +174,24 @@ agentwrench cassette replay --cassette cassettes/my-server.json --strict
 agentwrench gate check run.jsonl --policy policy.yaml --junit junit.xml
 ```
 
+### 智能体的 TypeScript 补丁改出了任务范围 → `fence`
+
+让智能体只修一个函数，它却常常顺手格式化整个文件或"改进"相邻函数。`fence` 以基线（目录或 Git 修订）和精确的符号白名单检查统一 diff，拒绝白名单之外的任何改动（包括空白），且从不应用补丁。退出码 0 通过，1 有范围外改动，2 证据无效。需要安装 `fence` 扩展。[docs/fence.md](docs/fence.md)
+
+```sh
+agentwrench fence check --repo . --base HEAD --patch candidate.patch --allow 'src/api.ts::getUser'
+```
+
+### “测试通过了”，可到底是哪份代码？→ `handoff`
+
+用 in-toto 记录一次检查，再把 Git 源码状态指纹、这份执行回执，以及任务声明和未决问题打包成一个 JSON。接手的人在自己的检出目录上校验，不会执行其中的任何命令，就能看到代码漂移、过期回执和尚未验证的声明。需要安装 `handoff` 扩展。[docs/handoff.md](docs/handoff.md)
+
+```sh
+agentwrench handoff record --output ../evidence/check.link -- python -m pytest -q
+agentwrench handoff capture --task task.json --log ../evidence/check.link --output ../evidence/handoff.json
+agentwrench handoff verify ../evidence/handoff.json --require-current-pass
+```
+
 ### LangGraph 的 checkpoint 数据库越来越大 → `checkpoints`
 
 看清哪些线程和通道在增长，对比相邻步骤，用字节预算卡住增长，在保留最新状态和待写入数据的前提下清理旧 checkpoint，并留好备份。需要安装 `langgraph` 扩展。[docs/checkpoints.md](docs/checkpoints.md)
@@ -176,9 +202,9 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 
 ## 可信与局限
 
-- **离线，无遥测。** agentwrench 本身不建立任何网络连接，也不收集任何数据。远程 MCP 服务器只会被 `scan` 列出来，从不连接。
+- **离线，无遥测。** agentwrench 不向任何地方发送数据，也不收集任何数据。唯一的联网例外：`sift` 第一次使用某个 tiktoken 编码时，tiktoken 会下载该编码公开的词表文件（不会发送任何输入数据）；把 `TIKTOKEN_CACHE_DIR` 指向一个已准备好的目录即可保持离线。远程 MCP 服务器只会被 `scan` 列出来，从不连接。
 - **默认只读。** `scan`、`check`、`explain`、`report` 和 `measure` 从不修改你的输入文件（`gate check --junit` 只写你指定的报告文件）。会改文件的命令都要显式给出目标或开关（`--out`、`-o`、`--in-place --backup`、`--root`），大多数提供 `--dry-run`，大多数拒绝覆盖已存在的输出文件。
-- **哪些会执行代码。** `scan --probe` 用你配置里的命令、参数、环境变量和工作目录启动每个 stdio MCP 服务器，列出工具后关掉。这些是你自己的服务器，它们会做它们本来就做的事（`npx` 服务器可能会下载）。`slim discover`、`slim proxy` 和 `cassette record` 会运行你传给它们的服务器命令。除此之外不执行任何东西。
+- **哪些会执行代码。** `scan --probe` 用你配置里的命令、参数、环境变量和工作目录启动每个 stdio MCP 服务器，列出工具后关掉。这些是你自己的服务器，它们会做它们本来就做的事（`npx` 服务器可能会下载）。`slim discover`、`slim proxy` 和 `cassette record` 会运行你传给它们的服务器命令，`handoff record` 会运行你传给它的检查命令。`handoff` 和 `fence --repo` 会以只读方式调用本地 `git`。除此之外不执行任何东西。
 - **输出里没有密钥。** `scan` 对环境变量和请求头只报名字，会遮掉命令里的 token，也从不打印指令文件或会话的正文。
 - **估算会标明。** `scan` 和 `slim` 打印的是 `ceil(UTF-8 字节数 / 4)` 估算值。和 tiktoken `o200k_base` 相比，它在原始工具列表上偏高 7–18%，对节省比例最多高估 6 个百分点，所以本文的数字都来自分词器实测。目前没有可离线使用的 Claude 分词器，所有数字请按 ±15% 理解。
 - **有测试。** 9,000+ 个测试；CI 在 Linux 上覆盖 Python 3.11 到 3.14，另在 macOS 上跑 Python 3.13。需要 Python 3.11+。Apache-2.0 许可。
@@ -190,13 +216,14 @@ agentwrench 是独立项目，与 Anthropic、OpenAI 和 Model Context Protocol 
 
 | | 命令 | 文档（英文） |
 | --- | --- | --- |
-| token 与成本 | `scan`、`slim`、`cache` | [scan](docs/scan.md) · [slim](docs/slim.md)（[基准测试](benchmarks/mcp-servers/README.md)）· [cache](docs/cache.md)（[示例](benchmarks/demos.md)） |
+| token 与成本 | `scan`、`slim`、`cache`、`sift` | [scan](docs/scan.md) · [slim](docs/slim.md)（[基准测试](benchmarks/mcp-servers/README.md)）· [cache](docs/cache.md)（[示例](benchmarks/demos.md)）· [sift](docs/sift.md) |
 | 会话 | `doctor`、`export`、`gate` | [doctor](docs/doctor.md) · [export](docs/export.md) · [gate](docs/gate.md) |
 | MCP | `mcp-config`、`cassette` | [mcp-config](docs/mcp-config.md) · [cassette](docs/cassette.md) |
 | 指令文件 | `agentsmd` | [agentsmd](docs/agentsmd.md) |
+| 审查 | `fence`、`handoff` | [fence](docs/fence.md) · [handoff](docs/handoff.md) |
 | 其他 | `patch`、`checkpoints` | [patch](docs/patch.md) · [checkpoints](docs/checkpoints.md) |
 
-`agentwrench <命令> --help` 会列出所有子命令和选项。问题反馈和功能建议请提 [issue](https://github.com/tianhaogutum/agentwrench/issues)。
+`agentwrench <命令> --help` 会列出所有子命令和选项。`sift`、`fence`、`handoff` 和 `checkpoints` 需要额外安装扩展：`pip install 'agentwrench[sift,fence,handoff,langgraph]'`（也可以只装用到的）。问题反馈和功能建议请提 [issue](https://github.com/tianhaogutum/agentwrench/issues)。
 
 ---
 

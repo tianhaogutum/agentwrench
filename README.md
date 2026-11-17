@@ -107,6 +107,14 @@ A reordered tool list or a timestamp in the system prompt silently breaks prefix
 agentwrench cache analyze requests.jsonl --fail-on tool_reordered,system_changed
 ```
 
+### A tool result or test log is too big → `sift`
+
+An 80 KB pytest report or MCP result either floods the context or gets cut blindly. `sift` keeps the failures, exit code and `isError` exactly as they appear in the source, with byte ranges and JSON Pointers or line numbers, lists every omitted range, and fits the whole envelope into a tiktoken budget. `recover` reads any omitted range back from the original. Needs the `sift` extra. [docs/sift.md](docs/sift.md)
+
+```sh
+agentwrench sift summarize report.json --format json --budget 1500 --keep /exit_code > evidence.json
+```
+
 ### Codex ignores the end of your AGENTS.md → `agentsmd`
 
 By default Codex loads at most 32 KiB of project instruction files and drops the rest without a warning. `agentsmd` shows which files load, the exact byte and line where the cut falls, and every heading the agent never sees. It also audits CLAUDE.md `@imports`. [docs/agentsmd.md](docs/agentsmd.md)
@@ -166,6 +174,24 @@ Normalize `codex exec --json` or Claude Code `--output-format stream-json` logs 
 agentwrench gate check run.jsonl --policy policy.yaml --junit junit.xml
 ```
 
+### An agent's TypeScript patch strays outside the task → `fence`
+
+Asked to fix one function, an agent often reformats the file or "improves" a neighbour. `fence` checks a unified diff against a baseline (directory or Git revision) and an exact symbol allow-list, and rejects every outside change, including whitespace. It never applies the patch. Exit 0 pass, 1 outside changes, 2 invalid evidence. Needs the `fence` extra. [docs/fence.md](docs/fence.md)
+
+```sh
+agentwrench fence check --repo . --base HEAD --patch candidate.patch --allow 'src/api.ts::getUser'
+```
+
+### "Tests pass", but against which code? → `handoff`
+
+Record a check with in-toto, then package the Git source fingerprint, that receipt and the task's claims and open questions into one JSON. The receiver verifies it against their checkout without running anything and sees drift, stale receipts and unverified claims. Needs the `handoff` extra. [docs/handoff.md](docs/handoff.md)
+
+```sh
+agentwrench handoff record --output ../evidence/check.link -- python -m pytest -q
+agentwrench handoff capture --task task.json --log ../evidence/check.link --output ../evidence/handoff.json
+agentwrench handoff verify ../evidence/handoff.json --require-current-pass
+```
+
 ### Your LangGraph checkpoint database keeps growing → `checkpoints`
 
 See which threads and channels grow, diff steps, gate growth against byte budgets, and prune old checkpoints while keeping the latest state and pending writes, with a backup. Needs the `langgraph` extra. [docs/checkpoints.md](docs/checkpoints.md)
@@ -176,9 +202,9 @@ uvx --from 'agentwrench[langgraph]' agentwrench checkpoints stats checkpoints.sq
 
 ## Trust and limits
 
-- **Offline, no telemetry.** agentwrench itself opens no network connections and collects nothing. Remote MCP servers are listed by `scan`, never contacted.
+- **Offline, no telemetry.** agentwrench itself sends no data anywhere and collects nothing. One exception to "no network": the first time `sift` uses a tiktoken encoding, tiktoken downloads that encoding's public vocabulary file (no input data is sent); point `TIKTOKEN_CACHE_DIR` at a prepared directory to keep it offline. Remote MCP servers are listed by `scan`, never contacted.
 - **Read-only by default.** `scan`, `check`, `explain`, `report` and `measure` never modify your inputs (`gate check --junit` writes only the report file you name). Commands that change files need an explicit target or flag (`--out`, `-o`, `--in-place --backup`, `--root`), most have `--dry-run`, and most refuse to overwrite an existing output file.
-- **What runs code.** `scan --probe` starts each configured stdio MCP server with its own command, args, env and cwd, lists its tools, and stops it. Those are your servers, so they do what they do (an `npx` server may download). `slim discover`, `slim proxy` and `cassette record` run the server command you pass them. Nothing else executes anything.
+- **What runs code.** `scan --probe` starts each configured stdio MCP server with its own command, args, env and cwd, lists its tools, and stops it. Those are your servers, so they do what they do (an `npx` server may download). `slim discover`, `slim proxy` and `cassette record` run the server command you pass them, and `handoff record` runs the check command you pass it. `handoff` and `fence --repo` call your local `git` read-only. Nothing else executes anything.
 - **No secrets in output.** `scan` reports environment variables and headers by name only, masks tokens in commands, and never prints instruction or session text.
 - **Estimates are labelled.** `scan` and `slim` print `ceil(UTF-8 bytes / 4)` estimates. Against tiktoken `o200k_base` they run 7–18% high on raw tool lists and overstate savings by up to 6 points, so the numbers in this README come from the tokenizer. There is no offline Claude tokenizer; treat all counts as roughly ±15%.
 - **Tested.** 9,000+ tests; CI on Python 3.11 to 3.14 on Linux, plus macOS on Python 3.13. Requires Python 3.11+. Apache-2.0.
@@ -190,13 +216,14 @@ agentwrench is independent and not affiliated with Anthropic, OpenAI or the Mode
 
 | | Command | Docs |
 | --- | --- | --- |
-| Tokens & cost | `scan`, `slim`, `cache` | [scan](docs/scan.md) · [slim](docs/slim.md) ([benchmark](benchmarks/mcp-servers/README.md)) · [cache](docs/cache.md) ([demo](benchmarks/demos.md)) |
+| Tokens & cost | `scan`, `slim`, `cache`, `sift` | [scan](docs/scan.md) · [slim](docs/slim.md) ([benchmark](benchmarks/mcp-servers/README.md)) · [cache](docs/cache.md) ([demo](benchmarks/demos.md)) · [sift](docs/sift.md) |
 | Sessions | `doctor`, `export`, `gate` | [doctor](docs/doctor.md) · [export](docs/export.md) · [gate](docs/gate.md) |
 | MCP | `mcp-config`, `cassette` | [mcp-config](docs/mcp-config.md) · [cassette](docs/cassette.md) |
 | Instructions | `agentsmd` | [agentsmd](docs/agentsmd.md) |
+| Review | `fence`, `handoff` | [fence](docs/fence.md) · [handoff](docs/handoff.md) |
 | Other | `patch`, `checkpoints` | [patch](docs/patch.md) · [checkpoints](docs/checkpoints.md) |
 
-`agentwrench <command> --help` lists every subcommand and option. Bug reports and feature requests: [issues](https://github.com/tianhaogutum/agentwrench/issues).
+`agentwrench <command> --help` lists every subcommand and option. `sift`, `fence`, `handoff` and `checkpoints` need an extra: `pip install 'agentwrench[sift,fence,handoff,langgraph]'` (or only the ones you use). Bug reports and feature requests: [issues](https://github.com/tianhaogutum/agentwrench/issues).
 
 ---
 

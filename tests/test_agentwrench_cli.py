@@ -8,7 +8,8 @@ import pytest
 import agentwrench
 from agentwrench import cli
 
-TOOLS = ["doctor", "checkpoints", "agentsmd", "mcp-config", "export", "cassette", "gate", "patch"]
+TOOLS = ["doctor", "checkpoints", "agentsmd", "mcp-config", "export", "cassette", "gate", "patch",
+         "sift", "fence", "handoff"]
 BLOCK_LANGGRAPH = """
 import sys
 class Block:
@@ -19,6 +20,13 @@ sys.meta_path.insert(0, Block())
 from agentwrench.cli import main
 raise SystemExit(main(sys.argv[1:]))
 """
+# Commands whose optional extra can be missing: (command, extra, a module of that extra to block).
+EXTRA_COMMANDS = [("sift", "sift", "shrinkfit"), ("fence", "fence", "tree_sitter"),
+                  ("handoff", "handoff", "in_toto")]
+
+
+def block_module(module):
+    return BLOCK_LANGGRAPH.replace('"langgraph"', repr(module)).replace('"langgraph."', repr(module + "."))
 
 
 def run(*args, module=("-m", "agentwrench")):
@@ -37,7 +45,8 @@ def test_overview_lists_every_group_and_command(args, capsys):
 
 
 def test_command_table_shape():
-    assert [c.name for c in cli.COMMANDS if c.group == "Tokens & cost"] == ["scan", "slim", "cache"]
+    assert [c.name for c in cli.COMMANDS if c.group == "Tokens & cost"] == ["scan", "slim", "cache", "sift"]
+    assert [c.name for c in cli.COMMANDS if c.group == "Review"] == ["fence", "handoff"]
     assert {c.name: c.module for c in cli.COMMANDS if c.name in ("scan", "slim", "cache")} == {
         "scan": "agentwrench.scan.cli", "slim": "agentwrench.slim.cli", "cache": "agentwrench.cache.cli"}
     assert set(TOOLS) <= set(cli.BY_NAME)
@@ -123,7 +132,28 @@ def test_checkpoints_without_langgraph_prints_install_hint():
     assert "(needs agentwrench[langgraph])" in overview.stdout
 
 
-@pytest.mark.parametrize("module", ["agentwrench.doctor", "agentwrench.mcpconfig", "agentwrench.patch"])
+@pytest.mark.parametrize("command,extra,module", EXTRA_COMMANDS)
+def test_new_command_help_without_extra_prints_usage_and_hint(command, extra, module):
+    result = run(command, "--help", module=("-c", block_module(module)))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.startswith(f"usage: agentwrench {command} <subcommand>")
+    for sub in SUBCOMMANDS[command]:
+        assert f"\n  {sub} " in result.stdout
+    assert result.stdout.endswith(f"install them with: pip install 'agentwrench[{extra}]'\n")
+    missing = run(command, SUBCOMMANDS[command][0], module=("-c", block_module(module)))
+    assert missing.returncode == 2 and missing.stdout == ""
+    assert missing.stderr.endswith(f"pip install 'agentwrench[{extra}]'\n")
+
+
+@pytest.mark.parametrize("legacy,command", [("tool-sift", "sift"), ("structured-truncate", "sift"),
+                                            ("symbol-fence", "fence"), ("anchored-handoff", "handoff")])
+def test_new_legacy_names_point_to_new_command(legacy, command, capsys):
+    assert cli.main([legacy]) == 2
+    assert f"{legacy} is now 'agentwrench {command}'" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("module", ["agentwrench.doctor", "agentwrench.mcpconfig", "agentwrench.patch",
+                                    "agentwrench.sift", "agentwrench.fence", "agentwrench.handoff"])
 def test_subpackage_main_routes_through_dispatcher(module):
     result = run("--help", module=("-m", module))
     assert result.returncode == 0 and "usage: agentwrench " in result.stdout
@@ -148,6 +178,9 @@ SUBCOMMANDS = {
     "patch": ["parse", "apply", "to-unified", "from-unified", "explain", "preview", "apply-plan", "check-plan",
               "check-unified"],
     "checkpoints": ["threads", "stats", "diff", "prune", "snapshot", "plan-status", "budget", "compare-plans"],
+    "sift": ["summarize", "recover", "verify"],
+    "fence": ["check", "symbols"],
+    "handoff": ["capture", "verify", "record", "inspect", "diff", "schema"],
 }
 ALL_HELP = [(name, None) for name in SUBCOMMANDS] + [(name, sub) for name, subs in SUBCOMMANDS.items() for sub in subs]
 

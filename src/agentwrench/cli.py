@@ -28,7 +28,7 @@ class Command:
     requires: tuple[str, ...] = ()
 
 
-GROUPS = ("Tokens & cost", "Sessions", "MCP", "Instructions", "Other")
+GROUPS = ("Tokens & cost", "Sessions", "MCP", "Instructions", "Review", "Other")
 
 COMMANDS: tuple[Command, ...] = (
     Command("scan", "agentwrench.scan.cli",
@@ -38,6 +38,10 @@ COMMANDS: tuple[Command, ...] = (
             "Shrink the tool definitions an MCP server exposes", "Tokens & cost"),
     Command("cache", "agentwrench.cache.cli",
             "Find where consecutive LLM requests stop sharing a cacheable prefix", "Tokens & cost"),
+    Command("sift", "agentwrench.sift.cli",
+            "Shrink one large tool result or test log into token-bounded, source-located evidence",
+            "Tokens & cost", extra="sift",
+            requires=("shrinkfit", "tiktoken", "json_source_map", "jsonpointer", "strip_ansi")),
     Command("doctor", "agentwrench.doctor.cli",
             "Validate and repair tool-call pairing in Codex/Claude Code session JSONL", "Sessions"),
     Command("export", "agentwrench.export.cli",
@@ -50,6 +54,12 @@ COMMANDS: tuple[Command, ...] = (
             "Record and replay MCP stdio sessions (includes a pytest plugin)", "MCP"),
     Command("agentsmd", "agentwrench.agentsmd.cli",
             "Show which AGENTS.md bytes Codex loads, truncation, and CLAUDE.md imports", "Instructions"),
+    Command("fence", "agentwrench.fence.cli",
+            "Check that a unified diff to TypeScript only edits the symbols you allowed", "Review",
+            extra="fence", requires=("tree_sitter", "tree_sitter_typescript")),
+    Command("handoff", "agentwrench.handoff.cli",
+            "Package Git state, in-toto command receipts and task claims; verify them later", "Review",
+            extra="handoff", requires=("in_toto", "pydantic")),
     Command("patch", "agentwrench.patch.cli",
             "Parse, apply, convert and explain Codex apply_patch (V4A) patches", "Other"),
     Command("checkpoints", "agentwrench.checkpoints.cli",
@@ -63,6 +73,8 @@ LEGACY = {
     "rollout-doctor": "doctor", "lgckpt": "checkpoints", "agentsmd-scope": "agentsmd",
     "mcpconf": "mcp-config", "trajport": "export", "mcp-cassette": "cassette",
     "trajgate": "gate", "v4a": "patch", "mcp-slim": "slim", "prefix-drift": "cache",
+    "tool-sift": "sift", "structured-truncate": "sift", "symbol-fence": "fence",
+    "anchored-handoff": "handoff",
 }
 
 

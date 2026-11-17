@@ -10,12 +10,12 @@ description = "Find and cut the tokens and breakages your Claude Code, Codex and
 dynamic = ["readme"]
 requires-python = ">=3.11"
 license = "Apache-2.0"
-license-files = ["LICENSE", "NOTICE", "THIRD_PARTY.md"]
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY.md", "licenses/*"]
 authors = [{ name = "tianhaogutum" }]
 keywords = [
     "ai-agents", "coding-agents", "claude-code", "codex", "mcp",
     "model-context-protocol", "agents-md", "langgraph", "apply-patch",
-    "trajectory", "devtools", "cli",
+    "trajectory", "in-toto", "tree-sitter", "typescript", "devtools", "cli",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -51,8 +51,27 @@ langgraph = [
 ]
 # Lets `agentwrench gate export-agentevals` output be scored with AgentEvals.
 agentevals = ["agentevals>=0.0.9"]
+# `agentwrench sift`: shrinkfit selection proposals, exact tiktoken budgets, JSON Pointer source maps.
+# sift reads json_source_map module internals (calculate() loses colliding pointers): stay below 1.1.
+sift = [
+    "shrinkfit>=0.6.0,<0.7",
+    "tiktoken>=0.14,<0.15",
+    "json-source-map>=1.0.5,<1.1",
+    "jsonpointer>=3,<4",
+    "strip-ansi>=0.1.1,<0.2",
+]
+# `agentwrench fence` parses TypeScript/TSX with Tree-sitter (same grammar release as before).
+fence = [
+    "tree-sitter>=0.23,<0.27",
+    "tree-sitter-typescript>=0.23.2,<0.24",
+]
+# `agentwrench handoff` records and verifies in-toto command receipts with strict Pydantic models.
+handoff = [
+    "in-toto>=3.0,<4",
+    "pydantic>=2.10,<3",
+]
 test = [
-    "agentwrench[langgraph,agentevals]",
+    "agentwrench[langgraph,agentevals,sift,fence,handoff]",
     "pytest>=8.4",
     "langgraph>=1.2.20,<2",
     "mcp>=1.26,<2",
@@ -115,6 +134,7 @@ include = [
     "/LICENSE",
     "/NOTICE",
     "/THIRD_PARTY.md",
+    "/licenses",
     "/pyproject.toml",
 ]
 exclude = ["__pycache__", "*.pyc"]
